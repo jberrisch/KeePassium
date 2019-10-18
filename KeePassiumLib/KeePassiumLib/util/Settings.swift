@@ -1010,7 +1010,7 @@ public class Settings {
             {
                 return timeout
             }
-            return DatabaseLockTimeout.after1hour
+            return DatabaseLockTimeout.never
         }
         set {
             let oldValue = databaseLockTimeout
