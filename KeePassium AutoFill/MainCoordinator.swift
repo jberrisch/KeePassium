@@ -44,6 +44,11 @@ class MainCoordinator: NSObject, Coordinator {
         watchdog = Watchdog.shared // init
         super.init()
 
+        #if PREPAID_VERSION
+        BusinessModel.type = .prepaid
+        #else
+        BusinessModel.type = .freemium
+        #endif
         SettingsMigrator.processAppLaunch(with: Settings.current)
         Diag.info(AppInfo.description)
 
