@@ -20,6 +20,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     fileprivate var biometricsBackgroundWindow: UIWindow?
     fileprivate var isBiometricAuthShown = false
     
+    // Repeated biometric requests are considered successful for a brief time.
+    fileprivate let biometricAuthReuseDuration = TimeInterval(1.5)
+    fileprivate var lastSuccessfulBiometricAuthTime: Date = .distantPast
+    
+    
     override init() {
         watchdog = Watchdog.shared // init
         super.init()
@@ -181,6 +186,16 @@ extension AppDelegate: WatchdogDelegate {
         guard Settings.current.premiumIsBiometricAppLockEnabled else { return }
         guard !isBiometricAuthShown else { return }
         
+        // After a successful biometric auth, consider repeated requests successful.
+        // Basically, this is a custom implementation of
+        // `touchIDAuthenticationAllowableReuseDuration` that does not seem to work properly.
+        let timeSinceLastSuccess = abs(Date.now.timeIntervalSince(lastSuccessfulBiometricAuthTime))
+        if timeSinceLastSuccess < biometricAuthReuseDuration {
+            print("Skipping repeated biometric prompt")
+            watchdog.unlockApp()
+            return
+        }
+        
         let context = LAContext()
         let policy = LAPolicy.deviceOwnerAuthenticationWithBiometrics
         context.localizedFallbackTitle = "" // hide "Enter (System) Password" fallback; nil won't work
@@ -188,13 +203,16 @@ extension AppDelegate: WatchdogDelegate {
         print("Showing biometrics request")
         
         showBiometricsBackground()
+        lastSuccessfulBiometricAuthTime = .distantPast
         context.evaluatePolicy(policy, localizedReason: LString.titleTouchID) {
             [weak self] (authSuccessful, authError) in
             DispatchQueue.main.async { [weak self] in
                 if authSuccessful {
-                    self?.watchdog.unlockApp(fromAnotherWindow: true)
+                    self?.lastSuccessfulBiometricAuthTime = Date.now
+                    self?.watchdog.unlockApp()
                 } else {
                     Diag.warning("TouchID failed [message: \(authError?.localizedDescription ?? "nil")]")
+                    self?.lastSuccessfulBiometricAuthTime = .distantPast
                     self?.showPasscodeRequest()
                 }
                 self?.hideBiometricsBackground()
@@ -236,7 +254,7 @@ extension AppDelegate: PasscodeInputDelegate {
     func passcodeInput(_ sender: PasscodeInputVC, didEnterPasscode passcode: String) {
         do {
             if try Keychain.shared.isAppPasscodeMatch(passcode) { // throws KeychainError
-                watchdog.unlockApp(fromAnotherWindow: false)
+                watchdog.unlockApp()
             } else {
                 sender.animateWrongPassccode()
                 if Settings.current.isLockAllDatabasesOnFailedPasscode {

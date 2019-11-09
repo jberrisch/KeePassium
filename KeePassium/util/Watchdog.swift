@@ -67,7 +67,6 @@ class Watchdog {
     
     public weak var delegate: WatchdogDelegate?
     
-    private var isBeingUnlockedFromAnotherWindow = false
     private var appLockTimer: Timer?
     private var databaseLockTimer: Timer?
     
@@ -91,16 +90,11 @@ class Watchdog {
     }
     
     internal func didBecomeActive() {
-        print("App did become active (fromAnotherWindow: \(isBeingUnlockedFromAnotherWindow))")
+        print("App did become active")
         // `appDidBecomeActive` is also being called after returning from biometric auth window.
-        // Flag `isBeingUnlockedFromAnotherWindow` tracks this state to avoid immediate re-locking.
         restartAppTimer()
         restartDatabaseTimer()
-        if isBeingUnlockedFromAnotherWindow {
-            isBeingUnlockedFromAnotherWindow = false
-        } else {
-            maybeLockSomething()
-        }
+        maybeLockSomething()
         delegate?.hideAppCover(self)
     }
     
@@ -243,7 +237,6 @@ class Watchdog {
         Diag.info("Engaging App Lock")
         appLockTimer?.invalidate()
         appLockTimer = nil
-        isBeingUnlockedFromAnotherWindow = false
         delegate.showAppLock(self)
         NotificationCenter.default.post(name: Watchdog.Notifications.appLockDidEngage, object: self)
     }
@@ -266,13 +259,11 @@ class Watchdog {
             clearStoredKey: true)
     }
     
-    open func unlockApp(fromAnotherWindow: Bool) {
+    open func unlockApp() {
         guard let delegate = delegate else { return }
         guard delegate.isAppLocked else { return }
-        isBeingUnlockedFromAnotherWindow = fromAnotherWindow
         delegate.hideAppCover(self)
         delegate.hideAppLock(self)
         restart()
     }
-    
 }

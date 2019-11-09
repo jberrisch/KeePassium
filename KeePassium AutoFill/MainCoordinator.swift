@@ -738,7 +738,7 @@ extension MainCoordinator: WatchdogDelegate {
                 Diag.info("Biometric auth successful")
                 DispatchQueue.main.async {
                     [weak self] in
-                    self?.watchdog.unlockApp(fromAnotherWindow: true)
+                    self?.watchdog.unlockApp()
                 }
             } else {
                 Diag.warning("Biometric auth failed [message: \(authError?.localizedDescription ?? "nil")]")
@@ -761,7 +761,7 @@ extension MainCoordinator: PasscodeInputDelegate {
     func passcodeInput(_ sender: PasscodeInputVC, didEnterPasscode passcode: String) {
         do {
             if try Keychain.shared.isAppPasscodeMatch(passcode) { // throws KeychainError
-                watchdog.unlockApp(fromAnotherWindow: false)
+                watchdog.unlockApp()
             } else {
                 sender.animateWrongPassccode()
                 if Settings.current.isLockAllDatabasesOnFailedPasscode {
