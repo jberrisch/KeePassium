@@ -536,7 +536,6 @@ extension UnlockDatabaseVC: DatabaseManagerObserver {
 
     func databaseManager(database urlRef: URLReference, loadingError message: String, reason: String?) {
         DatabaseManager.shared.removeObserver(self)
-        try? Keychain.shared.removeDatabaseKey(databaseRef: urlRef) // throws KeychainError, ignored
         refresh()
         hideProgressOverlay()
         
