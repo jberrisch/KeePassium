@@ -169,6 +169,8 @@ extension AppDelegate: WatchdogDelegate {
             _appLockWindow.rootViewController = passcodeInputVC
             _appLockWindow.makeKeyAndVisible()
         }
+        passcodeInputVC.view.snapshotView(afterScreenUpdates: true)
+        
         self.appLockWindow = _appLockWindow
         print("passcode request shown")
     }
