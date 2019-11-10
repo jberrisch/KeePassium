@@ -216,11 +216,13 @@ class MainCoordinator: NSObject, Coordinator {
         //TODO: ask for confirmation
         FileKeeper.shared.removeExternalReference(urlRef, fileType: .database)
         try? Keychain.shared.removeDatabaseKey(databaseRef: urlRef)
+        Settings.current.forgetKeyFile(for: urlRef)
         refreshFileList()
     }
     
     func deleteDatabase(_ urlRef: URLReference) {
         try? Keychain.shared.removeDatabaseKey(databaseRef: urlRef)
+        Settings.current.forgetKeyFile(for: urlRef)
         do {
             try FileKeeper.shared.deleteFile(urlRef, fileType: .database, ignoreErrors: false)
                 // throws `FileKeeperError`

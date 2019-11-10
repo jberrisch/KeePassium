@@ -332,6 +332,7 @@ class ChooseDatabaseVC: UITableViewController, Refreshable {
         }
 
         try? Keychain.shared.removeDatabaseKey(databaseRef: urlRef) // throws KeychainError, ignored
+        Settings.current.forgetKeyFile(for: urlRef)
         do {
             let fileInfo = urlRef.getInfo()
             try FileKeeper.shared.deleteFile(
@@ -354,6 +355,7 @@ class ChooseDatabaseVC: UITableViewController, Refreshable {
             Settings.current.startupDatabase = nil
         }
         try? Keychain.shared.removeDatabaseKey(databaseRef: urlRef) // throws KeychainError, ignored
+        Settings.current.forgetKeyFile(for: urlRef)
         FileKeeper.shared.removeExternalReference(urlRef, fileType: .database)
     }
     

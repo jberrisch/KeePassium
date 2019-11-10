@@ -882,6 +882,11 @@ public class Settings {
         postChangeNotification(changedKey: Keys.keyFileAssociations)
     }
     
+    /// Removes key file association for the given database.
+    public func forgetKeyFile(for databaseRef: URLReference) {
+        setKeyFileForDatabase(databaseRef: databaseRef, keyFileRef: nil)
+    }
+    
     /// Removes any database associations with the given key file.
     public func forgetKeyFile(_ keyFileRef: URLReference) {
         guard isKeepKeyFileAssociations else { return }
