@@ -93,6 +93,9 @@ public class Settings {
         case autoFillFinishedOK
         case copyTOTPOnAutoFill
         
+        // Haptic feedback
+        case hapticFeedbackEnabled
+        
         // Password generator
         case passwordGeneratorLength
         case passwordGeneratorIncludeLowerCase
@@ -1196,7 +1199,23 @@ public class Settings {
                 key: .copyTOTPOnAutoFill)
         }
     }
-
+    
+    /// Whether to play tactile/haptic feedback
+    public var isHapticFeedbackEnabled: Bool {
+        get {
+            let stored = UserDefaults.appGroupShared
+                .object(forKey: Keys.hapticFeedbackEnabled.rawValue)
+                as? Bool
+            return stored ?? true
+        }
+        set {
+            updateAndNotify(
+                oldValue: isHapticFeedbackEnabled,
+                newValue: newValue,
+                key: .hapticFeedbackEnabled)
+        }
+    }
+    
     // MARK: - Password generator
     
     /// Password generator: length of generated passwords

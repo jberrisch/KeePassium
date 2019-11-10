@@ -66,14 +66,19 @@ class DatabaseUnlockerVC: UIViewController, Refreshable {
         }
     }
     
-    func showErrorMessage(_ text: String, reason: String?=nil, suggestion: String?=nil) {
+    func showErrorMessage(
+        _ text: String,
+        reason: String?=nil,
+        suggestion: String?=nil,
+        haptics: HapticFeedback.Kind?=nil
+    ) {
         let text = [text, reason, suggestion]
             .compactMap { return $0 } // drop empty
             .joined(separator: "\n")
         errorMessageLabel.text = text
         Diag.error(text)
         UIAccessibility.post(notification: .announcement, argument: text)
-
+        
         // In a stack view, visibility calls are accumulated
         // (https://stackoverflow.com/a/45599835)
         // so we avoid re-showing the panel.
@@ -91,6 +96,9 @@ class DatabaseUnlockerVC: UIViewController, Refreshable {
             completion: {
                 [weak self] (finished) in
                 self?.errorMessagePanel.shake()
+                if let hapticsKind = haptics {
+                    HapticFeedback.play(hapticsKind)
+                }
             }
         )
     }
@@ -124,7 +132,7 @@ class DatabaseUnlockerVC: UIViewController, Refreshable {
     }
 
     func showMasterKeyInvalid(message: String) {
-        showErrorMessage(message)
+        showErrorMessage(message, haptics: .wrongPassword)
     }
     
     func refresh() {

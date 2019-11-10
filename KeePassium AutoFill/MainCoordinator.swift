@@ -766,8 +766,10 @@ extension MainCoordinator: PasscodeInputDelegate {
     func passcodeInput(_ sender: PasscodeInputVC, didEnterPasscode passcode: String) {
         do {
             if try Keychain.shared.isAppPasscodeMatch(passcode) { // throws KeychainError
+                HapticFeedback.play(.appUnlocked)
                 watchdog.unlockApp()
             } else {
+                HapticFeedback.play(.wrongPassword)
                 sender.animateWrongPassccode()
                 if Settings.current.isLockAllDatabasesOnFailedPasscode {
                     try? Keychain.shared.removeAllDatabaseKeys() // throws KeychainError
