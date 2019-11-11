@@ -34,6 +34,9 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
     
     private var keyFileRef: URLReference?
     private var fileKeeperNotifications: FileKeeperNotifications!
+    
+    var isAutoUnlockEnabled = true
+    fileprivate var isAutomaticUnlock = false
 
     static func make(databaseRef: URLReference) -> UnlockDatabaseVC {
         let vc = UnlockDatabaseVC.instantiateFromStoryboard()
@@ -83,6 +86,12 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
         super.viewWillAppear(animated)
         refreshPremiumStatus()
         refresh()
+        if isMovingToParent {
+            // returned from ViewGroup
+            DispatchQueue.main.async { [weak self] in
+                self?.maybeAutoUnlock()
+            }
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -309,7 +318,7 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
         progressOverlay = ProgressOverlay.addTo(
             keyboardAdjView,
             title: LString.databaseStatusLoading,
-            animated: true)
+            animated: !isAutomaticUnlock)
         progressOverlay?.isCancellable = true
         
         // Disable navigation so the user won't switch to another DB while unlocking.
@@ -322,7 +331,7 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
     
     fileprivate func hideProgressOverlay() {
         UIView.animateKeyframes(
-            withDuration: 0.2,
+            withDuration: isAutomaticUnlock ? 0.0 : 0.2,
             delay: 0.0,
             options: [.beginFromCurrentState],
             animations: {
@@ -364,7 +373,7 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
     }
     
     @IBAction func didPressUnlock(_ sender: Any) {
-        tryToUnlockDatabase()
+        tryToUnlockDatabase(isAutomaticUnlock: false)
     }
     
     private var premiumCoordinator: PremiumCoordinator?
@@ -377,8 +386,18 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
     
     // MARK: - DB unlocking
     
-    func tryToUnlockDatabase() {
+    func maybeAutoUnlock() {
+        guard isAutoUnlockEnabled else { return }
+        guard let splitVC = splitViewController, splitVC.isCollapsed else { return }
+        let hasKey: Bool = (try? DatabaseManager.shared.hasKey(for: databaseRef)) ?? true
+            // throws KeychainError
+        guard hasKey else { return }
+        tryToUnlockDatabase(isAutomaticUnlock: true)
+    }
+    
+    func tryToUnlockDatabase(isAutomaticUnlock: Bool) {
         Diag.clear()
+        self.isAutomaticUnlock = isAutomaticUnlock
         let password = passwordField.text ?? ""
         passwordField.resignFirstResponder()
         hideWatchdogTimeoutMessage(animated: true)
@@ -453,7 +472,7 @@ extension UnlockDatabaseVC: KeyFileChooserDelegate {
 extension UnlockDatabaseVC: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         if textField == self.passwordField {
-            tryToUnlockDatabase()
+            tryToUnlockDatabase(isAutomaticUnlock: false)
         }
         return true
     }
@@ -539,6 +558,7 @@ extension UnlockDatabaseVC: DatabaseManagerObserver {
         refresh()
         hideProgressOverlay()
         
+        isAutoUnlockEnabled = false
         showErrorMessage(message, details: reason, haptics: .error)
         maybeFocusOnPassword()
     }
