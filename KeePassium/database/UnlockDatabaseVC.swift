@@ -62,6 +62,8 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
         view.backgroundColor = UIColor(patternImage: UIImage(asset: .backgroundPattern))
         view.layer.isOpaque = false
         
+        setupYubikeyButton()
+
         // hide the hidden labels
         watchdogTimeoutLabel.alpha = 0.0
         errorMessagePanel.alpha = 0.0
@@ -208,6 +210,64 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
     private func clearPasswordField() {
         passwordField.text = ""
     }
+    
+    // MARK: - Yubikey button
+    
+    private func setupYubikeyButton() {
+        let yubiButton = UIButton(type: .custom)
+        yubiButton.tintColor = UIColor.green
+        yubiButton.addTarget(self, action: #selector(didPressYubiButton), for: .touchUpInside)
+        let yubiImage = UIImage(asset: .yubikeyAccessory)
+        yubiButton.setImage(yubiImage, for: .normal)
+        
+        let horizontalInsets = CGFloat(8.0)
+        let verticalInsets = CGFloat(2.0)
+        yubiButton.imageEdgeInsets = UIEdgeInsets(
+            top: verticalInsets,
+            left: horizontalInsets,
+            bottom: verticalInsets,
+            right: horizontalInsets)
+        yubiButton.frame = CGRect(
+            x: 0.0,
+            y: 0.0,
+            width: yubiImage.size.width + 2 * horizontalInsets,
+            height: yubiImage.size.height + 2 * verticalInsets)
+        yubiButton.isAccessibilityElement = true
+        yubiButton.accessibilityLabel = NSLocalizedString(
+            "[Database/Unlock] YubiKey",
+            value: "YubiKey",
+            comment: "Action/button to setup YubiKey key component")
+        keyFileField.rightViewMode = .always
+        keyFileField.rightView = yubiButton
+    }
+    
+    @objc func didPressYubiButton() {
+        let selector = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        let yubikeySlot1 = UIAlertAction(
+            title: String.localizedStringWithFormat(LString.useYubikeySlotN, 1),
+            style: .default)
+        { (action) in
+        }
+        
+        let yubikeySlot2 = UIAlertAction(
+            title: String.localizedStringWithFormat(LString.useYubikeySlotN, 2),
+            style: .default)
+        { (action) in
+        }
+        
+        let noYubikey = UIAlertAction(title: LString.dontUseYubikey, style: .destructive) {
+            (action) in
+            
+        }
+        let cancel = UIAlertAction(title: LString.actionCancel, style: .cancel)
+
+        selector.addAction(noYubikey)
+        selector.addAction(yubikeySlot1)
+        selector.addAction(yubikeySlot2)
+        selector.addAction(cancel)
+        present(selector, animated: true, completion: nil)
+    }
+    
     
     // MARK: - In-app news announcements
     
