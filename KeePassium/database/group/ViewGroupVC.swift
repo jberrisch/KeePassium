@@ -202,7 +202,7 @@ open class ViewGroupVC: UITableViewController, Refreshable {
         alert.addAction(contactUsAction)
         present(alert, animated: true, completion: nil)
     }
-    
+        
     // MARK: - Searching
     
     private func setupSearch() {
@@ -666,8 +666,20 @@ open class ViewGroupVC: UITableViewController, Refreshable {
         present(settingsVC, animated: true, completion: nil)
     }
     
-    @IBAction func didPressLockDatabase(_ sender: Any) {
-        DatabaseManager.shared.closeDatabase(clearStoredKey: true)
+    @IBAction func didPressLockDatabase(_ sender: UIBarButtonItem) {
+        let confirmationAlert = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        let lockDatabaseAction = UIAlertAction(title: LString.actionLockDatabase, style: .destructive) {
+            (action) in
+            DatabaseManager.shared.closeDatabase(clearStoredKey: true)
+        }
+        let cancelAction = UIAlertAction(title: LString.actionCancel, style: .cancel, handler: nil)
+        confirmationAlert.addAction(lockDatabaseAction)
+        confirmationAlert.addAction(cancelAction)
+        confirmationAlert.modalPresentationStyle = .popover
+        if let popover = confirmationAlert.popoverPresentationController {
+            popover.barButtonItem = sender
+        }
+        present(confirmationAlert, animated: true, completion: nil)
     }
     
     @IBAction func didPressChangeDatabaseSettings(_ sender: Any) {
