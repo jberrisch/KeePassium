@@ -122,11 +122,14 @@ public class Settings {
         }
         
         public static let allValues = [
-            immediately, after3seconds, after15seconds, after30seconds,
+            immediately,
+            // after1second — excluded, as it is used as internal replacement for `immediately`
+            after3seconds, after15seconds, after30seconds,
             after1minute, after2minutes, after5minutes]
         
         case never = -1 // left for backward compatibility
         case immediately = 0
+        case after1second = 1 // workaround for some bugs with `immediately`
         case after3seconds = 3
         case after15seconds = 15
         case after30seconds = 30
@@ -142,6 +145,7 @@ public class Settings {
             switch self {
             case .never,
                  .immediately,
+                 .after1second,
                  .after3seconds:
                 return .appMinimized
             default:
@@ -989,6 +993,20 @@ public class Settings {
         }
     }
     
+    /// Instance var, set externally by SystemIssueDetector
+    public var isAffectedByAutoFillFaceIDLoop_iOS_13_2_3 = false
+    
+    /// Workaround for infinite Face ID lock on iOS 13.2.3 (and maybe higher)
+    /// (https://github.com/keepassium/KeePassium/issues/74)
+    /// Converts immediate timeout to a 1-second one.
+    public func maybeFixAutoFillFaceIDLoop_iOS_13_2_3(_ timeout: AppLockTimeout) -> AppLockTimeout {
+        if isAffectedByAutoFillFaceIDLoop_iOS_13_2_3 && timeout == .immediately {
+            return .after1second
+        } else {
+            return timeout
+        }
+    }
+    
     /// Timeout for automatically locking the app, in seconds.
     public var appLockTimeout: AppLockTimeout {
         get {
@@ -996,9 +1014,9 @@ public class Settings {
                 .object(forKey: Keys.appLockTimeout.rawValue) as? Int,
                 let timeout = AppLockTimeout(rawValue: rawValue)
             {
-                return timeout
+                return maybeFixAutoFillFaceIDLoop_iOS_13_2_3(timeout)
             }
-            return AppLockTimeout.immediately
+            return maybeFixAutoFillFaceIDLoop_iOS_13_2_3(AppLockTimeout.immediately)
         }
         set {
             let oldValue = appLockTimeout
