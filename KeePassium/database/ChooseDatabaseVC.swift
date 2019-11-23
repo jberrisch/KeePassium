@@ -326,6 +326,10 @@ class ChooseDatabaseVC: UITableViewController, Refreshable {
     
     private func didSelectDatabase(urlRef: URLReference) {
         Settings.current.startupDatabase = urlRef
+        if databaseUnlocker != nil {
+            databaseUnlocker?.databaseRef = urlRef
+            return
+        }
         let unlockDatabaseVC = UnlockDatabaseVC.make(databaseRef: urlRef)
         showDetailViewController(unlockDatabaseVC, sender: self)
         databaseUnlocker = unlockDatabaseVC
