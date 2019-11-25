@@ -105,6 +105,10 @@
 		754BF08A2082A6BD00E3A292 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 754BF0892082A6BD00E3A292 /* Assets.xcassets */; };
 		754BF08D2082A6BD00E3A292 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 754BF08B2082A6BD00E3A292 /* LaunchScreen.storyboard */; };
 		754BF09A20984DEE00E3A292 /* UnlockDatabaseVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 754BF09920984DEE00E3A292 /* UnlockDatabaseVC.swift */; };
+		754D7C09238C2135005652E1 /* KeyFileTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 754D7C08238C2135005652E1 /* KeyFileTextField.swift */; };
+		754D7C0A238C2135005652E1 /* KeyFileTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 754D7C08238C2135005652E1 /* KeyFileTextField.swift */; };
+		754D7C0B238C2135005652E1 /* KeyFileTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 754D7C08238C2135005652E1 /* KeyFileTextField.swift */; };
+		754D7C0C238C2135005652E1 /* KeyFileTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 754D7C08238C2135005652E1 /* KeyFileTextField.swift */; };
 		754DE31220A5C4A4002ED5F9 /* ChooseKeyFileVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 754DE31120A5C4A4002ED5F9 /* ChooseKeyFileVC.swift */; };
 		7550D22B215CC99100360E0C /* ChangeMasterKeyVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7550D22A215CC99100360E0C /* ChangeMasterKeyVC.swift */; };
 		7550D242215D792000360E0C /* AuthenticationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7550D231215D758800360E0C /* AuthenticationServices.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -589,6 +593,7 @@
 		754BF08C2082A6BD00E3A292 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		754BF08E2082A6BD00E3A292 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		754BF09920984DEE00E3A292 /* UnlockDatabaseVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnlockDatabaseVC.swift; sourceTree = "<group>"; };
+		754D7C08238C2135005652E1 /* KeyFileTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyFileTextField.swift; sourceTree = "<group>"; };
 		754DE31120A5C4A4002ED5F9 /* ChooseKeyFileVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChooseKeyFileVC.swift; sourceTree = "<group>"; };
 		7550D22A215CC99100360E0C /* ChangeMasterKeyVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangeMasterKeyVC.swift; sourceTree = "<group>"; };
 		7550D231215D758800360E0C /* AuthenticationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AuthenticationServices.framework; path = System/Library/Frameworks/AuthenticationServices.framework; sourceTree = SDKROOT; };
@@ -1385,6 +1390,7 @@
 				7573FD8A2321664F00DCDA5A /* MultilineButton.swift */,
 				757ADC4F23A5180600D708D2 /* DismissableNavigationController.swift */,
 				757ADC4E23A5180600D708D2 /* DismissablePopover.swift */,
+				754D7C08238C2135005652E1 /* KeyFileTextField.swift */,
 			);
 			path = views;
 			sourceTree = "<group>";
@@ -1819,6 +1825,7 @@
 				75E446CA2330307300E24E70 /* Xcode11GM_LocalizedLabel.swift in Sources */,
 				75802635222ED11D00F4525F /* ProgressVC.swift in Sources */,
 				75C11F1F22208D6B0042FB2B /* LAContext+biometrics.swift in Sources */,
+				754D7C0A238C2135005652E1 /* KeyFileTextField.swift in Sources */,
 				757FB3CC21F9B4AF00F016FA /* ProtectedTextField.swift in Sources */,
 				750CFBDB21BAD7FF00E62B09 /* UIAlertController+extensions.swift in Sources */,
 				75CBAB9D21C166D600B8AFE2 /* Coordinator.swift in Sources */,
@@ -1888,6 +1895,7 @@
 				754DE31220A5C4A4002ED5F9 /* ChooseKeyFileVC.swift in Sources */,
 				757D336320EF5081000A47F0 /* SettingsClipboardTimeoutVC.swift in Sources */,
 				75B5FB7920D6101100D402D9 /* ItemCategory.swift in Sources */,
+				754D7C09238C2135005652E1 /* KeyFileTextField.swift in Sources */,
 				75D1674A21464333005E33C3 /* AboutVC.swift in Sources */,
 				750C683220D767F6001A6AA0 /* EditEntryVC.swift in Sources */,
 				75151D3323268AB300F3C411 /* UILabel+strikethrough.swift in Sources */,
@@ -1994,6 +2002,7 @@
 				75B38C16233E5B7C006BDEFC /* ChooseKeyFileVC.swift in Sources */,
 				75B38C17233E5B7C006BDEFC /* SettingsClipboardTimeoutVC.swift in Sources */,
 				75B38C18233E5B7C006BDEFC /* ItemCategory.swift in Sources */,
+				754D7C0B238C2135005652E1 /* KeyFileTextField.swift in Sources */,
 				75B38C19233E5B7C006BDEFC /* AboutVC.swift in Sources */,
 				75B38C1A233E5B7C006BDEFC /* EditEntryVC.swift in Sources */,
 				75B38C1B233E5B7C006BDEFC /* UILabel+strikethrough.swift in Sources */,
@@ -2089,6 +2098,7 @@
 				75D7DF94233E5E310029AD87 /* Xcode11GM_LocalizedLabel.swift in Sources */,
 				75D7DF95233E5E310029AD87 /* ProgressVC.swift in Sources */,
 				75D7DF96233E5E310029AD87 /* LAContext+biometrics.swift in Sources */,
+				754D7C0C238C2135005652E1 /* KeyFileTextField.swift in Sources */,
 				75D7DF97233E5E310029AD87 /* ProtectedTextField.swift in Sources */,
 				75D7DF98233E5E310029AD87 /* UIAlertController+extensions.swift in Sources */,
 				75D7DF99233E5E310029AD87 /* Coordinator.swift in Sources */,

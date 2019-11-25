@@ -13,7 +13,7 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
     @IBOutlet private weak var databaseNameLabel: UILabel!
     @IBOutlet private weak var inputPanel: UIView!
     @IBOutlet private weak var passwordField: UITextField!
-    @IBOutlet private weak var keyFileField: UITextField!
+    @IBOutlet private weak var keyFileField: KeyFileTextField!
     @IBOutlet private weak var keyboardAdjView: UIView!
     @IBOutlet private weak var errorMessagePanel: UIView!
     @IBOutlet private weak var errorLabel: UILabel!
@@ -61,13 +61,17 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
         // make background image
         view.backgroundColor = UIColor(patternImage: UIImage(asset: .backgroundPattern))
         view.layer.isOpaque = false
-        
-        setupYubikeyButton()
 
         // hide the hidden labels
         watchdogTimeoutLabel.alpha = 0.0
         errorMessagePanel.alpha = 0.0
         errorMessagePanel.isHidden = true
+        
+        // setup Yubikey button
+        keyFileField.yubikeyHandler = {
+            [weak self] (field) in
+            self?.didPressYubiButton()
+        }
 
         // Fix UIKeyboardAssistantBar constraints warnings for secure input field
         passwordField.inputAssistantItem.leadingBarButtonGroups = []
@@ -213,34 +217,6 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
     
     // MARK: - Yubikey button
     
-    private func setupYubikeyButton() {
-        let yubiButton = UIButton(type: .custom)
-        yubiButton.tintColor = UIColor.green
-        yubiButton.addTarget(self, action: #selector(didPressYubiButton), for: .touchUpInside)
-        let yubiImage = UIImage(asset: .yubikeyAccessory)
-        yubiButton.setImage(yubiImage, for: .normal)
-        
-        let horizontalInsets = CGFloat(8.0)
-        let verticalInsets = CGFloat(2.0)
-        yubiButton.imageEdgeInsets = UIEdgeInsets(
-            top: verticalInsets,
-            left: horizontalInsets,
-            bottom: verticalInsets,
-            right: horizontalInsets)
-        yubiButton.frame = CGRect(
-            x: 0.0,
-            y: 0.0,
-            width: yubiImage.size.width + 2 * horizontalInsets,
-            height: yubiImage.size.height + 2 * verticalInsets)
-        yubiButton.isAccessibilityElement = true
-        yubiButton.accessibilityLabel = NSLocalizedString(
-            "[Database/Unlock] YubiKey",
-            value: "YubiKey",
-            comment: "Action/button to setup YubiKey key component")
-        keyFileField.rightViewMode = .always
-        keyFileField.rightView = yubiButton
-    }
-    
     @objc func didPressYubiButton() {
         let selector = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         let yubikeySlot1 = UIAlertAction(
@@ -255,7 +231,7 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
         { (action) in
         }
         
-        let noYubikey = UIAlertAction(title: LString.dontUseYubikey, style: .destructive) {
+        let noYubikey = UIAlertAction(title: LString.dontUseYubikey, style: .default) {
             (action) in
             
         }
