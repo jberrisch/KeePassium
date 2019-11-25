@@ -258,12 +258,23 @@ extension DatabaseCreatorCoordinator: DatabaseManagerObserver {
         DatabaseManager.shared.removeObserver(self)
         databaseCreatorVC.hideProgressView()
         DatabaseManager.shared.closeDatabase(
-            completion: { [weak self] in
-                DispatchQueue.main.async { [weak self] in
-                    self?.pickTargetLocation(for: urlRef)
+            clearStoredKey: true,
+            ignoreErrors: false,
+            completion: { [weak self] (errorMessage) in
+                if let errorMessage = errorMessage {
+                    // there was a problem closing/saving the DB
+                    let errorAlert = UIAlertController.make(
+                        title: LString.titleError,
+                        message: errorMessage,
+                        cancelButtonTitle: LString.actionDismiss)
+                    self?.navigationController.present(errorAlert, animated: true, completion: nil)
+                } else {
+                    // all good, choose the saving location
+                    DispatchQueue.main.async { [weak self] in
+                        self?.pickTargetLocation(for: urlRef)
+                    }
                 }
-            },
-            clearStoredKey: true
+            }
         )
     }
     

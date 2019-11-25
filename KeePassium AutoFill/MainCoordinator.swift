@@ -63,8 +63,11 @@ class MainCoordinator: NSObject, Coordinator {
 
     func start() {
         // Sometimes the extension is not killed immediately (issue #2).
-        // In case the previous instance is still alive, close the DB.
-        DatabaseManager.shared.closeDatabase(clearStoredKey: false)
+        // In case the previous instance is still alive, force-close the DB.
+        DatabaseManager.shared.closeDatabase(
+            clearStoredKey: false,
+            ignoreErrors: true,
+            completion: nil)
         
         DatabaseManager.shared.addObserver(self)
         
@@ -100,9 +103,12 @@ class MainCoordinator: NSObject, Coordinator {
     
     // Clears and closes any resources before quitting the extension.
     func cleanup() {
-        DatabaseManager.shared.removeObserver(self)
-        DatabaseManager.shared.closeDatabase(clearStoredKey: false)
         PremiumManager.shared.usageMonitor.stopInterval()
+        DatabaseManager.shared.removeObserver(self)
+        DatabaseManager.shared.closeDatabase(
+            clearStoredKey: false,
+            ignoreErrors: true,
+            completion: nil)
     }
 
     /// Closes all view controllers and quits the extension.
@@ -603,7 +609,10 @@ extension MainCoordinator: LongPressAwareNavigationControllerDelegate {
             !navigationController.viewControllers.contains(fromVC) else { return }
         
         if fromVC is EntryFinderVC {
-            DatabaseManager.shared.closeDatabase(clearStoredKey: false)
+            DatabaseManager.shared.closeDatabase(
+                clearStoredKey: false,
+                ignoreErrors: true,
+                completion: nil) // cannot do anything about errors anyway
 //            navigationController.popToRootViewController(animated: true)
         }
     }
@@ -646,8 +655,22 @@ extension MainCoordinator: EntryFinderDelegate {
     }
     
     func entryFinderShouldLockDatabase(_ sender: EntryFinderVC) {
-        DatabaseManager.shared.closeDatabase(clearStoredKey: true)
-        navigationController.popToRootViewController(animated: true)
+        DatabaseManager.shared.closeDatabase(
+            clearStoredKey: true,
+            ignoreErrors: false,
+            completion: { [weak self] (errorMessage) in
+                if let errorMessage = errorMessage {
+                    let errorAlert = UIAlertController.make(
+                        title: LString.titleError,
+                        message: errorMessage,
+                        cancelButtonTitle: LString.actionDismiss)
+                    self?.navigationController.present(errorAlert, animated: true, completion: nil)
+                } else {
+                    // closed ok
+                    self?.navigationController.popToRootViewController(animated: true)
+                }
+            }
+        )
     }
 }
 
@@ -776,7 +799,10 @@ extension MainCoordinator: PasscodeInputDelegate {
                 sender.animateWrongPassccode()
                 if Settings.current.isLockAllDatabasesOnFailedPasscode {
                     try? Keychain.shared.removeAllDatabaseKeys() // throws KeychainError
-                    DatabaseManager.shared.closeDatabase(clearStoredKey: true)
+                    DatabaseManager.shared.closeDatabase(
+                        clearStoredKey: true,
+                        ignoreErrors: true,
+                        completion: nil)
                 }
             }
         } catch {

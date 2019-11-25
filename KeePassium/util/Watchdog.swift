@@ -248,15 +248,15 @@ class Watchdog {
         self.databaseLockTimer = nil
         try? Keychain.shared.removeAllDatabaseKeys() // throws `KeychainError`, ignored
         DatabaseManager.shared.closeDatabase(
-            completion: {
-                DispatchQueue.main.async {
-                    self.delegate?.watchdogDidCloseDatabase(self)
-                    NotificationCenter.default.post(
-                        name: Watchdog.Notifications.databaseLockDidEngage,
-                        object: self)
-                }
-            },
-            clearStoredKey: true)
+            clearStoredKey: true,
+            ignoreErrors: true,
+            completion: { // strong self
+                (errorMessage) in // errorMessage is always nil, due to ignoreErrors = true
+                self.delegate?.watchdogDidCloseDatabase(self)
+                NotificationCenter.default.post(
+                    name: Watchdog.Notifications.databaseLockDidEngage,
+                    object: self)
+            })
     }
     
     open func unlockApp() {

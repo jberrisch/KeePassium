@@ -55,9 +55,14 @@ public class DatabaseManager {
     /// Asynchronous call, returns immediately.
     ///
     /// - Parameters:
-    ///   - callback: called after successfully closing the database.
     ///   - clearStoredKey: whether to remove the database key stored in keychain (if any)
-    public func closeDatabase(completion callback: (() -> Void)?=nil, clearStoredKey: Bool) {
+    ///   - ignoreErrors: force-close ignoring any errors
+    ///   - callback: called after closing the database. `errorMessage` parameter is nil in case of success.
+    public func closeDatabase(
+        clearStoredKey: Bool,
+        ignoreErrors: Bool,
+        completion callback: ((String?) -> Void)?)
+    {
         guard database != nil else { return }
         Diag.debug("Will close database")
 
@@ -70,20 +75,44 @@ public class DatabaseManager {
         serialDispatchQueue.async {
             guard let dbDoc = self.databaseDocument else { return }
             
-            dbDoc.close(successHandler: {
-                guard let dbRef = self.databaseRef else { assertionFailure(); return }
-                self.notifyDatabaseWillClose(database: dbRef)
-                self.databaseDocument = nil
-                self.databaseRef = nil
-                self.notifyDatabaseDidClose(database: dbRef)
-                Diag.info("Database closed")
-                callback?()
-            }, errorHandler: { errorMessage in
-                Diag.warning("Failed to save database document [message: \(String(describing: errorMessage))]")
-                // An alert has been shown elsewhere, so there is nothing else to do.
-                //TODO: check if UI state makes sense in this case
-            })
+            let completionSemaphore = DispatchSemaphore(value: 0)
+            
+            // UIDocument.close() callbacks use the same queue as the .close() itself.
+            // So we switch to the main queue, while the serialDispatchQueue awaits
+            // for the completion.
+            DispatchQueue.main.async {
+                dbDoc.close(successHandler: { // strong self
+                    self.handleDatabaseClosing()
+                    callback?(nil)
+                    completionSemaphore.signal()
+                }, errorHandler: { errorMessage in // strong self
+                    Diag.error("Failed to save database document [message: \(String(describing: errorMessage))]")
+                    let adjustedErrorMessage: String?
+                    if ignoreErrors {
+                        Diag.warning("Ignoring errors and closing anyway")
+                        self.handleDatabaseClosing()
+                        adjustedErrorMessage = nil
+                    } else {
+                        adjustedErrorMessage = errorMessage
+                    }
+                    callback?(adjustedErrorMessage)
+                    completionSemaphore.signal()
+                })
+            }
+            // Block the serial queue until the document is done closing.
+            // Otherwise the user might try to re-open the DB before it is properly saved.
+            completionSemaphore.wait()
         }
+    }
+    
+    private func handleDatabaseClosing() {
+        guard let dbRef = self.databaseRef else { assertionFailure(); return }
+        
+        self.notifyDatabaseWillClose(database: dbRef)
+        self.databaseDocument = nil
+        self.databaseRef = nil
+        self.notifyDatabaseDidClose(database: dbRef)
+        Diag.info("Database closed")
     }
 
     /// Tries to load a database and unlock it with given password/key file.
