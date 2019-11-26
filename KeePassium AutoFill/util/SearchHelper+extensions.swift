@@ -16,6 +16,13 @@ struct FuzzySearchResults {
     var partialMatch: SearchResults
     
     var isEmpty: Bool { return exactMatch.isEmpty && partialMatch.isEmpty }
+    
+    // True iff the search results contain only one entry, and it is an exact match.
+    var hasPerfectMatch: Bool {
+        guard partialMatch.isEmpty && (exactMatch.count == 1) else { return false }
+        let firstGroup = exactMatch.first!
+        return firstGroup.entries.count == 1
+    }
 }
 
 /// Adds AutoFill-specific search methods
