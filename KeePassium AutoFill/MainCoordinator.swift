@@ -192,7 +192,7 @@ class MainCoordinator: NSObject, Coordinator {
         
         let allRefs = FileKeeper.shared.getAllReferences(fileType: .database, includeBackup: false)
         if allRefs.isEmpty {
-            let firstSetupVC = FirstSetupVC.make(coordinator: self)
+            let firstSetupVC = FirstSetupVC.make(delegate: self)
             firstSetupVC.navigationItem.hidesBackButton = true
             navigationController.pushViewController(firstSetupVC, animated: false)
             completion?()
@@ -208,11 +208,14 @@ class MainCoordinator: NSObject, Coordinator {
         }
     }
     
-    func addDatabase() {
+    func addDatabase(popoverAnchor: PopoverAnchor) {
         let picker = UIDocumentPickerViewController(
             documentTypes: FileType.databaseUTIs,
             in: .open)
         picker.delegate = self
+        if let popover = picker.popoverPresentationController {
+            popoverAnchor.apply(to: popover)
+        }
         navigationController.topViewController?.present(picker, animated: true, completion: nil)
         
         // remember the instance to recognize it in delegate method
@@ -275,9 +278,12 @@ class MainCoordinator: NSObject, Coordinator {
         }
     }
     
-    func addKeyFile() {
+    func addKeyFile(popoverAnchor: PopoverAnchor) {
         let picker = UIDocumentPickerViewController(documentTypes: FileType.keyFileUTIs, in: .open)
         picker.delegate = self
+        if let popover = picker.popoverPresentationController {
+            popoverAnchor.apply(to: popover)
+        }
         navigationController.topViewController?.present(picker, animated: true, completion: nil)
         
         // remember the instance to recognize it in delegate method
@@ -292,7 +298,6 @@ class MainCoordinator: NSObject, Coordinator {
     
     func selectKeyFile() {
         let vc = KeyFileChooserVC.instantiateFromStoryboard()
-        vc.coordinator = self
         vc.delegate = self
         navigationController.pushViewController(vc, animated: true)
     }
@@ -386,16 +391,16 @@ extension MainCoordinator: DatabaseChooserDelegate {
         dismissAndQuit()
     }
     
-    func databaseChooserShouldAddDatabase(_ sender: DatabaseChooserVC) {
+    func databaseChooserShouldAddDatabase(_ sender: DatabaseChooserVC, popoverAnchor: PopoverAnchor) {
         watchdog.restart()
         if sender.databaseRefs.count > 0 {
             if PremiumManager.shared.isAvailable(feature: .canUseMultipleDatabases) {
-                addDatabase()
+                addDatabase(popoverAnchor: popoverAnchor)
             } else {
                 offerPremiumUpgrade(from: sender, for: .canUseMultipleDatabases)
             }
         } else {
-            addDatabase()
+            addDatabase(popoverAnchor: popoverAnchor)
         }
     }
     
@@ -440,7 +445,7 @@ extension MainCoordinator: DatabaseUnlockerDelegate {
 // MARK: - KeyFileChooserDelegate
 extension MainCoordinator: KeyFileChooserDelegate {
     
-    func keyFileChooser(_ sender: KeyFileChooserVC, didSelectFile urlRef: URLReference?) {
+    func didSelectFile(in keyFileChooser: KeyFileChooserVC, urlRef: URLReference?) {
         watchdog.restart()
         navigationController.popViewController(animated: true) // bye-bye, key file chooser
         if let databaseUnlockerVC = navigationController.topViewController as? DatabaseUnlockerVC {
@@ -448,6 +453,10 @@ extension MainCoordinator: KeyFileChooserDelegate {
         } else {
             assertionFailure()
         }
+    }
+    
+    func didPressAddKeyFile(in keyFileChooser: KeyFileChooserVC, popoverAnchor: PopoverAnchor) {
+        addKeyFile(popoverAnchor: popoverAnchor)
     }
 }
 
@@ -827,5 +836,16 @@ extension MainCoordinator: CrashReportDelegate {
         
         navigationController.viewControllers.removeAll()
         showDatabaseChooser(canPickDefaultDatabase: false, completion: nil)
+    }
+}
+
+// MARK: - FirstSetupDelegate
+extension MainCoordinator: FirstSetupDelegate {
+    func didPressCancel(in firstSetup: FirstSetupVC) {
+        dismissAndQuit()
+    }
+    
+    func didPressAddDatabase(in firstSetup: FirstSetupVC, at popoverAnchor: PopoverAnchor) {
+        addDatabase(popoverAnchor: popoverAnchor)
     }
 }

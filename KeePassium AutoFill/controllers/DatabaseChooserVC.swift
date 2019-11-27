@@ -12,7 +12,7 @@ protocol DatabaseChooserDelegate: class {
     /// Called when the user presses "Cancel"
     func databaseChooserShouldCancel(_ sender: DatabaseChooserVC)
     /// Called when the user presses "Add database"
-    func databaseChooserShouldAddDatabase(_ sender: DatabaseChooserVC)
+    func databaseChooserShouldAddDatabase(_ sender: DatabaseChooserVC, popoverAnchor: PopoverAnchor)
     /// Called when the user selects a database from the list
     func databaseChooser(_ sender: DatabaseChooserVC, didSelectDatabase urlRef: URLReference)
     /// Called when the user wants to delete a (local) database file from the list
@@ -84,9 +84,10 @@ class DatabaseChooserVC: UITableViewController, Refreshable {
         delegate?.databaseChooserShouldCancel(self)
     }
     
-    @IBAction func didPressAddDatabase(_ sender: Any) {
+    @IBAction func didPressAddDatabase(_ sender: UIBarButtonItem) {
         Watchdog.shared.restart()
-        delegate?.databaseChooserShouldAddDatabase(self)
+        let popoverAnchor = PopoverAnchor(barButtonItem: sender)
+        delegate?.databaseChooserShouldAddDatabase(self, popoverAnchor: popoverAnchor)
     }
     
     @objc func didLongPressTableView(_ gestureRecognizer: UILongPressGestureRecognizer) {
