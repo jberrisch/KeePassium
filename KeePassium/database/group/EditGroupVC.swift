@@ -162,7 +162,10 @@ class EditGroupVC: UIViewController, Refreshable {
         }
         group.name = nameTextField.text ?? ""
         group.modified()
-        DatabaseManager.shared.startSavingDatabase()
+        DatabaseManager.shared.startSavingDatabase(challengeHandler: {
+            (challenge: SecureByteArray, responseHandler: ResponseHandler) -> Void in
+            assertionFailure("Not implemented") // TODO: implement this
+        })
     }
     
     private var savingOverlay: ProgressOverlay?

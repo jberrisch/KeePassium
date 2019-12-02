@@ -40,6 +40,9 @@ public class DatabaseManager {
     public var isDatabaseOpen: Bool { return database != nil }
     
     private var databaseDocument: DatabaseDocument?
+    private var databaseLoader: DatabaseLoader?
+    private var databaseSaver: DatabaseSaver?
+    
     private var serialDispatchQueue = DispatchQueue(
         label: "com.keepassium.DatabaseManager",
         qos: .userInitiated)
@@ -123,24 +126,39 @@ public class DatabaseManager {
     public func startLoadingDatabase(
         database dbRef: URLReference,
         password: String,
-        keyFile keyFileRef: URLReference?)
+        keyFile keyFileRef: URLReference?,
+        challengeHandler: ChallengeHandler?)
     {
         Diag.verbose("Will queue load database")
         serialDispatchQueue.async {
-            self._loadDatabase(dbRef: dbRef, compositeKey: nil, password: password, keyFileRef: keyFileRef)
+            self._loadDatabase(
+                dbRef: dbRef,
+                compositeKey: nil,
+                password: password,
+                keyFileRef: keyFileRef,
+                challengeHandler: challengeHandler)
         }
     }
     
     /// Tries to load database and unlock it with the given composite key
     /// (as opposed to password/keyfile pair).
     /// Returns immediately, works asynchronously.
-    public func startLoadingDatabase(database dbRef: URLReference, compositeKey: SecureByteArray) {
+    public func startLoadingDatabase(
+        database dbRef: URLReference,
+        compositeKey: SecureByteArray,
+        challengeHandler: ChallengeHandler?)
+    {
         Diag.verbose("Will queue load database")
         /// compositeKey might be erased when we leave this block.
         /// So keep a local copy.
         let compositeKeyClone = compositeKey.secureClone()
         serialDispatchQueue.async {
-            self._loadDatabase(dbRef: dbRef, compositeKey: compositeKeyClone, password: "", keyFileRef: nil)
+            self._loadDatabase(
+                dbRef: dbRef,
+                compositeKey: compositeKeyClone,
+                password: "",
+                keyFileRef: nil,
+                challengeHandler: challengeHandler)
         }
     }
     
@@ -149,7 +167,8 @@ public class DatabaseManager {
         dbRef: URLReference,
         compositeKey: SecureByteArray?,
         password: String,
-        keyFileRef: URLReference?)
+        keyFileRef: URLReference?,
+        challengeHandler: ChallengeHandler?)
     {
         precondition(database == nil, "Can only load one database at a time")
 
@@ -158,19 +177,23 @@ public class DatabaseManager {
         progress.totalUnitCount = ProgressSteps.all
         progress.completedUnitCount = 0
         
-        let dbLoader = DatabaseLoader(
+        precondition(databaseLoader == nil)
+        databaseLoader = DatabaseLoader(
             dbRef: dbRef,
             compositeKey: compositeKey,
             password: password,
             keyFileRef: keyFileRef,
+            challengeHandler: challengeHandler,
             progress: progress,
-            completion: databaseLoaded)
-        dbLoader.load()
+            completion: databaseLoaderFinished)
+        databaseLoader!.load()
     }
     
-    private func databaseLoaded(_ dbDoc: DatabaseDocument, _ dbRef: URLReference) {
-        self.databaseDocument = dbDoc
+    // dbDoc is `nil` in case of error
+    private func databaseLoaderFinished(_ dbRef: URLReference, _ dbDoc: DatabaseDocument?) {
         self.databaseRef = dbRef
+        self.databaseDocument = dbDoc
+        self.databaseLoader = nil
     }
 
     /// Stores current database's key in keychain.
@@ -195,19 +218,23 @@ public class DatabaseManager {
     
     /// Save previously opened database to its original path.
     /// Asynchronous call, returns immediately.
-    public func startSavingDatabase() {
+    public func startSavingDatabase(challengeHandler: ChallengeHandler?) {
         guard let databaseDocument = databaseDocument, let dbRef = databaseRef else {
             Diag.warning("Tried to save database before opening one.")
             assertionFailure("Tried to save database before opening one.")
             return
         }
         serialDispatchQueue.async {
-            self._saveDatabase(databaseDocument, dbRef: dbRef)
+            self._saveDatabase(databaseDocument, dbRef: dbRef, challengeHandler: challengeHandler)
             Diag.info("Async database saving finished")
         }
     }
     
-    private func _saveDatabase(_ dbDoc: DatabaseDocument, dbRef: URLReference) {
+    private func _saveDatabase(
+        _ dbDoc: DatabaseDocument,
+        dbRef: URLReference,
+        challengeHandler: ChallengeHandler?)
+    {
         precondition(database != nil, "No database to save")
         Diag.info("Saving database")
         
@@ -216,16 +243,19 @@ public class DatabaseManager {
         progress.completedUnitCount = 0
         notifyDatabaseWillSave(database: dbRef)
         
-        let dbSaver = DatabaseSaver(
+        precondition(databaseSaver == nil)
+        databaseSaver = DatabaseSaver(
             databaseDocument: dbDoc,
             databaseRef: dbRef,
+            challengeHandler: challengeHandler,
             progress: progress,
-            completion: databaseSaved)
-        dbSaver.save()
+            completion: databaseSaverFinished)
+        databaseSaver!.save()
     }
     
-    private func databaseSaved(_ dbDoc: DatabaseDocument) {
-        // nothing to do here
+    private func databaseSaverFinished(_ urlRef: URLReference, _ dbDoc: DatabaseDocument) {
+        databaseSaver = nil
+        // nothing else to do here
     }
     
     /// Changes the composite key of the current database.
@@ -310,6 +340,7 @@ public class DatabaseManager {
         databaseURL: URL,
         password: String,
         keyFile: URLReference?,
+        challengeHandler: ChallengeHandler?,
         template templateSetupHandler: @escaping (Group2) -> Void,
         success successHandler: @escaping () -> Void,
         error errorHandler: @escaping ((String?) -> Void))
@@ -552,31 +583,38 @@ public class DatabaseManager {
     }
 }
 
+// MARK: - DatabaseLoader
 
 fileprivate class DatabaseLoader {
+    typealias CompletionHandler = (URLReference, DatabaseDocument?) -> Void
+    
     private let dbRef: URLReference
     private let compositeKey: SecureByteArray?
     private let password: String
     private let keyFileRef: URLReference?
+    private let challengeHandler: ChallengeHandler?
     private let progress: ProgressEx
     private var progressKVO: NSKeyValueObservation?
     private unowned var notifier: DatabaseManager
     /// Warning messages related to DB loading, that should be shown to the user.
     private let warnings: DatabaseLoadingWarnings
-    private let completion: ((DatabaseDocument, URLReference) -> Void)
+    private let completion: CompletionHandler
     
+    /// `completion` is always called once done, even if there was an error.
     init(
         dbRef: URLReference,
         compositeKey: SecureByteArray?,
         password: String,
         keyFileRef: URLReference?,
+        challengeHandler: ChallengeHandler?,
         progress: ProgressEx,
-        completion: @escaping((DatabaseDocument, URLReference) -> Void))
+        completion: @escaping(CompletionHandler))
     {
         self.dbRef = dbRef
         self.compositeKey = compositeKey
         self.password = password
         self.keyFileRef = keyFileRef
+        self.challengeHandler = challengeHandler
         self.progress = progress
         self.completion = completion
         self.warnings = DatabaseLoadingWarnings()
@@ -664,6 +702,7 @@ fileprivate class DatabaseLoader {
                     value: "Cannot find database file",
                     comment: "Error message"),
                 reason: error.localizedDescription)
+            completion(dbRef, nil)
             endBackgroundTask()
             return
         }
@@ -691,6 +730,7 @@ fileprivate class DatabaseLoader {
                         value: "Cannot open database file",
                         comment: "Error message"),
                     reason: errorMessage)
+                self.completion(self.dbRef, nil)
                 self.endBackgroundTask()
             }
         )
@@ -712,6 +752,7 @@ fileprivate class DatabaseLoader {
                     value: "Unrecognized database format",
                     comment: "Error message"),
                 reason: nil)
+            completion(dbRef, nil)
             endBackgroundTask()
             return
         }
@@ -749,6 +790,7 @@ fileprivate class DatabaseLoader {
                         value: "Cannot find key file",
                         comment: "Error message"),
                     reason: error.localizedDescription)
+                completion(dbRef, nil)
                 endBackgroundTask()
                 return
             }
@@ -771,6 +813,7 @@ fileprivate class DatabaseLoader {
                             value: "Cannot open key file",
                             comment: "Error message"),
                         reason: error.localizedDescription)
+                    self.completion(self.dbRef, nil)
                     self.endBackgroundTask()
                 }
             )
@@ -795,6 +838,7 @@ fileprivate class DatabaseLoader {
                     bundle: Bundle.framework,
                     value: "Please provide at least a password or a key file",
                     comment: "Error shown when both master password and key file are empty"))
+            completion(dbRef, nil)
             endBackgroundTask()
             return
         }
@@ -822,10 +866,11 @@ fileprivate class DatabaseLoader {
                 bundle: Bundle.framework,
                 value: "Done",
                 comment: "Progress status: finished loading database")
-            completion(dbDoc, dbRef)
+            completion(dbRef, dbDoc)
             stopObservingProgress()
             notifier.notifyDatabaseDidLoad(database: dbRef, warnings: warnings)
             endBackgroundTask()
+            
         } catch let error as DatabaseError {
             // first, clean up
             dbDoc.database = nil
@@ -845,18 +890,18 @@ fileprivate class DatabaseLoader {
                     isCancelled: progress.isCancelled,
                     message: error.localizedDescription,
                     reason: error.failureReason)
-                endBackgroundTask()
             case .invalidKey:
                 Diag.error("Invalid master key. [message: \(error.localizedDescription)]")
                 stopObservingProgress()
                 notifier.notifyDatabaseInvalidMasterKey(
                     database: dbRef,
                     message: error.localizedDescription)
-                endBackgroundTask()
             case .saveError:
                 Diag.error("saveError while loading?!")
                 fatalError("Database saving error while loading?!")
             }
+            completion(dbRef, nil)
+            endBackgroundTask()
         } catch let error as ProgressInterruption {
             dbDoc.database = nil
             dbDoc.close(completionHandler: nil)
@@ -879,6 +924,7 @@ fileprivate class DatabaseLoader {
                         message: error.localizedDescription,
                         reason: nil)
                 }
+                completion(dbRef, nil)
                 endBackgroundTask()
             }
         } catch {
@@ -892,30 +938,38 @@ fileprivate class DatabaseLoader {
                 isCancelled: progress.isCancelled,
                 message: error.localizedDescription,
                 reason: nil)
+            completion(dbRef, nil)
             endBackgroundTask()
         }
     }
 }
 
+// MARK: - DatabaseSaver
 
 fileprivate class DatabaseSaver {
+    typealias CompletionHandler = (URLReference, DatabaseDocument) -> Void
+    
     private let dbDoc: DatabaseDocument
     private let dbRef: URLReference
+    private let challengeHandler: ChallengeHandler?
     private let progress: ProgressEx
     private var progressKVO: NSKeyValueObservation?
     private unowned var notifier: DatabaseManager
-    private let completion: ((DatabaseDocument) -> Void)
+    private let completion: CompletionHandler
 
     /// `dbRef` refers to the existing URL of the currently opened `dbDoc`.
+    /// `completion` is always called once done, even if there was an error.
     init(
         databaseDocument dbDoc: DatabaseDocument,
         databaseRef dbRef: URLReference,
+        challengeHandler: ChallengeHandler?,
         progress: ProgressEx,
-        completion: @escaping((DatabaseDocument) -> Void))
+        completion: @escaping(CompletionHandler))
     {
         assert(dbDoc.documentState.contains(.normal))
         self.dbDoc = dbDoc
         self.dbRef = dbRef
+        self.challengeHandler = challengeHandler
         self.progress = progress
         notifier = DatabaseManager.shared
         self.completion = completion
@@ -993,7 +1047,7 @@ fileprivate class DatabaseSaver {
                     Diag.info("Database saved OK")
                     self.stopObservingProgress()
                     self.notifier.notifyDatabaseDidSave(database: self.dbRef)
-                    self.completion(self.dbDoc)
+                    self.completion(self.dbRef, self.dbDoc)
                     self.endBackgroundTask()
                 },
                 errorHandler: {
@@ -1005,6 +1059,7 @@ fileprivate class DatabaseSaver {
                         isCancelled: self.progress.isCancelled,
                         message: errorMessage ?? "",
                         reason: nil)
+                    self.completion(self.dbRef, self.dbDoc)
                     self.endBackgroundTask()
                 }
             )
@@ -1021,6 +1076,7 @@ fileprivate class DatabaseSaver {
                 isCancelled: progress.isCancelled,
                 message: error.localizedDescription,
                 reason: error.failureReason)
+            completion(dbRef, dbDoc)
             endBackgroundTask()
         } catch let error as ProgressInterruption {
             stopObservingProgress()
@@ -1042,6 +1098,7 @@ fileprivate class DatabaseSaver {
                         message: error.localizedDescription,
                         reason: nil)
                 }
+                completion(dbRef, dbDoc)
                 endBackgroundTask()
             }
         } catch { // file writing errors
@@ -1052,6 +1109,7 @@ fileprivate class DatabaseSaver {
                 isCancelled: progress.isCancelled,
                 message: error.localizedDescription,
                 reason: nil)
+            completion(dbRef, dbDoc)
             endBackgroundTask()
         }
     }

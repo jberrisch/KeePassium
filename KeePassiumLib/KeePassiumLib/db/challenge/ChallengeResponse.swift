@@ -8,10 +8,11 @@
 
 import Foundation
 
-public class YubiKey {
-    public enum Slot {
-        case none
-        case slot1
-        case slot2
-    }
+public enum ChallengeResonseError {
+    
 }
+
+public typealias ChallengeHandler =
+    (_ challenge: SecureByteArray, _ responseHandler: ResponseHandler) -> ()
+public typealias ResponseHandler =
+    (_ response: SecureByteArray, _ error: ChallengeResonseError) -> ()

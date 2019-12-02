@@ -88,6 +88,10 @@ class DatabaseCreatorCoordinator: NSObject {
             databaseURL: tmpFileURL,
             password: databaseCreatorVC.password,
             keyFile: databaseCreatorVC.keyFile,
+            challengeHandler: {
+                (challenge: SecureByteArray, responseHandler: ResponseHandler) -> Void in
+                assertionFailure("Not implemented") // TODO: implement this
+            },
             template: { [weak self] (rootGroup2) in
                 rootGroup2.name = fileName // override default "/" with a meaningful name
                 self?.addTemplateItems(to: rootGroup2)
@@ -173,7 +177,10 @@ class DatabaseCreatorCoordinator: NSObject {
     /// Step 3: Save temporary database
     private func startSavingDatabase() {
         DatabaseManager.shared.addObserver(self)
-        DatabaseManager.shared.startSavingDatabase()
+        DatabaseManager.shared.startSavingDatabase(challengeHandler: {
+            (challenge: SecureByteArray, responseHandler: ResponseHandler) -> Void in
+            assertionFailure("Not implemented") // TODO: implement this
+        })
     }
     
     /// Step 4: Show picker to move temporary database to its final location

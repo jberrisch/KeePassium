@@ -872,7 +872,10 @@ open class ViewGroupVC: UITableViewController, Refreshable {
     
     func saveDatabase() {
         DatabaseManager.shared.addObserver(self)
-        DatabaseManager.shared.startSavingDatabase()
+        DatabaseManager.shared.startSavingDatabase(challengeHandler: {
+            (challenge: SecureByteArray, responseHandler: ResponseHandler) -> Void in
+            assertionFailure("Not implemented") // TODO: implement this
+        })
     }
     
     private var savingOverlay: ProgressOverlay?

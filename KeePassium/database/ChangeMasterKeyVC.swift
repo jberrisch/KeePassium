@@ -81,7 +81,10 @@ class ChangeMasterKeyVC: UIViewController {
                 dbm.changeCompositeKey(to: newCompositeKey)
                 try? dbm.rememberDatabaseKey(onlyIfExists: true) // throws KeychainError, ignored
                 dbm.addObserver(_self)
-                dbm.startSavingDatabase()
+                dbm.startSavingDatabase(challengeHandler: {
+                    (challenge: SecureByteArray, responseHandler: ResponseHandler) -> Void in
+                    assertionFailure("Not implemented") // TODO: implement this
+                })
             },
             error: {
                 [weak self] (_ errorMessage: String) -> Void in

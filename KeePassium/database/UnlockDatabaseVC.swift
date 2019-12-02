@@ -33,6 +33,7 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
     }
     
     private var keyFileRef: URLReference?
+    private var yubiKeySlot: YubiKey.Slot = .none
     private var fileKeeperNotifications: FileKeeperNotifications!
     
     var isAutoUnlockEnabled = true
@@ -218,22 +219,34 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
     // MARK: - Yubikey button
     
     @objc func didPressYubiButton() {
+//        if #available(iOS 13, *) {
+//            if YubiKitDeviceCapabilities.supportsISO7816NFCTags {
+//                // Provide additional setup when NFC is available
+//                // example
+//                YubiKitManager.shared.nfcSession.startIso7816Session()
+//                YubiKitManager.shared.nfcSession.stopIso7816Session()
+//            } else {
+//                // Handle the missing NFC support
+//            }
+//        }
         let selector = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         let yubikeySlot1 = UIAlertAction(
             title: String.localizedStringWithFormat(LString.useYubikeySlotN, 1),
             style: .default)
-        { (action) in
+        { [weak self] (action) in
+            self?.yubiKeySlot = .slot1
         }
-        
+
         let yubikeySlot2 = UIAlertAction(
             title: String.localizedStringWithFormat(LString.useYubikeySlotN, 2),
             style: .default)
-        { (action) in
+        { [weak self] (action) in
+            self?.yubiKeySlot = .slot2
         }
-        
+
         let noYubikey = UIAlertAction(title: LString.dontUseYubikey, style: .default) {
-            (action) in
-            
+            [weak self] (action) in
+            self?.yubiKeySlot = .none
         }
         let cancel = UIAlertAction(title: LString.actionCancel, style: .cancel)
 
@@ -462,30 +475,42 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
         passwordField.resignFirstResponder()
         hideWatchdogTimeoutMessage(animated: true)
         DatabaseManager.shared.addObserver(self)
-
-        let dbSettings = DatabaseSettingsManager.shared.getSettings(for: databaseRef)
-        if let databaseKey = dbSettings?.masterKey {
-            DatabaseManager.shared.startLoadingDatabase(
-                database: databaseRef,
-                compositeKey: databaseKey.secureClone())
-        } else {
-            guard !isAutomaticUnlock else {
-                // Automatic unlock, but there is no master key?
-                // This means the key was just cleared by the watchdog.
-                // So let's abort auto-unlock and pretend this never happened.
-                Diag.debug("Aborting auto-unlock, there is no stored key")
-                refreshInputMode()
-                hideProgressOverlay(quickly: true)
-                return
+        
+        do {
+            let challengeHandler = {
+                (challenge: SecureByteArray, responseHandler: ResponseHandler) -> Void in
+                assertionFailure("Not implemented") // TODO: implement this
             }
 
-            DatabaseManager.shared.startLoadingDatabase(
-                database: databaseRef,
-                password: password,
-                keyFile: keyFileRef)
+            let dbSettings = DatabaseSettingsManager.shared.getSettings(for: databaseRef)
+            if let databaseKey = dbSettings?.masterKey {
+                DatabaseManager.shared.startLoadingDatabase(
+                    database: databaseRef,
+                    compositeKey: databaseKey.secureClone(),
+                    challengeHandler: challengeHandler)
+            } else {
+                guard !isAutomaticUnlock else {
+                    // Automatic unlock, but there is no master key?
+                    // This means the key was just cleared by the watchdog.
+                    // So let's abort auto-unlock and pretend this never happened.
+                    Diag.debug("Aborting auto-unlock, there is no stored key")
+                    refreshInputMode()
+                    hideProgressOverlay(quickly: true)
+                    return
+                }
+
+                DatabaseManager.shared.startLoadingDatabase(
+                    database: databaseRef,
+                    password: password,
+                    keyFile: keyFileRef,
+                    challengeHandler: challengeHandler)
+        } catch {
+            Diag.error(error.localizedDescription)
+            hideProgressOverlay(quickly: true) // if shown by automatic unlock
+            showErrorMessage(error.localizedDescription)
         }
     }
-    
+
     /// Called when the DB is successfully loaded, shows it in ViewGroupVC
     func showDatabaseRoot(loadingWarnings: DatabaseLoadingWarnings) {
         guard let database = DatabaseManager.shared.database else {

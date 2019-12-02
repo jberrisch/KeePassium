@@ -316,7 +316,10 @@ class EditEntryVC: UITableViewController, Refreshable {
         entry.modified()
         view.endEditing(true)
         DatabaseManager.shared.addObserver(self)
-        DatabaseManager.shared.startSavingDatabase()
+        DatabaseManager.shared.startSavingDatabase(challengeHandler: {
+            (challenge: SecureByteArray, responseHandler: ResponseHandler) -> Void in
+            assertionFailure("Not implemented") // TODO: implement this
+        })
     }
 
     private var savingOverlay: ProgressOverlay?

@@ -152,7 +152,8 @@ class MainCoordinator: NSObject, Coordinator {
     private func tryToUnlockDatabase(
         database: URLReference,
         password: String,
-        keyFile: URLReference?)
+        keyFile: URLReference?,
+        yubiKeySlot: YubiKey.Slot)
     {
         // This flag will be reset to `true` after we successfully open the database.
         Settings.current.isAutoFillFinishedOK = false
@@ -161,12 +162,18 @@ class MainCoordinator: NSObject, Coordinator {
         DatabaseManager.shared.startLoadingDatabase(
             database: database,
             password: password,
-            keyFile: keyFile)
+            keyFile: keyFile,
+            challengeHandler: {
+                (challenge: SecureByteArray, responseHandler: ResponseHandler) -> Void in
+                assertionFailure("Not implemented") // TODO: implement this
+            }
+        )
     }
     
     private func tryToUnlockDatabase(
         database: URLReference,
-        compositeKey: SecureByteArray)
+        compositeKey: SecureByteArray,
+        yubiKeySlot: YubiKey.Slot)
     {
         // This flag will be reset to `true` after we successfully open the database.
         Settings.current.isAutoFillFinishedOK = false
@@ -174,7 +181,13 @@ class MainCoordinator: NSObject, Coordinator {
         isLoadingUsingStoredDatabaseKey = true
         DatabaseManager.shared.startLoadingDatabase(
             database: database,
-            compositeKey: compositeKey)
+            compositeKey: compositeKey,
+            challengeHandler: {
+                (challenge: SecureByteArray, responseHandler: ResponseHandler) -> Void in
+                //Check if YK is required, and show an error that extensions don't support YK
+                assertionFailure("Not implemented") // TODO: implement this
+            }
+        )
     }
     
     // MARK: - Actions
@@ -265,7 +278,11 @@ class MainCoordinator: NSObject, Coordinator {
         navigationController.pushViewController(vc, animated: animated)
         completion?()
         if let storedDatabaseKey = storedDatabaseKey {
-            tryToUnlockDatabase(database: database, compositeKey: storedDatabaseKey)
+            let storedYubiKeySlot = YubiKey.Slot.none // TODO: read from settings
+            tryToUnlockDatabase(
+                database: database,
+                compositeKey: storedDatabaseKey,
+                yubiKeySlot: storedYubiKeySlot)
         }
     }
     
@@ -422,10 +439,15 @@ extension MainCoordinator: DatabaseUnlockerDelegate {
         _ sender: DatabaseUnlockerVC,
         database: URLReference,
         password: String,
-        keyFile: URLReference?)
+        keyFile: URLReference?,
+        yubiKeySlot: YubiKey.Slot)
     {
         watchdog.restart()
-        tryToUnlockDatabase(database: database, password: password, keyFile: keyFile)
+        tryToUnlockDatabase(
+            database: database,
+            password: password,
+            keyFile: keyFile,
+            yubiKeySlot: yubiKeySlot)
     }
     
     func didPressNewsItem(in databaseUnlocker: DatabaseUnlockerVC, newsItem: NewsItem) {
