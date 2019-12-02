@@ -184,6 +184,56 @@ public class Keychain {
     }
     
     // MARK: - Database-key association routines
+
+    /// Stores DB's key in keychain.
+    ///
+    /// - Parameters:
+    ///   - databaseRef: reference to identify the database
+    ///   - key: key for the database
+    /// - Throws: KeychainError
+    public func setDatabaseKey(databaseRef: URLReference, key: CompositeKey) throws {
+        guard !databaseRef.info.hasError else { return }
+        guard key.state >= .combinedComponents else { assertionFailure(); return }
+        
+        // let account = databaseRef.hash.asHexString
+        let account = databaseRef.info.fileName
+        if let staticComponentsData = key.combinedStaticComponents?.asData {
+            try set(service: .databaseKeys, account: account, data: staticComponentsData)
+            // throws KeychainError
+        } else {
+            assertionFailure()
+        }
+        if let finalKeyData = key.finalKey?.asData {
+            try set(service: .databaseFinalKeys, account: account, data: finalKeyData)
+            // throws KeychainError
+        } else {
+            assertionFailure()
+        }
+    }
+
+    /// Returns stored key for the given `databaseRef`.
+    ///
+    /// - Returns: stored key, or `nil` if none found.
+    /// - Throws: KeychainError
+    public func getDatabaseKey(databaseRef: URLReference) throws -> CompositeKey? {
+        guard !databaseRef.info.hasError else { return nil }
+        
+        // let account = databaseRef.hash.asHexString
+        let account = databaseRef.info.fileName
+        guard let staticCompositeKeyData = try get(service: .databaseKeys, account: account) else {
+            // nothing found
+            return nil
+        }
+        guard let finalKeyData = try get(service: .databaseFinalKeys, account: account) else {
+            // nothing found
+            return nil
+        }
+        let compositeKey = CompositeKey(
+            staticComponents: SecureByteArray(data: staticCompositeKeyData),
+            challengeHandler: nil) // to be set elsewhere
+        compositeKey.setFinalKey(SecureByteArray(data: finalKeyData))
+        return compositeKey
+    }
     
     /// - Throws: KeychainError
     internal func getDatabaseSettings(for databaseRef: URLReference) throws -> DatabaseSettings? {

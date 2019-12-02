@@ -20,33 +20,36 @@ final class KeyHelper2: KeyHelper {
         return SecureByteArray(data: Data(password.utf8))
     }
     
-    override func makeCompositeKey(
+    override func combineComponents(
         passwordData: SecureByteArray,
         keyFileData: ByteArray
     ) -> SecureByteArray {
         let hasPassword = !passwordData.isEmpty
         let hasKeyFile = !keyFileData.isEmpty
-
+        
         precondition(hasPassword || hasKeyFile)
         
-        let preKey: SecureByteArray
-        if hasPassword && hasKeyFile {
-            Diag.info("Using password and key file")
-            preKey = SecureByteArray.concat(
-                passwordData.sha256,
-                processKeyFile(keyFileData: keyFileData))
-        } else if hasPassword {
-            Diag.info("Using password only")
-            preKey = passwordData.sha256
-        } else if hasKeyFile {
-            Diag.info("Using key file only")
-            preKey = processKeyFile(keyFileData: keyFileData)
-            // in KP2, preKey is kept for another sha256 (in KP1, is returned as is)
-        } else {
-            // Nothing is provided. This should have already been checked above.
-            fatalError("Both password and key file are empty after being checked.")
+        var preKey = SecureByteArray()
+        if hasPassword {
+            Diag.info("Using password")
+            preKey = SecureByteArray.concat(preKey, passwordData.sha256)
         }
-        return preKey.sha256
+        if hasKeyFile {
+            Diag.info("Using key file")
+            preKey = SecureByteArray.concat(
+                preKey,
+                processKeyFile(keyFileData: keyFileData)
+            )
+        }
+        if preKey.isEmpty {
+            // There is no data. This should have already been checked above.
+            fatalError("All key components are empty after being checked.")
+        }
+        return preKey // not hashed yet
+    }
+    
+    override func getKey(fromCombinedComponents combinedComponents: SecureByteArray) -> SecureByteArray {
+        return combinedComponents.sha256
     }
     
     /// Tries to extract key data from KeePass v2.xx XML file.

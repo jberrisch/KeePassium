@@ -114,7 +114,7 @@ public class Database2: Database {
     public var customIcons: [UUID: CustomIcon2] { return meta.customIcons }
     public var defaultUserName: String { return meta.defaultUserName }
     private var cipherKey = SecureByteArray()
-    private var hmacKey = ByteArray()
+    private var hmacKey = SecureByteArray()
     private var deletedObjects: ContiguousArray<DeletedObject2> = []
     
     override public var keyHelper: KeyHelper { return _keyHelper }
@@ -174,7 +174,7 @@ public class Database2: Database {
     override public func load(
         dbFileName: String,
         dbFileData: ByteArray,
-        compositeKey: SecureByteArray,
+        compositeKey: CompositeKey,
         warnings: DatabaseLoadingWarnings
     ) throws {
         Diag.info("Loading KP2 database")
@@ -618,23 +618,73 @@ public class Database2: Database {
     }
     
     /// Updates `cipherKey` field by transforming the given `compositeKey`.
-    /// - Throws: CryptoError, ProgressInterruption
-    func deriveMasterKey(compositeKey: SecureByteArray, cipher: DataCipher) throws {
+    /// - Throws: CryptoError, ProgressInterruption, ChallengeResponseError
+    func deriveMasterKey(compositeKey: CompositeKey, cipher: DataCipher) throws {
         Diag.debug("Start key derivation")
         progress.addChild(header.kdf.initProgress(), withPendingUnitCount: ProgressSteps.keyDerivation)
-        let transformedKey = try header.kdf.transform(key: compositeKey, params: header.kdfParams)
-            // throws CryptoError, ProgressInterruption
-        let joinedKey = ByteArray.concat(header.masterSeed, transformedKey)
+        
+        var combinedComponents: SecureByteArray
+        if compositeKey.state == .processedComponents {
+            /// merges the components according to format rules, but does not hash them
+            combinedComponents = keyHelper.combineComponents(
+                passwordData: compositeKey.passwordData!, // might be empty, but not nil
+                keyFileData: compositeKey.keyFileData!    // might be empty, but not nil
+            )
+            compositeKey.setCombinedStaticComponents(combinedComponents)
+        } else if compositeKey.state == .combinedComponents {
+            combinedComponents = compositeKey.combinedStaticComponents! // not nil in this state
+        } else {
+            preconditionFailure("Unexpected key state")
+        }
+        
+        let secureMasterSeed = SecureByteArray(header.masterSeed)
+        let joinedKey: SecureByteArray
+        switch header.formatVersion {
+        case .v3:
+            // In v3, the response is added after transforming the static components
+            
+            // 1. hash static components
+            let keyToTransform = keyHelper.getKey(fromCombinedComponents: combinedComponents)
+            
+            // 2. transform them, without the response
+            let transformedKey = try header.kdf.transform(
+                key: keyToTransform,
+                params: header.kdfParams)
+                // throws CryptoError, ProgressInterruption
+            
+            // 3. insert the response to the mix
+            let challengeResponse = try compositeKey.getResponse(challenge: secureMasterSeed) // waits until ready
+                // throws `ChallengeResponseError`
+            joinedKey = SecureByteArray.concat(secureMasterSeed, challengeResponse, transformedKey)
+        case .v4:
+            // In v4, the response is added before key transformation
+            
+            // 1. append the response to the static components
+            let challengeResponse = try compositeKey.getResponse(challenge: secureMasterSeed) // waits until ready
+                // throws `ChallengeResponseError`
+            combinedComponents = SecureByteArray.concat(combinedComponents, challengeResponse)
+            
+            // 2. hash the mix
+            let keyToTransform = keyHelper.getKey(fromCombinedComponents: combinedComponents)
+            
+            // 3. transform the key
+            let transformedKey = try header.kdf.transform(
+                key: keyToTransform,
+                params: header.kdfParams)
+                // throws CryptoError, ProgressInterruption
+            joinedKey = SecureByteArray.concat(secureMasterSeed, transformedKey)
+        }
         self.cipherKey = cipher.resizeKey(key: joinedKey)
-        let one = ByteArray(bytes: [1])
-        self.hmacKey = ByteArray.concat(joinedKey, one).sha512
+        let one = SecureByteArray(bytes: [1])
+        self.hmacKey = SecureByteArray.concat(joinedKey, one).sha512
+        compositeKey.setFinalKey(hmacKey)
     }
     
     /// Changes DB's composite key to the provided one.
     /// Don't forget to call `deriveMasterKey` before saving.
     ///
     /// - Parameter newKey: new composite key.
-    override public func changeCompositeKey(to newKey: SecureByteArray) {
+    override public func changeCompositeKey(to newKey: CompositeKey) {
         compositeKey = newKey
     }
     

@@ -21,8 +21,7 @@ class KeyHelper1: KeyHelper {
         return SecureByteArray(data: data)
     }
     
-    
-    override func makeCompositeKey(
+    override func combineComponents(
         passwordData: SecureByteArray,
         keyFileData: ByteArray
     ) -> SecureByteArray {
@@ -47,6 +46,10 @@ class KeyHelper1: KeyHelper {
             // should not happen, already checked above
             fatalError("Both password and key file are empty after being checked.")
         }
+    }
+    
+    override func getKey(fromCombinedComponents combinedComponents: SecureByteArray) -> SecureByteArray {
+        return combinedComponents // they are already hashed
     }
     
     override func processXmlKeyFile(keyFileData: ByteArray) -> SecureByteArray? {

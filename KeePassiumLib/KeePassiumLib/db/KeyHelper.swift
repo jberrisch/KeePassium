@@ -12,17 +12,18 @@ public class KeyHelper {
     public static let compositeKeyLength = 32
     internal let keyFileKeyLength = 32
     
-    /// Builds a composite master key from the password and key file data.
+    /// Combines given key components into a format-specific key.
     /// At least one parameter should be non-empty.
     /// (Pure virtual method, must be overriden)
     ///
     /// - Parameter: passwordData - password data (possibly empty)
     /// - Parameter: keyFileData - key file data (possibly empty)
     /// - Returns: composite key
-    public func makeCompositeKey(
-        passwordData: SecureByteArray,
-        keyFileData: ByteArray
-    ) -> SecureByteArray {
+    public func combineComponents(passwordData: SecureByteArray, keyFileData: ByteArray) -> SecureByteArray {
+        fatalError("Pure virtual method")
+    }
+    
+    public func getKey(fromCombinedComponents combinedComponents: SecureByteArray) -> SecureByteArray {
         fatalError("Pure virtual method")
     }
     

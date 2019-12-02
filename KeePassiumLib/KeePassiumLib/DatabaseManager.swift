@@ -130,46 +130,30 @@ public class DatabaseManager {
         challengeHandler: ChallengeHandler?)
     {
         Diag.verbose("Will queue load database")
+        let compositeKey = CompositeKey(
+            password: password,
+            keyFileRef: keyFileRef,
+            challengeHandler: challengeHandler
+        )
         serialDispatchQueue.async {
-            self._loadDatabase(
-                dbRef: dbRef,
-                compositeKey: nil,
-                password: password,
-                keyFileRef: keyFileRef,
-                challengeHandler: challengeHandler)
+            self._loadDatabase(dbRef: dbRef, compositeKey: compositeKey)
         }
     }
     
     /// Tries to load database and unlock it with the given composite key
     /// (as opposed to password/keyfile pair).
     /// Returns immediately, works asynchronously.
-    public func startLoadingDatabase(
-        database dbRef: URLReference,
-        compositeKey: SecureByteArray,
-        challengeHandler: ChallengeHandler?)
-    {
+    public func startLoadingDatabase(database dbRef: URLReference, compositeKey: CompositeKey) {
         Diag.verbose("Will queue load database")
         /// compositeKey might be erased when we leave this block.
         /// So keep a local copy.
         let compositeKeyClone = compositeKey.secureClone()
         serialDispatchQueue.async {
-            self._loadDatabase(
-                dbRef: dbRef,
-                compositeKey: compositeKeyClone,
-                password: "",
-                keyFileRef: nil,
-                challengeHandler: challengeHandler)
+            self._loadDatabase(dbRef: dbRef, compositeKey: compositeKeyClone)
         }
     }
     
-    /// If `compositeKey` is specified, `password` and `keyFileRef` are ignored.
-    private func _loadDatabase(
-        dbRef: URLReference,
-        compositeKey: SecureByteArray?,
-        password: String,
-        keyFileRef: URLReference?,
-        challengeHandler: ChallengeHandler?)
-    {
+    private func _loadDatabase(dbRef: URLReference, compositeKey: CompositeKey) {
         precondition(database == nil, "Can only load one database at a time")
 
         Diag.info("Will load database")
@@ -181,9 +165,6 @@ public class DatabaseManager {
         databaseLoader = DatabaseLoader(
             dbRef: dbRef,
             compositeKey: compositeKey,
-            password: password,
-            keyFileRef: keyFileRef,
-            challengeHandler: challengeHandler,
             progress: progress,
             completion: databaseLoaderFinished)
         databaseLoader!.load()
@@ -260,7 +241,7 @@ public class DatabaseManager {
     
     /// Changes the composite key of the current database.
     /// Make sure to call `startSavingDatabase` after that.
-    public func changeCompositeKey(to newKey: SecureByteArray) {
+    public func changeCompositeKey(to newKey: CompositeKey) {
         database?.changeCompositeKey(to: newKey)
         Diag.info("Database composite key changed")
     }
@@ -272,7 +253,8 @@ public class DatabaseManager {
         keyHelper: KeyHelper,
         password: String,
         keyFile keyFileRef: URLReference?,
-        success successHandler: @escaping((_ combinedKey: SecureByteArray) -> Void),
+        challengeHandler: ChallengeHandler?,
+        success successHandler: @escaping((_ compositeKey: CompositeKey) -> Void),
         error errorHandler: @escaping((_ errorMessage: String) -> Void))
     {
         let dataReadyHandler = { (keyFileData: ByteArray) -> Void in
@@ -286,10 +268,11 @@ public class DatabaseManager {
                     comment: "Error message"))
                 return
             }
-            let compositeKey = keyHelper.makeCompositeKey(
-                passwordData: passwordData,
-                keyFileData: keyFileData)
             Diag.debug("New composite key created successfully")
+            let compositeKey = CompositeKey(
+                passwordData: passwordData,
+                keyFileData: keyFileData,
+                challengeHandler: challengeHandler)
             successHandler(compositeKey)
         }
         
@@ -357,6 +340,7 @@ public class DatabaseManager {
             keyHelper: db2.keyHelper,
             password: password,
             keyFile: keyFile,
+            challengeHandler: challengeHandler,
             success: { // strong self
                 (newCompositeKey) in
                 DatabaseManager.shared.changeCompositeKey(to: newCompositeKey)
@@ -589,10 +573,7 @@ fileprivate class DatabaseLoader {
     typealias CompletionHandler = (URLReference, DatabaseDocument?) -> Void
     
     private let dbRef: URLReference
-    private let compositeKey: SecureByteArray?
-    private let password: String
-    private let keyFileRef: URLReference?
-    private let challengeHandler: ChallengeHandler?
+    private let compositeKey: CompositeKey
     private let progress: ProgressEx
     private var progressKVO: NSKeyValueObservation?
     private unowned var notifier: DatabaseManager
@@ -603,18 +584,13 @@ fileprivate class DatabaseLoader {
     /// `completion` is always called once done, even if there was an error.
     init(
         dbRef: URLReference,
-        compositeKey: SecureByteArray?,
-        password: String,
-        keyFileRef: URLReference?,
-        challengeHandler: ChallengeHandler?,
+        compositeKey: CompositeKey,
         progress: ProgressEx,
         completion: @escaping(CompletionHandler))
     {
+        assert(compositeKey.state != .empty)
         self.dbRef = dbRef
         self.compositeKey = compositeKey
-        self.password = password
-        self.keyFileRef = keyFileRef
-        self.challengeHandler = challengeHandler
         self.progress = progress
         self.completion = completion
         self.warnings = DatabaseLoadingWarnings()
@@ -758,17 +734,19 @@ fileprivate class DatabaseLoader {
         }
         
         dbDoc.database = db
-        if let compositeKey = compositeKey {
+        guard compositeKey.state == .rawComponents else {
+            // No need to load the key file, it's already been processed
+            
             // Shortcut: we already have the composite key, so skip password/key file processing
             progress.completedUnitCount += ProgressSteps.readKeyFile
             Diag.info("Using a ready composite key")
-            onCompositeKeyReady(dbDoc: dbDoc, compositeKey: compositeKey)
+            onCompositeKeyComponentsProcessed(dbDoc: dbDoc, compositeKey: compositeKey)
             return
         }
         
-        if let keyFileRef = keyFileRef {
+        // OK, so the key is in rawComponents state, let's load the key file
+        if let keyFileRef = compositeKey.keyFileRef {
             Diag.debug("Loading key file")
-            //TODO: maybe replace with DatabaseManager.createCompositeKey
             progress.localizedDescription = NSLocalizedString(
                 "[Database/Progress] Loading key file...",
                 bundle: Bundle.framework,
@@ -827,7 +805,7 @@ fileprivate class DatabaseLoader {
         
         progress.completedUnitCount += ProgressSteps.readKeyFile
         let keyHelper = database.keyHelper
-        let passwordData = keyHelper.getPasswordData(password: password)
+        let passwordData = keyHelper.getPasswordData(password: compositeKey.password)
         if passwordData.isEmpty && keyFileData.isEmpty {
             Diag.error("Both password and key file are empty")
             stopObservingProgress()
@@ -842,13 +820,12 @@ fileprivate class DatabaseLoader {
             endBackgroundTask()
             return
         }
-        let compositeKey = keyHelper.makeCompositeKey(
-            passwordData: passwordData,
-            keyFileData: keyFileData)
-        onCompositeKeyReady(dbDoc: dbDoc, compositeKey: compositeKey)
+        compositeKey.setProcessedComponents(passwordData: passwordData, keyFileData: keyFileData)
+        onCompositeKeyComponentsProcessed(dbDoc: dbDoc, compositeKey: compositeKey)
     }
     
-    func onCompositeKeyReady(dbDoc: DatabaseDocument, compositeKey: SecureByteArray) {
+    func onCompositeKeyComponentsProcessed(dbDoc: DatabaseDocument, compositeKey: CompositeKey) {
+        assert(compositeKey.state >= .processedComponents)
         guard let db = dbDoc.database else { fatalError() }
         do {
             progress.addChild(db.initProgress(), withPendingUnitCount: ProgressSteps.decryptDatabase)
@@ -857,8 +834,7 @@ fileprivate class DatabaseLoader {
                 dbFileName: dbDoc.fileURL.lastPathComponent,
                 dbFileData: dbDoc.encryptedData,
                 compositeKey: compositeKey,
-                warnings: warnings
-            )
+                warnings: warnings)
                 // throws DatabaseError, ProgressInterruption
             Diag.info("Database loaded OK")
             progress.localizedDescription = NSLocalizedString(
@@ -929,6 +905,7 @@ fileprivate class DatabaseLoader {
             }
         } catch {
             // should not happen, but just in case
+            assertionFailure("Unprocessed exception")
             dbDoc.database = nil
             dbDoc.close(completionHandler: nil)
             Diag.error("Unexpected error [message: \(error.localizedDescription)]")
@@ -1024,6 +1001,8 @@ fileprivate class DatabaseSaver {
     
     func save() {
         guard let database = dbDoc.database else { fatalError("Database is nil") }
+        database.compositeKey.challengeHandler = self.challengeHandler
+        
         startBackgroundTask()
         startObservingProgress()
         do {

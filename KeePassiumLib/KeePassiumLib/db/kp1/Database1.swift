@@ -150,7 +150,7 @@ public class Database1: Database {
     /// Don't forget to call `deriveMasterKey` before saving.
     ///
     /// - Parameter newKey: new composite key.
-    override public func changeCompositeKey(to newKey: SecureByteArray) {
+    override public func changeCompositeKey(to newKey: CompositeKey) {
         compositeKey = newKey
     }
     
@@ -159,7 +159,7 @@ public class Database1: Database {
     override public func load(
         dbFileName: String,
         dbFileData: ByteArray,
-        compositeKey: SecureByteArray,
+        compositeKey: CompositeKey,
         warnings: DatabaseLoadingWarnings
     ) throws {
         Diag.info("Loading KP1 database")
@@ -203,7 +203,7 @@ public class Database1: Database {
     }
     
     /// - Throws: `CryptoError`, `ProgressInterruption`
-    func deriveMasterKey(compositeKey: SecureByteArray) throws {
+    func deriveMasterKey(compositeKey: CompositeKey) throws {
         Diag.debug("Start key derivation")
         let kdf = AESKDF()
         progress.addChild(kdf.initProgress(), withPendingUnitCount: ProgressSteps.keyDerivation)
@@ -215,9 +215,24 @@ public class Database1: Database {
             key: AESKDF.transformRoundsParam,
             value: VarDict.TypedValue(value: UInt64(header.transformRounds)))
         
-        let transformedKey = try kdf.transform(key: compositeKey, params: kdfParams)
+        let combinedComponents: SecureByteArray
+        if compositeKey.state == .processedComponents {
+            combinedComponents = keyHelper.combineComponents(
+                passwordData: compositeKey.passwordData!, // might be empty, but not nil
+                keyFileData: compositeKey.keyFileData!    // might be empty, but not nil
+            )
+        } else if compositeKey.state == .combinedComponents {
+            combinedComponents = compositeKey.combinedStaticComponents! // not nil in this state
+        } else {
+            preconditionFailure("Unexpected key state")
+        }
+        
+        let keyToTransform = keyHelper.getKey(fromCombinedComponents: combinedComponents)
+        let transformedKey = try kdf.transform(key: keyToTransform, params: kdfParams)
             // throws CryptoError, ProgressInterruption
-        masterKey = SecureByteArray(ByteArray.concat(header.masterSeed, transformedKey).sha256)
+        let secureMasterSeed = SecureByteArray(header.masterSeed)
+        masterKey = SecureByteArray.concat(secureMasterSeed, transformedKey).sha256
+        compositeKey.setFinalKey(masterKey)
     }
     
     /// Reads groups and entries from plain-text `data`

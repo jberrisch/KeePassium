@@ -98,7 +98,7 @@ open class Database: Eraseable {
     public internal(set) var progress = ProgressEx()
 
     /// Composite key of the database, before derivation
-    internal var compositeKey = SecureByteArray()
+    internal var compositeKey = CompositeKey.empty
     
     /// Returns a fresh instance of progress for load/save operations
     public func initProgress() -> ProgressEx {
@@ -139,7 +139,7 @@ open class Database: Eraseable {
     /// - Parameters:
     ///   - dbFileName: name of the database file (without path)
     ///   - dbFileData: content of the database file
-    ///   - compositeKey: pre-built composite key
+    ///   - compositeKey: composite key
     ///   - warnings: will contain messages about database issues, that are not-blocking
     ///               (loading can continue), but might lead to loss of data.
     ///               For example, orphaned attachments in KP2 binary pool.
@@ -147,7 +147,7 @@ open class Database: Eraseable {
     public func load(
         dbFileName: String,
         dbFileData: ByteArray,
-        compositeKey: SecureByteArray,
+        compositeKey: CompositeKey,
         warnings: DatabaseLoadingWarnings
     ) throws {
         fatalError("Pure virtual method")
@@ -170,7 +170,7 @@ open class Database: Eraseable {
     /// (Pure virtual method, must be overriden)
     ///
     /// - Parameter newKey: new composite key.
-    public func changeCompositeKey(to newKey: SecureByteArray) {
+    public func changeCompositeKey(to newKey: CompositeKey) {
         fatalError("Pure virtual method")
     }
     
