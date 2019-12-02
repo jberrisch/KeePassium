@@ -23,10 +23,9 @@ class KeyHelper1: KeyHelper {
     
     
     override func makeCompositeKey(
-        passwordData: ByteArray,
+        passwordData: SecureByteArray,
         keyFileData: ByteArray
-        ) -> SecureByteArray
-    {
+    ) -> SecureByteArray {
         let hasPassword = !passwordData.isEmpty
         let hasKeyFile = !keyFileData.isEmpty
         
@@ -34,13 +33,13 @@ class KeyHelper1: KeyHelper {
         
         if hasPassword && hasKeyFile {
             Diag.info("Using password and key file")
-            let preKey = ByteArray.concat(
+            let preKey = SecureByteArray.concat(
                 passwordData.sha256,
                 processKeyFile(keyFileData: keyFileData))
-            return SecureByteArray(preKey.sha256)
+            return preKey.sha256
         } else if hasPassword {
             Diag.info("Using password")
-            return SecureByteArray(passwordData.sha256)
+            return passwordData.sha256
         } else if hasKeyFile {
             Diag.info("Using key file")
             return processKeyFile(keyFileData: keyFileData) // in KP1 returned as is (in KP2 undergoes another sha256)

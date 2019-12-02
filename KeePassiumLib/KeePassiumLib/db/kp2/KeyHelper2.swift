@@ -20,13 +20,16 @@ final class KeyHelper2: KeyHelper {
         return SecureByteArray(data: Data(password.utf8))
     }
     
-    override func makeCompositeKey(passwordData: ByteArray, keyFileData: ByteArray) -> SecureByteArray {
+    override func makeCompositeKey(
+        passwordData: SecureByteArray,
+        keyFileData: ByteArray
+    ) -> SecureByteArray {
         let hasPassword = !passwordData.isEmpty
         let hasKeyFile = !keyFileData.isEmpty
 
         precondition(hasPassword || hasKeyFile)
         
-        let preKey: ByteArray
+        let preKey: SecureByteArray
         if hasPassword && hasKeyFile {
             Diag.info("Using password and key file")
             preKey = SecureByteArray.concat(
@@ -43,7 +46,7 @@ final class KeyHelper2: KeyHelper {
             // Nothing is provided. This should have already been checked above.
             fatalError("Both password and key file are empty after being checked.")
         }
-        return SecureByteArray(preKey.sha256)
+        return preKey.sha256
     }
     
     /// Tries to extract key data from KeePass v2.xx XML file.

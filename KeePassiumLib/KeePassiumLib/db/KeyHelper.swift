@@ -19,7 +19,10 @@ public class KeyHelper {
     /// - Parameter: passwordData - password data (possibly empty)
     /// - Parameter: keyFileData - key file data (possibly empty)
     /// - Returns: composite key
-    public func makeCompositeKey(passwordData: ByteArray, keyFileData: ByteArray) -> SecureByteArray {
+    public func makeCompositeKey(
+        passwordData: SecureByteArray,
+        keyFileData: ByteArray
+    ) -> SecureByteArray {
         fatalError("Pure virtual method")
     }
     
