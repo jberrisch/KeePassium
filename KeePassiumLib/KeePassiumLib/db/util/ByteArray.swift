@@ -10,8 +10,8 @@ import Foundation
 
 /// [UInt8] as a reference type.
 /// Fills itself with zeros before destruction.
-public class ByteArray: Eraseable, Codable {
-    
+public class ByteArray: Eraseable, Codable, CustomDebugStringConvertible {
+
     public class InputStream {
         fileprivate let base: Foundation.InputStream
         var hasBytesAvailable: Bool { return base.hasBytesAvailable }
@@ -144,6 +144,10 @@ public class ByteArray: Eraseable, Codable {
         return ByteArray(bytes: self.bytes[range])
     }
 
+    public var debugDescription: String {
+        return asHexString
+    }
+    
     public init() {
         bytes = []
     }

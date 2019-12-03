@@ -468,7 +468,7 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
         
         do {
             let challengeHandler = {
-                [weak self] (challenge: SecureByteArray, responseHandler: ResponseHandler) -> Void in
+                [weak self] (challenge: SecureByteArray, responseHandler: @escaping ResponseHandler) -> Void in
                 self?.performChallengeResponse(challenge: challenge, responseHandler: responseHandler)
             }
 
@@ -502,23 +502,8 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
         }
     }
     
-    private func performChallengeResponse(challenge: SecureByteArray, responseHandler: ResponseHandler) {
-        if #available(iOS 13, *) {
-            if YubiKitDeviceCapabilities.supportsISO7816NFCTags {
-                // Provide additional setup when NFC is available
-                let keySession = YubiKitManager.shared.nfcSession
-                keySession.startIso7816Session()
-                if let keyDescription = keySession.tagDescription {
-                    let serialNumber = keyDescription.identifier
-                    print("The key serial number is: \(serialNumber).")
-                }
-                
-                keySession.stopIso7816Session()
-            } else {
-                // Handle the missing NFC support
-            }
-        }
-
+    private func performChallengeResponse(challenge: SecureByteArray, responseHandler: @escaping ResponseHandler) {
+        ChallengeResponseManager.instance.perform(challenge: challenge, responseHandler: responseHandler)
     }
     
     /// Called when the DB is successfully loaded, shows it in ViewGroupVC

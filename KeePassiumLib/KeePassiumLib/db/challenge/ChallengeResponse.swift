@@ -13,9 +13,12 @@ public enum ChallengeResonseError: Error {
     case notSupportedByHardware
     /// Challenge-response feature is not supported by the database format (kdb or kdbx3)
     case notSupportedByDatabaseFormat
+    
+    case communicationError(message: String)
 }
 
 public typealias ChallengeHandler =
-    (_ challenge: SecureByteArray, _ responseHandler: ResponseHandler) -> ()
+    (_ challenge: SecureByteArray, _ responseHandler: @escaping ResponseHandler) -> Void
+
 public typealias ResponseHandler =
-    (_ response: SecureByteArray, _ error: ChallengeResonseError?) -> ()
+    (_ response: SecureByteArray, _ error: ChallengeResonseError?) -> Void

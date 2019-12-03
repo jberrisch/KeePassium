@@ -156,7 +156,7 @@ public class CompositeKey {
         
         var response: SecureByteArray?
         var challengeError: ChallengeResonseError?
-        let responseReadySemaphore = DispatchSemaphore(value: 1)
+        let responseReadySemaphore = DispatchSemaphore(value: 0)
         DispatchQueue.global(qos: .default).async {
             handler(challenge) {
                 (_response, _error) in
