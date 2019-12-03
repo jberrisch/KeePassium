@@ -8,11 +8,14 @@
 
 import Foundation
 
-public enum ChallengeResonseError {
-    
+public enum ChallengeResonseError: Error {
+    /// Challenge-response feature is not supported by hardware
+    case notSupportedByHardware
+    /// Challenge-response feature is not supported by the database format (kdb or kdbx3)
+    case notSupportedByDatabaseFormat
 }
 
 public typealias ChallengeHandler =
     (_ challenge: SecureByteArray, _ responseHandler: ResponseHandler) -> ()
 public typealias ResponseHandler =
-    (_ response: SecureByteArray, _ error: ChallengeResonseError) -> ()
+    (_ response: SecureByteArray, _ error: ChallengeResonseError?) -> ()

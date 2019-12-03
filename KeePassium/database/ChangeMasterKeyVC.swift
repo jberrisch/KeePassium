@@ -70,21 +70,24 @@ class ChangeMasterKeyVC: UIViewController {
             return
         }
         
+        let challengeHandler: ChallengeHandler = {
+            (challenge: SecureByteArray, responseHandler: ResponseHandler) in
+            assertionFailure("Not implemented") // TODO: implement this
+        }
+        
         DatabaseManager.createCompositeKey(
             keyHelper: db.keyHelper,
             password: passwordField.text ?? "",
             keyFile: keyFileRef,
+            challengeHandler: challengeHandler,
             success: {
-                [weak self] (_ newCompositeKey: SecureByteArray) -> Void in
+                [weak self] (_ newCompositeKey: CompositeKey) -> Void in
                 guard let _self = self else { return }
                 let dbm = DatabaseManager.shared
                 dbm.changeCompositeKey(to: newCompositeKey)
                 try? dbm.rememberDatabaseKey(onlyIfExists: true) // throws KeychainError, ignored
                 dbm.addObserver(_self)
-                dbm.startSavingDatabase(challengeHandler: {
-                    (challenge: SecureByteArray, responseHandler: ResponseHandler) -> Void in
-                    assertionFailure("Not implemented") // TODO: implement this
-                })
+                dbm.startSavingDatabase(challengeHandler: challengeHandler)
             },
             error: {
                 [weak self] (_ errorMessage: String) -> Void in

@@ -219,16 +219,6 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
     // MARK: - Yubikey button
     
     @objc func didPressYubiButton() {
-//        if #available(iOS 13, *) {
-//            if YubiKitDeviceCapabilities.supportsISO7816NFCTags {
-//                // Provide additional setup when NFC is available
-//                // example
-//                YubiKitManager.shared.nfcSession.startIso7816Session()
-//                YubiKitManager.shared.nfcSession.stopIso7816Session()
-//            } else {
-//                // Handle the missing NFC support
-//            }
-//        }
         let selector = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         let yubikeySlot1 = UIAlertAction(
             title: String.localizedStringWithFormat(LString.useYubikeySlotN, 1),
@@ -478,16 +468,17 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
         
         do {
             let challengeHandler = {
-                (challenge: SecureByteArray, responseHandler: ResponseHandler) -> Void in
-                assertionFailure("Not implemented") // TODO: implement this
+                [weak self] (challenge: SecureByteArray, responseHandler: ResponseHandler) -> Void in
+                self?.performChallengeResponse(challenge: challenge, responseHandler: responseHandler)
             }
 
             let dbSettings = DatabaseSettingsManager.shared.getSettings(for: databaseRef)
             if let databaseKey = dbSettings?.masterKey {
+                let storedYubiKeySlot = YubiKey.Slot.none // TODO: get this from the VC
+                databaseKey.challengeHandler = challengeHandler
                 DatabaseManager.shared.startLoadingDatabase(
                     database: databaseRef,
-                    compositeKey: databaseKey.secureClone(),
-                    challengeHandler: challengeHandler)
+                    compositeKey: databaseKey.secureClone())
             } else {
                 guard !isAutomaticUnlock else {
                     // Automatic unlock, but there is no master key?
@@ -510,7 +501,26 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
             showErrorMessage(error.localizedDescription)
         }
     }
+    
+    private func performChallengeResponse(challenge: SecureByteArray, responseHandler: ResponseHandler) {
+        if #available(iOS 13, *) {
+            if YubiKitDeviceCapabilities.supportsISO7816NFCTags {
+                // Provide additional setup when NFC is available
+                let keySession = YubiKitManager.shared.nfcSession
+                keySession.startIso7816Session()
+                if let keyDescription = keySession.tagDescription {
+                    let serialNumber = keyDescription.identifier
+                    print("The key serial number is: \(serialNumber).")
+                }
+                
+                keySession.stopIso7816Session()
+            } else {
+                // Handle the missing NFC support
+            }
+        }
 
+    }
+    
     /// Called when the DB is successfully loaded, shows it in ViewGroupVC
     func showDatabaseRoot(loadingWarnings: DatabaseLoadingWarnings) {
         guard let database = DatabaseManager.shared.database else {

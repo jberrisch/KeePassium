@@ -30,7 +30,7 @@ public class CompositeKey {
     // These vars are valid in the .rawComponents state
     internal private(set) var password: String
     internal private(set) var keyFileRef: URLReference?
-    internal var challengeHandler: ChallengeHandler? // can be set by DatabaseSaver
+    public var challengeHandler: ChallengeHandler? // can be set by the UI
     
     // These vars are valid in the .processedComponents state
     internal private(set) var passwordData: SecureByteArray?
