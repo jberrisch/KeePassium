@@ -10,8 +10,8 @@ import Foundation
 
 /// A collection of master key components
 /// (password, key file, challenge-response handler)
-public class CompositeKey {
-    public enum State: Int, Comparable {
+public class CompositeKey: Codable {
+    public enum State: Int, Comparable, Codable {
         case empty               = 0 // not initialized
         case rawComponents       = 1 // password and keyFileRef set, but not loaded
         case processedComponents = 2 // password converted to bytes, keyFile data loaded
@@ -28,7 +28,7 @@ public class CompositeKey {
     internal private(set) var state: State
     
     // These vars are valid in the .rawComponents state
-    internal private(set) var password: String
+    internal private(set) var password: String = ""
     internal private(set) var keyFileRef: URLReference?
     public var challengeHandler: ChallengeHandler? // can be set by the UI
     
@@ -91,21 +91,51 @@ public class CompositeKey {
     }
     
     func erase() {
-        password.erase()
         keyFileRef = nil
         challengeHandler = nil
-        
-        passwordData?.erase()
         passwordData = nil
-        keyFileData?.erase()
         keyFileData = nil
-        
-        combinedStaticComponents?.erase()
         combinedStaticComponents = nil
         
         state = .empty
     }
 
+    // MARK: - Serialization
+    
+    private enum CodingKeys: String, CodingKey {
+        case state
+        case combinedStaticComponents = "staticComponents"
+        case finalKey
+    }
+    
+    internal func serialize() -> SecureByteArray {
+        let encoder = JSONEncoder()
+        let encodedBytes = SecureByteArray(data: try! encoder.encode(self))
+        return encodedBytes
+    }
+    
+    internal static func deserialize(from bytes: SecureByteArray?) -> CompositeKey? {
+        guard let data = bytes?.asData else { return nil }
+        let decoder = JSONDecoder()
+        let result = try? decoder.decode(CompositeKey.self, from: data)
+        return result
+    }
+    
+    // MARK: - Setters & getters
+    
+    /// Builds and returns a deep copy of this instance.
+    public func clone() -> CompositeKey {
+        let clone = CompositeKey(
+            password: self.password,
+            keyFileRef: self.keyFileRef,
+            challengeHandler: self.challengeHandler)
+        clone.passwordData = self.passwordData?.secureClone()
+        clone.keyFileData = self.keyFileData?.clone()
+        clone.combinedStaticComponents = self.combinedStaticComponents?.secureClone()
+        clone.state = self.state
+        return clone
+    }
+    
     func setProcessedComponents(passwordData: SecureByteArray, keyFileData: ByteArray) {
         assert(state == .rawComponents)
         self.passwordData = passwordData

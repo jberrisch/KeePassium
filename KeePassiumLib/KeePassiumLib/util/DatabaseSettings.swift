@@ -24,7 +24,7 @@ public class DatabaseSettings: Eraseable, Codable {
     public var accessMode: AccessMode
     
     public var isRememberMasterKey: Bool?
-    public private(set) var masterKey: SecureByteArray?
+    public private(set) var masterKey: CompositeKey?
     public var hasMasterKey: Bool { return masterKey != nil }
     
     public var isRememberKeyFile: Bool?
@@ -73,16 +73,16 @@ public class DatabaseSettings: Eraseable, Codable {
     }
 
     /// Stores the master key for the target database
-    public func setMasterKey(_ key: SecureByteArray) {
-        masterKey = key.secureClone()
+    public func setMasterKey(_ key: CompositeKey) {
+        masterKey = key.clone()
     }
     
     /// Conditionally stores the master key for the target database,
     /// only if allowed by settings.
-    public func maybeSetMasterKey(_ key: SecureByteArray) {
-        if isRememberKeyFile ?? Settings.current.isRememberDatabaseKey {
-            setMasterKey(key)
-        }
+    public func maybeSetMasterKey(_ key: CompositeKey) {
+        guard isRememberKeyFile ?? Settings.current.isRememberDatabaseKey else { return }
+        guard key.state >= .combinedComponents else { return }
+        setMasterKey(key)
     }
 
     public func clearMasterKey() {
@@ -95,9 +95,8 @@ public class DatabaseSettings: Eraseable, Codable {
     }
     
     public func maybeSetAssociatedKeyFile(_ urlRef: URLReference?) {
-        if isRememberKeyFile ?? Settings.current.isKeepKeyFileAssociations {
-            setAssociatedKeyFile(urlRef)
-        }
+        guard isRememberKeyFile ?? Settings.current.isKeepKeyFileAssociations else { return }
+        setAssociatedKeyFile(urlRef)
     }
 }
 

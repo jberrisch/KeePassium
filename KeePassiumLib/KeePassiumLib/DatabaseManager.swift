@@ -147,7 +147,7 @@ public class DatabaseManager {
         Diag.verbose("Will queue load database")
         /// compositeKey might be erased when we leave this block.
         /// So keep a local copy.
-        let compositeKeyClone = compositeKey.secureClone()
+        let compositeKeyClone = compositeKey.clone()
         serialDispatchQueue.async {
             self._loadDatabase(dbRef: dbRef, compositeKey: compositeKeyClone)
         }
