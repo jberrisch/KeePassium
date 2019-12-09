@@ -242,7 +242,7 @@ class ChooseKeyFileVC: UITableViewController, Refreshable {
                 urlRef,
                 fileType: .keyFile,
                 ignoreErrors: urlRef.info.hasError)
-            Settings.current.forgetKeyFile(urlRef)
+            DatabaseSettingsManager.shared.removeAllAssociations(of: urlRef)
             refresh()
         } catch {
             let errorAlert = UIAlertController.make(

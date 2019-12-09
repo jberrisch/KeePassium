@@ -31,6 +31,8 @@ public struct FileInfo {
 /// Represents a URL as a URL bookmark. Useful for handling external (cloud-based) files.
 public class URLReference: Equatable, Codable {
 
+    public typealias Descriptor = String
+    
     /// Specifies possible storage locations of files.
     public enum Location: Int, Codable, CustomStringConvertible {
         public static let allValues: [Location] =
@@ -144,6 +146,17 @@ public class URLReference: Equatable, Codable {
             relativeTo: nil,
             bookmarkDataIsStale: &isStale)
         return url
+    }
+    
+    /// Identifies this reference among others.
+    /// Currently returns file name if available.
+    /// If the reference is not resolvable, returns nil.
+    public func getDescriptor() -> Descriptor? {
+        guard !info.hasError else {
+            //TODO: lookup file name by hash, in some persistent table
+            return nil
+        }
+        return info.fileName
     }
     
     /// Cached information about resolved URL.

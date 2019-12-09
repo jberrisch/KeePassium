@@ -196,7 +196,9 @@ extension ChangeMasterKeyVC: KeyFileChooserDelegate {
     func onKeyFileSelected(urlRef: URLReference?) {
         // can be nil, can have error, can be ok
         keyFileRef = urlRef
-        Settings.current.setKeyFileForDatabase(databaseRef: databaseRef, keyFileRef: keyFileRef)
+        DatabaseSettingsManager.shared.updateSettings(for: databaseRef) { (dbSettings) in
+            dbSettings.maybeSetAssociatedKeyFile(keyFileRef)
+        }
         
         guard let keyFileRef = urlRef else {
             keyFileField.text = ""

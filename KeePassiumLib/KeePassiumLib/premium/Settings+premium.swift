@@ -40,11 +40,6 @@ public extension Settings {
         return isKeepKeyFileAssociations
     }
     
-    func premiumGetKeyFileForDatabase(databaseRef: URLReference) -> URLReference? {
-        // unlimited
-        return getKeyFileForDatabase(databaseRef: databaseRef)
-    }
-    
     /// Checks whether given timeout value is available for the given premium status.
     func isAvailable(timeout: Settings.DatabaseLockTimeout, for status: PremiumManager.Status) -> Bool {
         switch status {

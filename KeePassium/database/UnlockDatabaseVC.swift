@@ -152,9 +152,8 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
             }
         }
         
-        let associatedKeyFileRef = Settings.current
-            .premiumGetKeyFileForDatabase(databaseRef: databaseRef)
-        if let associatedKeyFileRef = associatedKeyFileRef {
+        let dbSettings = DatabaseSettingsManager.shared.getSettings(for: databaseRef)
+        if let associatedKeyFileRef = dbSettings?.associatedKeyFile {
             // Stored reference can be from the main app (inaccessible),
             // so make sure 1) it is available, or at least 2) there is a same-name available file.
             let allAvailableKeyFiles = FileKeeper.shared
@@ -183,10 +182,10 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
     
     /// Switch the UI depending on whether the master key is already known.
     private func refreshInputMode() {
-        let isDatabaseKeyStored = try? DatabaseManager.shared.hasKey(for: databaseRef)
-            // throws KeychainError, ignored
+        let dbSettings = DatabaseSettingsManager.shared.getSettings(for: databaseRef)
+        let isDatabaseKeyStored = dbSettings?.hasMasterKey ?? false
         
-        let shouldInputMasterKey = !(isDatabaseKeyStored ?? false)
+        let shouldInputMasterKey = !isDatabaseKeyStored
         masterKeyKnownLabel.isHidden = shouldInputMasterKey
         inputPanel.isHidden = !shouldInputMasterKey
     }
@@ -395,8 +394,9 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
     func canAutoUnlock() -> Bool {
         guard isAutoUnlockEnabled else { return false }
         guard let splitVC = splitViewController, splitVC.isCollapsed else { return false }
-        let hasKey: Bool = (try? DatabaseManager.shared.hasKey(for: databaseRef)) ?? true
-            // throws KeychainError
+        
+        let dbSettings = DatabaseSettingsManager.shared.getSettings(for: databaseRef)
+        let hasKey = dbSettings?.hasMasterKey ?? false
         return hasKey
     }
     
@@ -407,23 +407,17 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
         passwordField.resignFirstResponder()
         hideWatchdogTimeoutMessage(animated: true)
         DatabaseManager.shared.addObserver(self)
-        
-        do {
-            if let databaseKey = try Keychain.shared.getDatabaseKey(databaseRef: databaseRef) {
-                // throws KeychainError
-                DatabaseManager.shared.startLoadingDatabase(
-                    database: databaseRef,
-                    compositeKey: databaseKey)
-            } else {
-                DatabaseManager.shared.startLoadingDatabase(
-                    database: databaseRef,
-                    password: password,
-                    keyFile: keyFileRef)
-            }
-        } catch {
-            Diag.error(error.localizedDescription)
-            hideProgressOverlay(quickly: true) // if shown by automatic unlock
-            showErrorMessage(error.localizedDescription)
+
+        let dbSettings = DatabaseSettingsManager.shared.getSettings(for: databaseRef)
+        if let databaseKey = dbSettings?.masterKey {
+            DatabaseManager.shared.startLoadingDatabase(
+                database: databaseRef,
+                compositeKey: databaseKey)
+        } else {
+            DatabaseManager.shared.startLoadingDatabase(
+                database: databaseRef,
+                password: password,
+                keyFile: keyFileRef)
         }
     }
     
@@ -455,7 +449,9 @@ extension UnlockDatabaseVC: KeyFileChooserDelegate {
     func setKeyFile(urlRef: URLReference?) {
         // can be nil, can have error, can be ok
         keyFileRef = urlRef
-        Settings.current.setKeyFileForDatabase(databaseRef: databaseRef, keyFileRef: keyFileRef)
+        DatabaseSettingsManager.shared.updateSettings(for: databaseRef) { (dbSettings) in
+            dbSettings.maybeSetAssociatedKeyFile(keyFileRef)
+        }
 
         guard let fileInfo = urlRef?.info else {
             Diag.debug("No key file selected")
@@ -525,7 +521,10 @@ extension UnlockDatabaseVC: DatabaseManagerObserver {
     
     func databaseManager(database urlRef: URLReference, isCancelled: Bool) {
         DatabaseManager.shared.removeObserver(self)
-        try? Keychain.shared.removeDatabaseKey(databaseRef: urlRef) // throws KeychainError, ignored
+        DatabaseSettingsManager.shared.updateSettings(for: urlRef) { (dbSettings) in
+            dbSettings.clearMasterKey()
+        }
+        
         refresh()
         hideProgressOverlay(quickly: true)
         // cancelled by the user, no errors to show
@@ -538,7 +537,9 @@ extension UnlockDatabaseVC: DatabaseManagerObserver {
     
     func databaseManager(database urlRef: URLReference, invalidMasterKey message: String) {
         DatabaseManager.shared.removeObserver(self)
-        try? Keychain.shared.removeDatabaseKey(databaseRef: urlRef) // throws KeychainError, ignored
+        DatabaseSettingsManager.shared.updateSettings(for: urlRef) { (dbSettings) in
+            dbSettings.clearMasterKey()
+        }
         refresh()
         hideProgressOverlay(quickly: true)
         

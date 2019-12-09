@@ -38,10 +38,11 @@ public class Keychain {
     
     private static let accessGroup: String? = nil
     private enum Service: String {
-        static let allValues: [Service] = [.general, .databaseKeys, .premium]
+        static let allValues: [Service] = [.general, .databaseKeys, databaseSettings, .premium]
         
         case general = "KeePassium"
         case databaseKeys = "KeePassium.dbKeys"
+        case databaseSettings = "KeePassium.dbSettings"
         case premium = "KeePassium.premium"
     }
     private let appPasscodeAccount = "appPasscode"
@@ -49,7 +50,12 @@ public class Keychain {
     private let premiumProductAccount = "premiumProductID"
     
     private init() {
-        // left empty
+        cleanupObsoleteKeys()
+    }
+    
+    /// Removes DB keys stored by build 48 and earlier.
+    private func cleanupObsoleteKeys() {
+        try? remove(service: .databaseKeys, account: nil)
     }
     
     // MARK: - Low-level keychain access helpers
@@ -178,51 +184,35 @@ public class Keychain {
     }
     
     // MARK: - Database-key association routines
-
-    /// Stores DB's key in keychain.
-    ///
-    /// - Parameters:
-    ///   - databaseRef: reference to identify the database
-    ///   - key: key for the database
+    
     /// - Throws: KeychainError
-    public func setDatabaseKey(databaseRef: URLReference, key: SecureByteArray) throws {
-        guard !databaseRef.info.hasError else { return }
-        
-        // let account = databaseRef.hash.asHexString
-        let account = databaseRef.info.fileName
-        try set(service: .databaseKeys, account: account, data: key.asData) // throws KeychainError
-    }
-
-    /// Returns stored key for the given `databaseRef`.
-    ///
-    /// - Returns: stored key, or `nil` if none found.
-    /// - Throws: KeychainError
-    public func getDatabaseKey(databaseRef: URLReference) throws -> SecureByteArray? {
-        guard !databaseRef.info.hasError else { return nil }
-        
-        // let account = databaseRef.hash.asHexString
-        let account = databaseRef.info.fileName
-        guard let data = try get(service: .databaseKeys, account: account) else {
-            // nothing found
+    internal func getDatabaseSettings(for databaseRef: URLReference) throws -> DatabaseSettings? {
+        guard !databaseRef.info.hasError else {
+            Diag.warning("Database with an error, cannot load DB-specific settings")
             return nil
         }
-        return SecureByteArray(data: data)
-    }
 
-    /// Removes associated keys for the given database
-    /// - Throws: KeychainError
-    public func removeDatabaseKey(databaseRef: URLReference) throws {
-        guard !databaseRef.info.hasError else { return }
-        // let account = databaseRef.hash.asHexString
-        let account = databaseRef.info.fileName
-        try remove(service: .databaseKeys, account: account)
+        guard let account = databaseRef.getDescriptor() else { return nil }
+        if let data = try get(service: .databaseSettings, account: account) { // throws KeychainError
+            return DatabaseSettings.deserialize(from: data)
+        }
+        return nil
     }
     
-    /// Removes all the associated keys for all databases.
-    ///
     /// - Throws: KeychainError
-    public func removeAllDatabaseKeys() throws {
-        try remove(service: .databaseKeys, account: nil)
+    internal func setDatabaseSettings(_ dbSettings: DatabaseSettings, for databaseRef: URLReference) throws {
+        guard !databaseRef.info.hasError else { return }
+        
+        let data = dbSettings.serialize()
+        guard let account = databaseRef.getDescriptor() else { return }
+        try set(service: .databaseSettings, account: account, data: data)
+            // throws KeychainError
+    }
+    
+    /// - Throws: KeychainError
+    internal func removeDatabaseSettings(for databaseRef: URLReference) throws {
+        guard let account = databaseRef.getDescriptor() else { return }
+        try remove(service: .databaseSettings, account: account) // throws KeychainError
     }
     
     

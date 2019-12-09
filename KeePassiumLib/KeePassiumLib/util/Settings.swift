@@ -853,61 +853,6 @@ public class Settings {
         }
     }
     
-    /// Returns a URL reference to the key file last used with the given database.
-    public func getKeyFileForDatabase(databaseRef: URLReference) -> URLReference? {
-        guard let db2key = UserDefaults.appGroupShared
-            .dictionary(forKey: Keys.keyFileAssociations.rawValue) else { return nil }
-        
-        let databaseID = databaseRef.info.fileName
-        if let keyFileRefData = db2key[databaseID] as? Data {
-            return URLReference.deserialize(from: keyFileRefData)
-        } else { 
-            return nil
-        }
-    }
-    
-    /// Associates given keyFile as the one used with the given database,
-    /// (if enabled by `keepKeyFileAssociations`, otherwise does nothing).
-    public func setKeyFileForDatabase(databaseRef: URLReference, keyFileRef: URLReference?) {
-        guard isKeepKeyFileAssociations else { return }
-        var db2key: Dictionary<String, Data> = [:]
-        if let storedDict = UserDefaults.appGroupShared
-            .dictionary(forKey: Keys.keyFileAssociations.rawValue)
-        {
-            for (storedDatabaseID, storedKeyFileRefData) in storedDict {
-                guard let storedKeyFileRefData = storedKeyFileRefData as? Data else { continue }
-                db2key[storedDatabaseID] = storedKeyFileRefData
-            }
-        }
-        
-        let databaseID = databaseRef.info.fileName
-        db2key[databaseID] = keyFileRef?.serialize()
-        UserDefaults.appGroupShared.setValue(db2key, forKey: Keys.keyFileAssociations.rawValue)
-        postChangeNotification(changedKey: Keys.keyFileAssociations)
-    }
-    
-    /// Removes key file association for the given database.
-    public func forgetKeyFile(for databaseRef: URLReference) {
-        setKeyFileForDatabase(databaseRef: databaseRef, keyFileRef: nil)
-    }
-    
-    /// Removes any database associations with the given key file.
-    public func forgetKeyFile(_ keyFileRef: URLReference) {
-        guard isKeepKeyFileAssociations else { return }
-        var db2key = Dictionary<String, Data>()
-        if let storedDict = UserDefaults.appGroupShared
-            .dictionary(forKey: Keys.keyFileAssociations.rawValue)
-        {
-            for (storedDatabaseID, storedKeyFileRefData) in storedDict {
-                guard let storedKeyFileRefData = storedKeyFileRefData as? Data else { continue }
-                if keyFileRef != URLReference.deserialize(from: storedKeyFileRefData) {
-                    db2key[storedDatabaseID] = storedKeyFileRefData
-                }
-            }
-        }
-        UserDefaults.appGroupShared.setValue(db2key, forKey: Keys.keyFileAssociations.rawValue)
-    }
-    
     /// Removes all associations between databases and key files.
     public func removeAllKeyFileAssociations() {
         UserDefaults.appGroupShared.setValue(

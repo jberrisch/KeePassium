@@ -68,8 +68,9 @@ public class DatabaseManager {
 
         // Clear the key synchronously, otherwise auto-unlock might be racing with the closing.
         if clearStoredKey, let urlRef = databaseRef {
-            try? Keychain.shared.removeDatabaseKey(databaseRef: urlRef)
-                // throws KeychainError, ignored
+            DatabaseSettingsManager.shared.updateSettings(for: urlRef) { (dbSettings) in
+                dbSettings.clearMasterKey()
+            }
         }
 
         serialDispatchQueue.async {
@@ -131,8 +132,11 @@ public class DatabaseManager {
     /// (as opposed to password/keyfile pair).
     /// Returns immediately, works asynchronously.
     public func startLoadingDatabase(database dbRef: URLReference, compositeKey: SecureByteArray) {
+        /// compositeKey might be erased when we leave this block.
+        /// So keep a local copy.
+        let compositeKeyClone = compositeKey.secureClone()
         serialDispatchQueue.async {
-            self._loadDatabase(dbRef: dbRef, compositeKey: compositeKey, password: "", keyFileRef: nil)
+            self._loadDatabase(dbRef: dbRef, compositeKey: compositeKeyClone, password: "", keyFileRef: nil)
         }
     }
     
@@ -174,24 +178,15 @@ public class DatabaseManager {
     /// - Throws: KeychainError
     public func rememberDatabaseKey(onlyIfExists: Bool = false) throws {
         guard let databaseRef = databaseRef, let database = database else { return }
-        
-        if onlyIfExists {
-            guard try hasKey(for: databaseRef) else { return }
+        let dsm = DatabaseSettingsManager.shared
+        let dbSettings = dsm.getOrMakeSettings(for: databaseRef)
+        if onlyIfExists && !dbSettings.hasMasterKey {
+            return
         }
-        try Keychain.shared.setDatabaseKey(
-            databaseRef: databaseRef,
-            key: database.compositeKey)
-            // throws KeychainError
-        Diag.info("Database key saved in keychain.")
-    }
-    
-    /// True if keychain contains a key for the given database.
-    ///
-    /// - Parameter databaseRef: identifies the database of interest
-    /// - Throws: KeychainError
-    public func hasKey(for databaseRef: URLReference) throws -> Bool {
-        let key = try Keychain.shared.getDatabaseKey(databaseRef: databaseRef)
-        return key != nil
+        
+        Diag.info("Saving database key in keychain.")
+        dbSettings.setMasterKey(database.compositeKey)
+        dsm.setSettings(dbSettings, for: databaseRef)
     }
     
     /// Save previously opened database to its original path.

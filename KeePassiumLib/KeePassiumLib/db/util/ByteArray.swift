@@ -10,7 +10,7 @@ import Foundation
 
 /// [UInt8] as a reference type.
 /// Fills itself with zeros before destruction.
-public class ByteArray: Eraseable {
+public class ByteArray: Eraseable, Codable {
     
     public class InputStream {
         fileprivate let base: Foundation.InputStream
@@ -108,6 +108,10 @@ public class ByteArray: Eraseable {
         }
     }
     
+    private enum CodingKeys: CodingKey {
+        case bytes
+    }
+    
     // MARK: ByteArray
     fileprivate var bytes: [UInt8]
     fileprivate var sha256cache: ByteArray?
@@ -156,6 +160,7 @@ public class ByteArray: Eraseable {
     public init(bytes: ArraySlice<UInt8>) {
         self.bytes = [UInt8](bytes)
     }
+    
     /// Creates an instance filled with `count` zeroes.
     convenience public init(count: Int) {
         self.init(bytes: [UInt8](repeating: 0, count: count))
@@ -386,6 +391,11 @@ public class SecureByteArray: ByteArray {
             mlock(ptr.baseAddress, ptr.count)
         }
     }
+    
+    required init(from decoder: Decoder) throws {
+        try super.init(from: decoder)
+    }
+    
     deinit {
         self.bytes.withUnsafeBufferPointer { (ptr) -> Void in
             munlock(ptr.baseAddress, ptr.count)

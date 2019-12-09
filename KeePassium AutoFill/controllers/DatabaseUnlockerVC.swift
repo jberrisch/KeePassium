@@ -155,9 +155,8 @@ class DatabaseUnlockerVC: UIViewController, Refreshable {
             databaseLocationIconImage.image = UIImage.databaseIcon(for: dbRef)
         }
         
-        let associatedKeyFileRef = Settings.current
-            .premiumGetKeyFileForDatabase(databaseRef: dbRef)
-        if let associatedKeyFileRef = associatedKeyFileRef {
+        let dbSettings = DatabaseSettingsManager.shared.getSettings(for: dbRef)
+        if let associatedKeyFileRef = dbSettings?.associatedKeyFile {
             // Stored reference can be from the main app (inaccessible),
             // so make sure 1) it is available, or at least 2) there is a same-name available file.
             let allAvailableKeyFiles = FileKeeper.shared
@@ -177,7 +176,9 @@ class DatabaseUnlockerVC: UIViewController, Refreshable {
         hideErrorMessage(animated: false)
 
         guard let databaseRef = databaseRef else { return }
-        Settings.current.setKeyFileForDatabase(databaseRef: databaseRef, keyFileRef: keyFileRef)
+        DatabaseSettingsManager.shared.updateSettings(for: databaseRef) { (dbSettings) in
+            dbSettings.maybeSetAssociatedKeyFile(keyFileRef)
+        }
         
         guard let fileInfo = urlRef?.info else {
             Diag.debug("No key file selected")

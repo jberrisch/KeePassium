@@ -246,7 +246,7 @@ class Watchdog {
         Diag.info("Engaging Database Lock")
         self.databaseLockTimer?.invalidate()
         self.databaseLockTimer = nil
-        try? Keychain.shared.removeAllDatabaseKeys() // throws `KeychainError`, ignored
+        DatabaseSettingsManager.shared.eraseAllMasterKeys()
         DatabaseManager.shared.closeDatabase(
             clearStoredKey: true,
             ignoreErrors: true,
