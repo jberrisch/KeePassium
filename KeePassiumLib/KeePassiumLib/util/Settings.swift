@@ -994,13 +994,13 @@ public class Settings {
     }
     
     /// Instance var, set externally by SystemIssueDetector
-    public var isAffectedByAutoFillFaceIDLoop_iOS_13_2_3 = false
+    public var isAffectedByAutoFillFaceIDLoop_iOS_13_1_3 = false
     
-    /// Workaround for infinite Face ID lock on iOS 13.2.3 (and maybe higher)
+    /// Workaround for infinite Face ID lock on iOS 13.1.3 (and higher)
     /// (https://github.com/keepassium/KeePassium/issues/74)
     /// Converts immediate timeout to a 1-second one.
-    public func maybeFixAutoFillFaceIDLoop_iOS_13_2_3(_ timeout: AppLockTimeout) -> AppLockTimeout {
-        if isAffectedByAutoFillFaceIDLoop_iOS_13_2_3 && timeout == .immediately {
+    public func maybeFixAutoFillFaceIDLoop_iOS_13_1_3(_ timeout: AppLockTimeout) -> AppLockTimeout {
+        if isAffectedByAutoFillFaceIDLoop_iOS_13_1_3 && timeout == .immediately {
             return .after1second
         } else {
             return timeout
@@ -1014,9 +1014,9 @@ public class Settings {
                 .object(forKey: Keys.appLockTimeout.rawValue) as? Int,
                 let timeout = AppLockTimeout(rawValue: rawValue)
             {
-                return maybeFixAutoFillFaceIDLoop_iOS_13_2_3(timeout)
+                return maybeFixAutoFillFaceIDLoop_iOS_13_1_3(timeout)
             }
-            return maybeFixAutoFillFaceIDLoop_iOS_13_2_3(AppLockTimeout.immediately)
+            return maybeFixAutoFillFaceIDLoop_iOS_13_1_3(AppLockTimeout.immediately)
         }
         set {
             let oldValue = appLockTimeout
