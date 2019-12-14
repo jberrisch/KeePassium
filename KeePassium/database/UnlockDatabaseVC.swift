@@ -33,7 +33,7 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
     }
     
     private var keyFileRef: URLReference?
-    private var yubiKeySlot: YubiKey.Slot = .none
+    private var yubiKey: YubiKey?
     private var fileKeeperNotifications: FileKeeperNotifications!
     
     var isAutoUnlockEnabled = true
@@ -71,7 +71,11 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
         // setup Yubikey button
         keyFileField.yubikeyHandler = {
             [weak self] (field) in
-            self?.didPressYubiButton()
+            guard let self = self else { return }
+            let popoverAnchor = PopoverAnchor(
+                sourceView: self.keyFileField,
+                sourceRect: self.keyFileField.bounds)
+            self.showHardwareKeyPicker(at: popoverAnchor)
         }
 
         // Fix UIKeyboardAssistantBar constraints warnings for secure input field
@@ -178,6 +182,9 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
                 setKeyFile(urlRef: availableKeyFileRef)
             }
         }
+        if let associatedYubiKey = dbSettings?.associatedYubiKey {
+            setYubiKey(associatedYubiKey)
+        }
         refreshNews()
         refreshInputMode()
     }
@@ -216,35 +223,17 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
         passwordField.text = ""
     }
     
-    // MARK: - Yubikey button
+    // MARK: - Yubikey stuff
     
-    @objc func didPressYubiButton() {
-        let selector = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-        let yubikeySlot1 = UIAlertAction(
-            title: String.localizedStringWithFormat(LString.useYubikeySlotN, 1),
-            style: .default)
-        { [weak self] (action) in
-            self?.yubiKeySlot = .slot1
+    func showHardwareKeyPicker(at popoverAnchor: PopoverAnchor) {
+        let hardwareKeyPicker = HardwareKeyPicker.create(delegate: self)
+        hardwareKeyPicker.modalPresentationStyle = .popover
+        if let popover = hardwareKeyPicker.popoverPresentationController {
+            popoverAnchor.apply(to: popover)
+            popover.delegate = hardwareKeyPicker.dismissablePopoverDelegate
         }
-
-        let yubikeySlot2 = UIAlertAction(
-            title: String.localizedStringWithFormat(LString.useYubikeySlotN, 2),
-            style: .default)
-        { [weak self] (action) in
-            self?.yubiKeySlot = .slot2
-        }
-
-        let noYubikey = UIAlertAction(title: LString.dontUseYubikey, style: .default) {
-            [weak self] (action) in
-            self?.yubiKeySlot = .none
-        }
-        let cancel = UIAlertAction(title: LString.actionCancel, style: .cancel)
-
-        selector.addAction(noYubikey)
-        selector.addAction(yubikeySlot1)
-        selector.addAction(yubikeySlot2)
-        selector.addAction(cancel)
-        present(selector, animated: true, completion: nil)
+        hardwareKeyPicker.key = yubiKey
+        present(hardwareKeyPicker, animated: true, completion: nil)
     }
     
     
@@ -447,6 +436,20 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
     
     // MARK: - DB unlocking
     
+    /// Handles challenge-response interaction
+    func challengeHandler(challenge: SecureByteArray, responseHandler: @escaping ResponseHandler) {
+        guard let yubiKey = yubiKey else {
+            Diag.debug("Challenge-response is not used")
+            responseHandler(SecureByteArray(), nil)
+            return
+        }
+        ChallengeResponseManager.instance.perform(
+            with: yubiKey,
+            challenge: challenge,
+            responseHandler: responseHandler
+        )
+    }
+    
     func canAutoUnlock() -> Bool {
         guard isAutoUnlockEnabled else { return false }
         guard let splitVC = splitViewController, splitVC.isCollapsed else { return false }
@@ -466,44 +469,29 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
         hideWatchdogTimeoutMessage(animated: true)
         DatabaseManager.shared.addObserver(self)
         
-        do {
-            let challengeHandler = {
-                [weak self] (challenge: SecureByteArray, responseHandler: @escaping ResponseHandler) -> Void in
-                self?.performChallengeResponse(challenge: challenge, responseHandler: responseHandler)
+        let dbSettings = DatabaseSettingsManager.shared.getSettings(for: databaseRef)
+        if let databaseKey = dbSettings?.masterKey {
+            // try to unlock automatically
+            databaseKey.challengeHandler = self.challengeHandler
+            DatabaseManager.shared.startLoadingDatabase(
+                database: databaseRef,
+                compositeKey: databaseKey)
+        } else {
+            guard !isAutomaticUnlock else {
+                // Automatic unlock, but there is no master key?
+                // This means the key was just cleared by the watchdog.
+                // So let's abort auto-unlock and pretend this never happened.
+                Diag.debug("Aborting auto-unlock, there is no stored key")
+                refreshInputMode()
+                hideProgressOverlay(quickly: true)
+                return
             }
-
-            let dbSettings = DatabaseSettingsManager.shared.getSettings(for: databaseRef)
-            if let databaseKey = dbSettings?.masterKey {
-                let storedYubiKeySlot = YubiKey.Slot.none // TODO: get this from the VC
-                databaseKey.challengeHandler = challengeHandler
-                DatabaseManager.shared.startLoadingDatabase(
-                    database: databaseRef,
-                    compositeKey: databaseKey.secureClone())
-            } else {
-                guard !isAutomaticUnlock else {
-                    // Automatic unlock, but there is no master key?
-                    // This means the key was just cleared by the watchdog.
-                    // So let's abort auto-unlock and pretend this never happened.
-                    Diag.debug("Aborting auto-unlock, there is no stored key")
-                    refreshInputMode()
-                    hideProgressOverlay(quickly: true)
-                    return
-                }
-
-                DatabaseManager.shared.startLoadingDatabase(
-                    database: databaseRef,
-                    password: password,
-                    keyFile: keyFileRef,
-                    challengeHandler: challengeHandler)
-        } catch {
-            Diag.error(error.localizedDescription)
-            hideProgressOverlay(quickly: true) // if shown by automatic unlock
-            showErrorMessage(error.localizedDescription)
+            DatabaseManager.shared.startLoadingDatabase(
+                database: databaseRef,
+                password: password,
+                keyFile: keyFileRef,
+                challengeHandler: challengeHandler)
         }
-    }
-    
-    private func performChallengeResponse(challenge: SecureByteArray, responseHandler: @escaping ResponseHandler) {
-        ChallengeResponseManager.instance.perform(challenge: challenge, responseHandler: responseHandler)
     }
     
     /// Called when the DB is successfully loaded, shows it in ViewGroupVC
@@ -526,6 +514,26 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
         } else {
             // wide mode: stack group viewer on top of DB list
             leftNavController.show(viewGroupVC, sender: self)
+        }
+    }
+}
+
+extension UnlockDatabaseVC: HardwareKeyPickerDelegate {
+    func didPressCancel(in picker: HardwareKeyPicker) {
+        // ignored
+    }
+    
+    func didSelectKey(yubiKey: YubiKey?, in picker: HardwareKeyPicker) {
+        setYubiKey(yubiKey)
+    }
+    
+    func setYubiKey(_ yubiKey: YubiKey?) {
+        // TODO: refresh the UI
+        self.yubiKey = yubiKey
+        if let _yubiKey = yubiKey {
+            Diag.info("Hardware key selected [key: \(_yubiKey)]")
+        } else {
+            Diag.info("No hardware key selected")
         }
     }
 }
@@ -597,7 +605,7 @@ extension UnlockDatabaseVC: UITextFieldDelegate {
 }
 
 
-// MARK: - DatabaseManagerDelegate extension
+// MARK: - DatabaseManagerObserver
 extension UnlockDatabaseVC: DatabaseManagerObserver {
     func databaseManager(willLoadDatabase urlRef: URLReference) {
         showProgressOverlay(animated: true)
@@ -663,6 +671,7 @@ extension UnlockDatabaseVC: DatabaseManagerObserver {
     }
 }
 
+// MARK: - FileKeeperObserver
 extension UnlockDatabaseVC: FileKeeperObserver {
     func fileKeeper(didAddFile urlRef: URLReference, fileType: FileType) {
         if fileType == .database {
@@ -691,6 +700,7 @@ extension UnlockDatabaseVC: FileKeeperObserver {
     }
 }
 
+// MARK: - PremiumCoordinatorDelegate
 extension UnlockDatabaseVC: PremiumCoordinatorDelegate {
     func didUpgradeToPremium(in premiumCoordinator: PremiumCoordinator) {
         refresh()

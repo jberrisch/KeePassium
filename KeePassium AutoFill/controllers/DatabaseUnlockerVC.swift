@@ -15,7 +15,7 @@ protocol DatabaseUnlockerDelegate: class {
         database: URLReference,
         password: String,
         keyFile: URLReference?,
-        yubiKeySlot: YubiKey.Slot)
+        yubiKey: YubiKey?)
     func didPressNewsItem(in databaseUnlocker: DatabaseUnlockerVC, newsItem: NewsItem)
 }
 
@@ -39,7 +39,7 @@ class DatabaseUnlockerVC: UIViewController, Refreshable {
         didSet { refresh() }
     }
     private(set) var keyFileRef: URLReference?
-    private(set) var yubiKeySlot: YubiKey.Slot = .none
+    private(set) var yubiKey: YubiKey?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -266,7 +266,7 @@ class DatabaseUnlockerVC: UIViewController, Refreshable {
             database: databaseRef,
             password: passwordField.text ?? "",
             keyFile: keyFileRef,
-            yubiKeySlot: yubiKeySlot)
+            yubiKey: yubiKey)
     }
     
     @IBAction func didPressAnouncementButton(_ sender: Any) {

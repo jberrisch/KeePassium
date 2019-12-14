@@ -185,7 +185,7 @@ public class CompositeKey: Codable {
         // and wait until there is either a response or an error.
         
         var response: SecureByteArray?
-        var challengeError: ChallengeResonseError?
+        var challengeError: ChallengeResponseError?
         let responseReadySemaphore = DispatchSemaphore(value: 0)
         DispatchQueue.global(qos: .default).async {
             handler(challenge) {

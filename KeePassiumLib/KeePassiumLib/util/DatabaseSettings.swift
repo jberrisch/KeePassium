@@ -29,6 +29,9 @@ public class DatabaseSettings: Eraseable, Codable {
     
     public var isRememberKeyFile: Bool?
     public private(set) var associatedKeyFile: URLReference?
+    
+    public var isRememberHardwareKey: Bool?
+    public private(set) var associatedYubiKey: YubiKey?
 
     private enum CodingKeys: String, CodingKey {
         case databaseRef
@@ -37,6 +40,8 @@ public class DatabaseSettings: Eraseable, Codable {
         case masterKey
         case isRememberKeyFile
         case associatedKeyFile
+        case isRememberHardwareKey
+        case associatedYubiKey
     }
     
     init(for databaseRef: URLReference) {
@@ -97,6 +102,15 @@ public class DatabaseSettings: Eraseable, Codable {
     public func maybeSetAssociatedKeyFile(_ urlRef: URLReference?) {
         guard isRememberKeyFile ?? Settings.current.isKeepKeyFileAssociations else { return }
         setAssociatedKeyFile(urlRef)
+    }
+
+    public func setAssociatedYubiKey(_ yubiKey: YubiKey?) {
+        associatedYubiKey = yubiKey
+    }
+
+    public func maybeSetAssociatedYubiKey(_ yubiKey: YubiKey?) {
+        guard isRememberHardwareKey ?? Settings.current.isKeepHardwareKeyAssociations else { return }
+        setAssociatedYubiKey(yubiKey)
     }
 }
 

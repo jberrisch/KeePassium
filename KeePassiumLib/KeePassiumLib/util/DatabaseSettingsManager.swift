@@ -73,6 +73,18 @@ public class DatabaseSettingsManager {
         }
     }
     
+    public func forgetAllHardwareKeys() {
+        let allDatabaseRefs = FileKeeper.shared.getAllReferences(
+            fileType: .database,
+            includeBackup: true
+        )
+        for dbRef in allDatabaseRefs {
+            guard let dbSettings = getSettings(for: dbRef) else { continue }
+            dbSettings.setAssociatedYubiKey(nil)
+            setSettings(dbSettings, for: dbRef)
+        }
+    }
+
     /// Removes the given key file reference from any database associations.
     public func removeAllAssociations(of keyFileRef: URLReference) {
         guard let keyFileDescriptor = keyFileRef.getDescriptor() else { return }

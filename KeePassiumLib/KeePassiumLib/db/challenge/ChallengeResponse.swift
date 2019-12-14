@@ -8,11 +8,13 @@
 
 import Foundation
 
-public enum ChallengeResonseError: Error {
+public enum ChallengeResponseError: Error {
     /// Challenge-response feature is not supported by hardware
     case notSupportedByHardware
     /// Challenge-response feature is not supported by the database format (kdb or kdbx3)
     case notSupportedByDatabaseFormat
+    /// Challenge-response is not available in AutoFill extension
+    case notAvailableInAutoFill
     
     case communicationError(message: String)
 }
@@ -21,4 +23,4 @@ public typealias ChallengeHandler =
     (_ challenge: SecureByteArray, _ responseHandler: @escaping ResponseHandler) -> Void
 
 public typealias ResponseHandler =
-    (_ response: SecureByteArray, _ error: ChallengeResonseError?) -> Void
+    (_ response: SecureByteArray, _ error: ChallengeResponseError?) -> Void

@@ -149,10 +149,21 @@ class MainCoordinator: NSObject, Coordinator {
         (topVC as? KeyFileChooserVC)?.refresh()
     }
     
+    // MARK: - DB unlocking
+    
+    private func challengeHandler(
+        challenge: SecureByteArray,
+        responseHandler: @escaping ResponseHandler)
+    {
+        Diag.warning("YubiKey is not available in AutoFill")
+        responseHandler(SecureByteArray(), .notAvailableInAutoFill)
+    }
+    
     private func tryToUnlockDatabase(
         database: URLReference,
         password: String,
-        keyFile: URLReference?)
+        keyFile: URLReference?,
+        yubiKey: YubiKey?)
     {
         // This flag will be reset to `true` after we successfully open the database.
         Settings.current.isAutoFillFinishedOK = false
@@ -431,13 +442,14 @@ extension MainCoordinator: DatabaseUnlockerDelegate {
         database: URLReference,
         password: String,
         keyFile: URLReference?,
-        yubiKeySlot: YubiKey.Slot)
+        yubiKey: YubiKey?)
     {
         watchdog.restart()
         tryToUnlockDatabase(
             database: database,
             password: password,
-            keyFile: keyFile)
+            keyFile: keyFile,
+            yubiKey: yubiKey)
     }
     
     func didPressNewsItem(in databaseUnlocker: DatabaseUnlockerVC, newsItem: NewsItem) {

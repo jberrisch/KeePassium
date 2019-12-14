@@ -88,7 +88,7 @@ class SettingsDataProtectionVC: UITableViewController, Refreshable {
     }
     
     @IBAction func didPressClearKeyFileAssociations(_ sender: Any) {
-        Settings.current.removeAllKeyFileAssociations()
+        DatabaseSettingsManager.shared.forgetAllKeyFiles()
         let confirmationAlert = UIAlertController.make(
             title: NSLocalizedString(
                 "[Settings/ClearKeyFileAssociations/Cleared/title] Cleared",
