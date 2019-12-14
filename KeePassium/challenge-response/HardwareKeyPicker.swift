@@ -20,6 +20,9 @@ class HardwareKeyPicker: UITableViewController, Refreshable {
         didSet { refresh() }
     }
     
+    /// A convenience delegate to present this VC in a dismissable popover.
+    public let dismissablePopoverDelegate = DismissablePopover(leftButton: .cancel, rightButton: nil)
+    
     private let nfcKeys: [YubiKey] = [
         YubiKey(interface: .nfc, slot: .slot1),
         YubiKey(interface: .nfc, slot: .slot2)]
@@ -39,7 +42,7 @@ class HardwareKeyPicker: UITableViewController, Refreshable {
             case .yubiKeyNFC:
                 return "NFC"
             case .yubiKeyMFI:
-                return "MFI"
+                return "Lightning"
             }
         }
     }
