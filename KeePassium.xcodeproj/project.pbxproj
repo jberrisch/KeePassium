@@ -142,6 +142,14 @@
 		7578487E22C02A9100BBEF9A /* UITableViewCell+demoEditActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7578487C22C02A9100BBEF9A /* UITableViewCell+demoEditActions.swift */; };
 		7578488622C165C900BBEF9A /* SettingsBackupVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7578488522C165C900BBEF9A /* SettingsBackupVC.swift */; };
 		7578488F22C1DFF400BBEF9A /* SettingsBackupTimeoutPickerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7578488E22C1DFF400BBEF9A /* SettingsBackupTimeoutPickerVC.swift */; };
+		757ADC5023A5180600D708D2 /* DismissablePopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = 757ADC4E23A5180600D708D2 /* DismissablePopover.swift */; };
+		757ADC5123A5180600D708D2 /* DismissablePopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = 757ADC4E23A5180600D708D2 /* DismissablePopover.swift */; };
+		757ADC5223A5180600D708D2 /* DismissablePopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = 757ADC4E23A5180600D708D2 /* DismissablePopover.swift */; };
+		757ADC5323A5180600D708D2 /* DismissablePopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = 757ADC4E23A5180600D708D2 /* DismissablePopover.swift */; };
+		757ADC5423A5180600D708D2 /* DismissableNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 757ADC4F23A5180600D708D2 /* DismissableNavigationController.swift */; };
+		757ADC5523A5180600D708D2 /* DismissableNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 757ADC4F23A5180600D708D2 /* DismissableNavigationController.swift */; };
+		757ADC5623A5180600D708D2 /* DismissableNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 757ADC4F23A5180600D708D2 /* DismissableNavigationController.swift */; };
+		757ADC5723A5180600D708D2 /* DismissableNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 757ADC4F23A5180600D708D2 /* DismissableNavigationController.swift */; };
 		757D336120EF382D000A47F0 /* SettingsDatabaseTimeoutVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 757D336020EF382D000A47F0 /* SettingsDatabaseTimeoutVC.swift */; };
 		757D336320EF5081000A47F0 /* SettingsClipboardTimeoutVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 757D336220EF5081000A47F0 /* SettingsClipboardTimeoutVC.swift */; };
 		757EF2F520EB3D1C0024AACD /* PasswordGeneratorVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 757EF2F420EB3D1C0024AACD /* PasswordGeneratorVC.swift */; };
@@ -611,6 +619,8 @@
 		7578487C22C02A9100BBEF9A /* UITableViewCell+demoEditActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableViewCell+demoEditActions.swift"; sourceTree = "<group>"; };
 		7578488522C165C900BBEF9A /* SettingsBackupVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsBackupVC.swift; sourceTree = "<group>"; };
 		7578488E22C1DFF400BBEF9A /* SettingsBackupTimeoutPickerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsBackupTimeoutPickerVC.swift; sourceTree = "<group>"; };
+		757ADC4E23A5180600D708D2 /* DismissablePopover.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DismissablePopover.swift; sourceTree = "<group>"; };
+		757ADC4F23A5180600D708D2 /* DismissableNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DismissableNavigationController.swift; sourceTree = "<group>"; };
 		757D336020EF382D000A47F0 /* SettingsDatabaseTimeoutVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsDatabaseTimeoutVC.swift; sourceTree = "<group>"; };
 		757D336220EF5081000A47F0 /* SettingsClipboardTimeoutVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsClipboardTimeoutVC.swift; sourceTree = "<group>"; };
 		757EF2F420EB3D1C0024AACD /* PasswordGeneratorVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordGeneratorVC.swift; sourceTree = "<group>"; };
@@ -1339,6 +1349,8 @@
 				7561850220E033DB00EEFAEE /* WatchdogAwareTextView.swift */,
 				7548BC1721B07BFE001B00E9 /* ProtectedTextField.swift */,
 				7573FD8A2321664F00DCDA5A /* MultilineButton.swift */,
+				757ADC4F23A5180600D708D2 /* DismissableNavigationController.swift */,
+				757ADC4E23A5180600D708D2 /* DismissablePopover.swift */,
 			);
 			path = views;
 			sourceTree = "<group>";
@@ -1777,11 +1789,13 @@
 				753507A123783729003B65C9 /* HapticFeedback.swift in Sources */,
 				75779865223023D3006671BD /* ProgressViewHost.swift in Sources */,
 				75B24DB821C3C594003C9486 /* ProgressOverlay.swift in Sources */,
+				757ADC5523A5180600D708D2 /* DismissableNavigationController.swift in Sources */,
 				757FB3CB21F8D34A00F016FA /* PasscodeInputVC.swift in Sources */,
 				75B24DD521C523AE003C9486 /* SearchHelper.swift in Sources */,
 				7582544B2211BB830053FCC9 /* Watchdog.swift in Sources */,
 				750CFC0721BAD98B00E62B09 /* LString.swift in Sources */,
 				75151D3423268AB300F3C411 /* UILabel+strikethrough.swift in Sources */,
+				757ADC5123A5180600D708D2 /* DismissablePopover.swift in Sources */,
 				75A2677E22904E0D0097C693 /* PremiumFeature+extension.swift in Sources */,
 				750CFBDA21BAD7FF00E62B09 /* KeyboardLayoutConstraint.swift in Sources */,
 				750CFBDE21BAD7FF00E62B09 /* UIViewController+storyboard.swift in Sources */,
@@ -1808,6 +1822,7 @@
 				757EF2F520EB3D1C0024AACD /* PasswordGeneratorVC.swift in Sources */,
 				75C94C5720B373BA004FA29D /* ViewGroupVC.swift in Sources */,
 				753F924E2290705D005E496F /* SKProduct+extension.swift in Sources */,
+				757ADC5023A5180600D708D2 /* DismissablePopover.swift in Sources */,
 				75C3801B217A0B76006F74C2 /* UIViewController+storyboard.swift in Sources */,
 				7529310D21ADA46C00E4B0D2 /* FileInfoVC.swift in Sources */,
 				757D336120EF382D000A47F0 /* SettingsDatabaseTimeoutVC.swift in Sources */,
@@ -1886,6 +1901,7 @@
 				7596771E20FB36BD00E54827 /* SettingsAppTimeoutVC.swift in Sources */,
 				75B59A6823887A2C00239CFF /* SystemIssueDetector.swift in Sources */,
 				7546FBDB20C3AC5E00C5D834 /* main.swift in Sources */,
+				757ADC5423A5180600D708D2 /* DismissableNavigationController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1907,6 +1923,7 @@
 				75B38BFD233E5B7C006BDEFC /* PasswordGeneratorVC.swift in Sources */,
 				75B38BFE233E5B7C006BDEFC /* ViewGroupVC.swift in Sources */,
 				75B38BFF233E5B7C006BDEFC /* SKProduct+extension.swift in Sources */,
+				757ADC5223A5180600D708D2 /* DismissablePopover.swift in Sources */,
 				75B38C00233E5B7C006BDEFC /* UIViewController+storyboard.swift in Sources */,
 				75B38C01233E5B7C006BDEFC /* FileInfoVC.swift in Sources */,
 				75B38C02233E5B7C006BDEFC /* SettingsDatabaseTimeoutVC.swift in Sources */,
@@ -1985,6 +2002,7 @@
 				75B38C49233E5B7C006BDEFC /* SettingsAppTimeoutVC.swift in Sources */,
 				75B59A6A23887A2C00239CFF /* SystemIssueDetector.swift in Sources */,
 				75B38C4A233E5B7C006BDEFC /* main.swift in Sources */,
+				757ADC5623A5180600D708D2 /* DismissableNavigationController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2029,11 +2047,13 @@
 				753507A323783729003B65C9 /* HapticFeedback.swift in Sources */,
 				75D7DF9B233E5E310029AD87 /* ProgressViewHost.swift in Sources */,
 				75D7DF9E233E5E310029AD87 /* ProgressOverlay.swift in Sources */,
+				757ADC5723A5180600D708D2 /* DismissableNavigationController.swift in Sources */,
 				75D7DF9F233E5E310029AD87 /* PasscodeInputVC.swift in Sources */,
 				75D7DFA0233E5E310029AD87 /* SearchHelper.swift in Sources */,
 				75D7DFA1233E5E310029AD87 /* Watchdog.swift in Sources */,
 				75D7DFA2233E5E310029AD87 /* LString.swift in Sources */,
 				75D7DFA3233E5E310029AD87 /* UILabel+strikethrough.swift in Sources */,
+				757ADC5323A5180600D708D2 /* DismissablePopover.swift in Sources */,
 				75D7DFA4233E5E310029AD87 /* PremiumFeature+extension.swift in Sources */,
 				75D7DFA5233E5E310029AD87 /* KeyboardLayoutConstraint.swift in Sources */,
 				75D7DFA6233E5E310029AD87 /* UIViewController+storyboard.swift in Sources */,
