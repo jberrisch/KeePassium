@@ -172,6 +172,14 @@
 		757ADC4B23A12DD100D708D2 /* HardwareKeyPicker.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 757ADC4923A12DD100D708D2 /* HardwareKeyPicker.storyboard */; };
 		757ADC4C23A12DD100D708D2 /* HardwareKeyPicker.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 757ADC4923A12DD100D708D2 /* HardwareKeyPicker.storyboard */; };
 		757ADC4D23A12DD100D708D2 /* HardwareKeyPicker.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 757ADC4923A12DD100D708D2 /* HardwareKeyPicker.storyboard */; };
+		757ADC5023A5180600D708D2 /* DismissablePopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = 757ADC4E23A5180600D708D2 /* DismissablePopover.swift */; };
+		757ADC5123A5180600D708D2 /* DismissablePopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = 757ADC4E23A5180600D708D2 /* DismissablePopover.swift */; };
+		757ADC5223A5180600D708D2 /* DismissablePopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = 757ADC4E23A5180600D708D2 /* DismissablePopover.swift */; };
+		757ADC5323A5180600D708D2 /* DismissablePopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = 757ADC4E23A5180600D708D2 /* DismissablePopover.swift */; };
+		757ADC5423A5180600D708D2 /* DismissableNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 757ADC4F23A5180600D708D2 /* DismissableNavigationController.swift */; };
+		757ADC5523A5180600D708D2 /* DismissableNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 757ADC4F23A5180600D708D2 /* DismissableNavigationController.swift */; };
+		757ADC5623A5180600D708D2 /* DismissableNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 757ADC4F23A5180600D708D2 /* DismissableNavigationController.swift */; };
+		757ADC5723A5180600D708D2 /* DismissableNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 757ADC4F23A5180600D708D2 /* DismissableNavigationController.swift */; };
 		757D336120EF382D000A47F0 /* SettingsDatabaseTimeoutVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 757D336020EF382D000A47F0 /* SettingsDatabaseTimeoutVC.swift */; };
 		757D336320EF5081000A47F0 /* SettingsClipboardTimeoutVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 757D336220EF5081000A47F0 /* SettingsClipboardTimeoutVC.swift */; };
 		757EF2F520EB3D1C0024AACD /* PasswordGeneratorVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 757EF2F420EB3D1C0024AACD /* PasswordGeneratorVC.swift */; };
@@ -661,6 +669,8 @@
 		757ADC4F23A5180600D708D2 /* DismissableNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DismissableNavigationController.swift; sourceTree = "<group>"; };
 		757ADC4423A1047600D708D2 /* HardwareKeyPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HardwareKeyPicker.swift; sourceTree = "<group>"; };
 		757ADC4923A12DD100D708D2 /* HardwareKeyPicker.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = HardwareKeyPicker.storyboard; sourceTree = "<group>"; };
+		757ADC4E23A5180600D708D2 /* DismissablePopover.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DismissablePopover.swift; sourceTree = "<group>"; };
+		757ADC4F23A5180600D708D2 /* DismissableNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DismissableNavigationController.swift; sourceTree = "<group>"; };
 		757D336020EF382D000A47F0 /* SettingsDatabaseTimeoutVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsDatabaseTimeoutVC.swift; sourceTree = "<group>"; };
 		757D336220EF5081000A47F0 /* SettingsClipboardTimeoutVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsClipboardTimeoutVC.swift; sourceTree = "<group>"; };
 		757EF2F420EB3D1C0024AACD /* PasswordGeneratorVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordGeneratorVC.swift; sourceTree = "<group>"; };
@@ -1423,6 +1433,8 @@
 				757ADC4F23A5180600D708D2 /* DismissableNavigationController.swift */,
 				757ADC4E23A5180600D708D2 /* DismissablePopover.swift */,
 				754D7C08238C2135005652E1 /* KeyFileTextField.swift */,
+				757ADC4F23A5180600D708D2 /* DismissableNavigationController.swift */,
+				757ADC4E23A5180600D708D2 /* DismissablePopover.swift */,
 			);
 			path = views;
 			sourceTree = "<group>";
