@@ -44,9 +44,9 @@ class ChallengeResponseManager {
         
         guard #available(iOS 13.0, *) else { return }
         supportsNFC = YubiKitDeviceCapabilities.supportsISO7816NFCTags
-//        if supportsNFC {
-//            setupNFCSession()
-//        }
+        if supportsNFC {
+            setupNFCSession()
+        }
     }
     
     @available(iOS 13.0, *)
@@ -136,23 +136,32 @@ class ChallengeResponseManager {
     
     // MARK: - Public challenge-response stuff
 
-    public func perform(challenge: SecureByteArray, responseHandler: @escaping ResponseHandler) {
+    public func perform(
+        with yubiKey: YubiKey,
+        challenge: SecureByteArray,
+        responseHandler: @escaping ResponseHandler)
+    {
         guard #available(iOS 13.0, *) else { fatalError() }
         self.challenge = challenge.secureClone()
         self.responseHandler = responseHandler
         
-//        let nfcSession = YubiKitManager.shared.nfcSession as! YKFNFCSession
-//        nfcSession.startIso7816Session()
-        let keySession = YubiKitManager.shared.accessorySession
-        if keySession.isKeyConnected {
-            keySession.startSessionSync()
-        } else {
-            startAccessorySessionWhenKeyConnected()
+        switch yubiKey.interface {
+        case .nfc:
+            let nfcSession = YubiKitManager.shared.nfcSession as! YKFNFCSession
+            nfcSession.startIso7816Session()
+        case .mfi:
+            let keySession = YubiKitManager.shared.accessorySession
+            if keySession.isKeyConnected {
+                keySession.startSessionSync()
+            } else {
+                startAccessorySessionWhenKeyConnected()
+            }
         }
     }
     
     /// Aborts any pending operations
     public func cancel() {
+        // TODO: cancel only the current interface session, not both of them
         let accessorySession = YubiKitManager.shared.accessorySession
         if accessorySession.sessionState == .opening || accessorySession.sessionState == .open {
             accessorySession.stopSession()
@@ -160,10 +169,13 @@ class ChallengeResponseManager {
         accessorySessionStateObservation = nil
         accessoryConnectedStateObservation = nil
         
-//        let nfcSession = YubiKitManager.shared.nfcSession
-        //TODO
+        if #available(iOS 13, *) {
+            let nfcSession = YubiKitManager.shared.nfcSession
+            nfcSession.cancelCommands()
+            nfcSession.stopIso7816Session()
+        }
         nfcSessionStateObservation = nil
-        
+
         challenge?.erase()
         responseHandler = nil
     }
@@ -179,7 +191,7 @@ class ChallengeResponseManager {
         }
     }
 
-    private func returnError(_ error: ChallengeResonseError) {
+    private func returnError(_ error: ChallengeResponseError) {
         queue.async { [weak self] in
             self?.responseHandler?(SecureByteArray(), error)
             self?.cancel()
