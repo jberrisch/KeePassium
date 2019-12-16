@@ -51,3 +51,10 @@ public class YubiKey: Codable, Equatable, CustomStringConvertible {
         return "YubiKey \(interface) Slot \(slot.number)"
     }
 }
+
+//let yk = KeySettings(connection: .mfi, slot: .slot1)
+//let encoder = JSONEncoder()
+//let data = try encoder.encode(yk)
+//let string = String(data: data, encoding: .utf8)!
+//let decoder = JSONDecoder()
+//let yk2 = try decoder.decode(KeySettings.self, from: data)

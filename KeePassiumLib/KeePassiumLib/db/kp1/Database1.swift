@@ -170,7 +170,7 @@ public class Database1: Database {
             Diag.debug("Header read OK")
             
             try deriveMasterKey(compositeKey: compositeKey)
-                // throws CryptoError, ProgressInterruption
+                // throws CryptoError, ChallengeResponseError, ProgressInterruption
             Diag.debug("Key derivation OK")
             
             // Decrypt data
@@ -196,15 +196,23 @@ public class Database1: Database {
         } catch let error as CryptoError {
             Diag.error("Crypto error [reason: \(error.localizedDescription)]")
             throw DatabaseError.loadError(reason: error.localizedDescription)
+        } catch let error as ChallengeResponseError {
+            Diag.error("Challenge-response error [reason: \(error.localizedDescription)]")
+            throw DatabaseError.loadError(reason: error.localizedDescription)
         } catch let error as FormatError {
             Diag.error("Format error [reason: \(error.localizedDescription)]")
             throw DatabaseError.loadError(reason: error.localizedDescription)
         } // ProgressInterruption is passed further out
     }
     
-    /// - Throws: `CryptoError`, `ProgressInterruption`
+    /// - Throws: `CryptoError`, `ChallengeResponseError`, `ProgressInterruption`
     func deriveMasterKey(compositeKey: CompositeKey) throws {
         Diag.debug("Start key derivation")
+        
+        guard compositeKey.challengeHandler == nil else {
+            throw ChallengeResponseError.notSupportedByDatabaseFormat
+        }
+        
         let kdf = AESKDF()
         progress.addChild(kdf.initProgress(), withPendingUnitCount: ProgressSteps.keyDerivation)
         let kdfParams = kdf.defaultParams
@@ -404,7 +412,7 @@ public class Database1: Database {
             // update encryption seeds and transform the keys
             try header.randomizeSeeds() // throws CryptoError
             try deriveMasterKey(compositeKey: self.compositeKey)
-                // throws CryptoError, ProgressInterruption
+                // throws CryptoError, ChallengeResponseError, ProgressInterruption
             Diag.debug("Key derivation OK")
             
             // encrypt the content
@@ -420,6 +428,10 @@ public class Database1: Database {
             outStream.write(data: encryptedContent)
             return outStream.data!
         } catch let error as CryptoError {
+            Diag.error("Crypto error [reason: \(error.localizedDescription)]")
+            throw DatabaseError.saveError(reason: error.localizedDescription)
+        } catch let error as ChallengeResponseError {
+            Diag.error("Challenge-response error [reason: \(error.localizedDescription)]")
             throw DatabaseError.saveError(reason: error.localizedDescription)
         } // ProgressInterruption is passed further up
     }

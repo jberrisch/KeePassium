@@ -194,7 +194,7 @@ public class Database2: Database {
             
             // calculate cypher key
             try deriveMasterKey(compositeKey: compositeKey, cipher: header.dataCipher)
-                // throws CryptoError, ProgressInterruption
+                // throws CryptoError, ChallengeResponseError, ProgressInterruption
             Diag.debug("Key derivation OK")
             Diag.verbose("== DB2 progress CP2: \(progress.completedUnitCount)")
             
@@ -262,6 +262,9 @@ public class Database2: Database {
             throw DatabaseError.loadError(reason: error.localizedDescription)
         } catch let error as CryptoError {
             Diag.error("Crypto error [reason: \(error.localizedDescription)]")
+            throw DatabaseError.loadError(reason: error.localizedDescription)
+        } catch let error as ChallengeResponseError {
+            Diag.error("Challenge-response error [reason: \(error.localizedDescription)]")
             throw DatabaseError.loadError(reason: error.localizedDescription)
         } catch let error as FormatError {
             Diag.error("Format error [reason: \(error.localizedDescription)]")
@@ -618,7 +621,7 @@ public class Database2: Database {
     }
     
     /// Updates `cipherKey` field by transforming the given `compositeKey`.
-    /// - Throws: CryptoError, ProgressInterruption, ChallengeResponseError
+    /// - Throws: `CryptoError`, `ChallengeResponseError`, `ProgressInterruption`
     func deriveMasterKey(compositeKey: CompositeKey, cipher: DataCipher) throws {
         Diag.debug("Start key derivation")
         progress.addChild(header.kdf.initProgress(), withPendingUnitCount: ProgressSteps.keyDerivation)
@@ -631,11 +634,14 @@ public class Database2: Database {
                 keyFileData: compositeKey.keyFileData!    // might be empty, but not nil
             )
             compositeKey.setCombinedStaticComponents(combinedComponents)
-        } else if compositeKey.state == .combinedComponents {
+        } else if compositeKey.state >= .combinedComponents {
             combinedComponents = compositeKey.combinedStaticComponents! // not nil in this state
         } else {
             preconditionFailure("Unexpected key state")
         }
+        
+        let challenge = try header.kdf.getChallenge(header.kdfParams) // throws CryptoError.invalidKDFParam
+        let secureChallenge = SecureByteArray(challenge)
         
         let secureMasterSeed = SecureByteArray(header.masterSeed)
         let joinedKey: SecureByteArray
@@ -653,15 +659,15 @@ public class Database2: Database {
                 // throws CryptoError, ProgressInterruption
             
             // 3. insert the response to the mix
-            let challengeResponse = try compositeKey.getResponse(challenge: secureMasterSeed) // waits until ready
-                // throws `ChallengeResponseError`
+            let challengeResponse = try compositeKey.getResponse(challenge: secureChallenge) // waits until ready
+                // throws `ChallengeResponseError`, `ProgressInterruption`
             joinedKey = SecureByteArray.concat(secureMasterSeed, challengeResponse, transformedKey)
         case .v4:
             // In v4, the response is added before key transformation
             
             // 1. append the response to the static components
-            let challengeResponse = try compositeKey.getResponse(challenge: secureMasterSeed) // waits until ready
-                // throws `ChallengeResponseError`
+            let challengeResponse = try compositeKey.getResponse(challenge: secureChallenge) // waits until ready
+                // throws `ChallengeResponseError`, `ProgressInterruption`
             combinedComponents = SecureByteArray.concat(combinedComponents, challengeResponse)
             
             // 2. hash the mix
@@ -985,10 +991,13 @@ public class Database2: Database {
             try header.randomizeSeeds() // throws CryptoError.rngError
             Diag.debug("Seeds randomized OK")
             try deriveMasterKey(compositeKey: compositeKey, cipher: header.dataCipher)
-                // throws CryptoError, ProgressInterruption
+                // throws CryptoError, ChallengeResponseError, ProgressInterruption
             Diag.debug("Key derivation OK")
         } catch let error as CryptoError {
             Diag.error("Crypto error [reason: \(error.localizedDescription)]")
+            throw DatabaseError.saveError(reason: error.localizedDescription)
+        } catch let error as ChallengeResponseError {
+            Diag.error("Challenge-response error [reason: \(error.localizedDescription)]")
             throw DatabaseError.saveError(reason: error.localizedDescription)
         }
 

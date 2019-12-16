@@ -167,13 +167,13 @@ public class CompositeKey: Codable {
     }
     
     func setFinalKey(_ finalKey: SecureByteArray) {
-        assert(state == .combinedComponents)
+        assert(state >= .combinedComponents)
         self.finalKey = finalKey
         state = .final
         // keep the combined components and challengeHandler, will need them for saving
     }
     
-    /// - Throws: `ChallengeResponseError`
+    /// - Throws: `ChallengeResponseError`, `ProgressInterruption`
     func getResponse(challenge: SecureByteArray) throws -> SecureByteArray  {
         guard let handler = self.challengeHandler else {
             return SecureByteArray()
@@ -204,11 +204,16 @@ public class CompositeKey: Codable {
         responseReadySemaphore.wait()
         
         if let challengeError = challengeError {
-            throw challengeError // throws `ChallengeResponseError`
-        } else if let response = response {
-            return response
-        } else {
-            preconditionFailure("You should not be here")
+            switch challengeError {
+            case .cancelled:
+                throw ProgressInterruption.cancelled(reason: ProgressEx.CancellationReason.userRequest)
+            default:
+                throw challengeError // throws `ChallengeResponseError`
+            }
         }
+        if let response = response {
+            return response.sha256
+        }
+        preconditionFailure("You should not be here")
     }
 }

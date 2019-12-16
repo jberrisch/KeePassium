@@ -63,6 +63,15 @@ final class Argon2KDF: KeyDerivationFunction {
         return progress
     }
     
+    /// Returns the parameter that should be used for challenge-response.
+    /// Throws `CryptoError.invalidKDFParam`
+    func getChallenge(_ params: KDFParams) throws -> ByteArray {
+        guard let salt = params.getValue(key: Argon2KDF.saltParam)?.asByteArray() else {
+            throw CryptoError.invalidKDFParam(kdfName: name, paramName: AESKDF.transformSeedParam)
+        }
+        return salt
+    }
+    
     /// Randomize KDF parameters (for example, before saving the DB)
     /// - Throws: CryptoError.rngError
     func randomize(params: inout KDFParams) throws { 

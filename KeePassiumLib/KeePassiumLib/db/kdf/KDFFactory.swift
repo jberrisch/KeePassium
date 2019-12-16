@@ -27,6 +27,10 @@ protocol KeyDerivationFunction {
     /// - Returns: resulting key
     func transform(key: SecureByteArray, params: KDFParams) throws -> SecureByteArray
     
+    /// Returns the parameter that should be used for challenge-response.
+    /// Throws `CryptoError.invalidKDFParam`
+    func getChallenge(_ params: KDFParams) throws -> ByteArray
+    
     /// Randomize KDF parameters (before saving the DB)
     /// - Throws: CryptoError.rngError
     func randomize(params: inout KDFParams) throws
