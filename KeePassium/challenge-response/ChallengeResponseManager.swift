@@ -201,7 +201,12 @@ class ChallengeResponseManager {
     
     /// Aborts any pending operations
     private func cancel() {
-        guard let currentKey = currentKey else { assertionFailure(); return }
+        guard let currentKey = currentKey else {
+            challenge?.erase()
+            responseHandler = nil
+            return
+        }
+        
         switch currentKey.interface {
         case .mfi:
             cancelMFISession()
