@@ -14,12 +14,15 @@ class KeyFileTextField: ValidatingTextField {
     private let horizontalInsets = CGFloat(8.0)
     private let verticalInsets = CGFloat(2.0)
     
-    private let yubiImage = UIImage(asset: .yubikeyAccessory)
+    private let yubiKeyOnImage = UIImage(asset: .yubikeyOnAccessory)
+    private let yubiKeyOffImage = UIImage(asset: .yubikeyOffAccessory)
     
     private var yubiButton: UIButton! // owned strong ref
-    public var isYubikeyActive: Bool = false {
+    public var isYubiKeyActive: Bool = false {
         didSet {
-            yubiButton?.isSelected = isYubikeyActive
+            guard let button = rightView as? UIButton else { return }
+            button.isSelected = isYubiKeyActive
+            setNeedsDisplay()
         }
     }
     
@@ -34,8 +37,8 @@ class KeyFileTextField: ValidatingTextField {
         let yubiButton = UIButton(type: .custom)
         yubiButton.tintColor = UIColor.actionTint
         yubiButton.addTarget(self, action: #selector(didPressYubiButton), for: .touchUpInside)
-        yubiButton.setImage(yubiImage, for: .normal)
-        yubiButton.setImage(yubiImage, for: .selected)
+        yubiButton.setImage(yubiKeyOffImage, for: .normal)
+        yubiButton.setImage(yubiKeyOnImage, for: .selected)
         
         let horizontalInsets = CGFloat(8.0)
         let verticalInsets = CGFloat(2.0)
@@ -47,23 +50,24 @@ class KeyFileTextField: ValidatingTextField {
         yubiButton.frame = CGRect(
             x: 0.0,
             y: 0.0,
-            width: yubiImage.size.width + 2 * horizontalInsets,
-            height: yubiImage.size.height + 2 * verticalInsets)
+            width: yubiKeyOffImage.size.width + 2 * horizontalInsets,
+            height: yubiKeyOffImage.size.height + 2 * verticalInsets)
         yubiButton.isAccessibilityElement = true
         yubiButton.accessibilityLabel = NSLocalizedString(
             "[Database/Unlock] YubiKey",
             value: "YubiKey",
             comment: "Action/button to setup YubiKey key component")
+        self.yubiButton = yubiButton
         self.rightView = yubiButton
         self.rightViewMode = .always
     }
     
     override func rightViewRect(forBounds bounds: CGRect) -> CGRect {
         return CGRect(
-            x: bounds.maxX - yubiImage.size.width - 2 * horizontalInsets,
-            y: bounds.midY - yubiImage.size.height / 2 - verticalInsets,
-            width: yubiImage.size.width + 2 * horizontalInsets,
-            height: yubiImage.size.height + 2 * verticalInsets)
+            x: bounds.maxX - yubiKeyOffImage.size.width - 2 * horizontalInsets,
+            y: bounds.midY - yubiKeyOffImage.size.height / 2 - verticalInsets,
+            width: yubiKeyOffImage.size.width + 2 * horizontalInsets,
+            height: yubiKeyOffImage.size.height + 2 * verticalInsets)
     }
     
     @objc private func didPressYubiButton(_ sender: Any) {

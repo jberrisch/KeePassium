@@ -529,8 +529,9 @@ extension UnlockDatabaseVC: HardwareKeyPickerDelegate {
     }
     
     func setYubiKey(_ yubiKey: YubiKey?) {
-        // TODO: refresh the UI
         self.yubiKey = yubiKey
+        keyFileField.isYubiKeyActive = (yubiKey != nil)
+
         DatabaseSettingsManager.shared.updateSettings(for: databaseRef) { (dbSettings) in
             dbSettings.maybeSetAssociatedYubiKey(yubiKey)
         }
