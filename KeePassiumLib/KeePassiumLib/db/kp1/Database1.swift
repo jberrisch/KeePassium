@@ -229,6 +229,7 @@ public class Database1: Database {
                 passwordData: compositeKey.passwordData!, // might be empty, but not nil
                 keyFileData: compositeKey.keyFileData!    // might be empty, but not nil
             )
+            compositeKey.setCombinedStaticComponents(combinedComponents)
         } else if compositeKey.state == .combinedComponents {
             combinedComponents = compositeKey.combinedStaticComponents! // not nil in this state
         } else {

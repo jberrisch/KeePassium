@@ -469,10 +469,11 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
         hideWatchdogTimeoutMessage(animated: true)
         DatabaseManager.shared.addObserver(self)
         
+        let _challengeHandler = (yubiKey != nil) ? challengeHandler : nil
         let dbSettings = DatabaseSettingsManager.shared.getSettings(for: databaseRef)
         if let databaseKey = dbSettings?.masterKey {
             // try to unlock automatically
-            databaseKey.challengeHandler = self.challengeHandler
+            databaseKey.challengeHandler = _challengeHandler
             DatabaseManager.shared.startLoadingDatabase(
                 database: databaseRef,
                 compositeKey: databaseKey)
@@ -490,7 +491,7 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
                 database: databaseRef,
                 password: password,
                 keyFile: keyFileRef,
-                challengeHandler: challengeHandler)
+                challengeHandler: _challengeHandler)
         }
     }
     
@@ -530,6 +531,9 @@ extension UnlockDatabaseVC: HardwareKeyPickerDelegate {
     func setYubiKey(_ yubiKey: YubiKey?) {
         // TODO: refresh the UI
         self.yubiKey = yubiKey
+        DatabaseSettingsManager.shared.updateSettings(for: databaseRef) { (dbSettings) in
+            dbSettings.maybeSetAssociatedYubiKey(yubiKey)
+        }
         if let _yubiKey = yubiKey {
             Diag.info("Hardware key selected [key: \(_yubiKey)]")
         } else {
