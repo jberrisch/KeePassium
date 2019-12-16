@@ -22,12 +22,14 @@ class ChallengeResponseManager {
     
     private var challenge: SecureByteArray?
     private var responseHandler: ResponseHandler?
+    private var currentKey: YubiKey?
+    private var isResponseSent = false
     
     private var queue: DispatchQueue
-    
+        
     private init() {
         queue = DispatchQueue(label: "ChallengeResponseManager")
-        setupSessions()
+        initSessionObservers()
     }
 
     deinit {
@@ -36,33 +38,22 @@ class ChallengeResponseManager {
         nfcSessionStateObservation = nil
     }
     
-    // MARK: - Setup
+    // MARK: - Initialization
     
-    private func setupSessions() {
+    private func initSessionObservers() {
         supportsMFI = YubiKitDeviceCapabilities.supportsMFIAccessoryKey
         if supportsMFI {
-            setupAccessorySession()
+            initMFISessionObserver()
         }
         
         guard #available(iOS 13.0, *) else { return }
         supportsNFC = YubiKitDeviceCapabilities.supportsISO7816NFCTags
         if supportsNFC {
-            setupNFCSession()
+            initNFCSessionObserver()
         }
     }
     
-    @available(iOS 13.0, *)
-    private func setupNFCSession() {
-        let nfcSession = YubiKitManager.shared.nfcSession as! YKFNFCSession
-        nfcSessionStateObservation = nfcSession.observe(
-            \.iso7816SessionState,
-            changeHandler: { [weak self] (session, newValue) in
-                self?.nfcSessionStateDidChange()
-            }
-        )
-    }
-    
-    private func setupAccessorySession() {
+    private func initMFISessionObserver() {
         let accessorySession = YubiKitManager.shared.accessorySession as! YKFAccessorySession
         accessorySessionStateObservation = accessorySession.observe(
             \.sessionState,
@@ -73,30 +64,20 @@ class ChallengeResponseManager {
         )
     }
     
-    
-    // MARK: - Session state observation
-
-    
     @available(iOS 13.0, *)
-    private func nfcSessionStateDidChange() {
-        let keySession = YubiKitManager.shared.nfcSession as! YKFNFCSession
-        switch keySession.iso7816SessionState {
-        case .opening:
-            print("Accessory session -> opening")
-        case .open:
-            print("Accessory session -> open")
-            queue.async { [weak self] in
-                self?.performChallengeResponse(keySession)
-                keySession.stopIso7816Session()
+    private func initNFCSessionObserver() {
+        let nfcSession = YubiKitManager.shared.nfcSession as! YKFNFCSession
+        nfcSessionStateObservation = nfcSession.observe(
+            \.iso7816SessionState,
+            changeHandler: { [weak self] (session, newValue) in
+                self?.nfcSessionStateDidChange()
             }
-        case .pooling:
-            print("Accessory session -> pooling")
-        case .closed:
-            //TODO: to send an error to callback, if appropriate
-            print("Accessory session -> closed")
-        }
+        )
     }
     
+
+    // MARK: - Session state observation
+
     private func accessorySessionStateDidChange() {
         let keySession = YubiKitManager.shared.accessorySession as! YKFAccessorySession
         switch keySession.sessionState {
@@ -105,7 +86,8 @@ class ChallengeResponseManager {
         case .open:
             print("Accessory session -> open")
             queue.async { [weak self] in
-                self?.performChallengeResponse(keySession)
+                guard let key = self?.currentKey else { assertionFailure(); return }
+                self?.performChallengeResponse(keySession, slot: key.slot)
                 keySession.stopSessionSync()
             }
         case .closing:
@@ -116,45 +98,30 @@ class ChallengeResponseManager {
         }
     }
     
-    private func accessoryConnectedStateDidChange() {
-        let keySession = YubiKitManager.shared.accessorySession
-        if keySession.isKeyConnected {
-            print("Accessory connected")
-            keySession.startSessionSync()
-        } else {
-            print("Accessory disconnected")
-            keySession.stopSession()
-        }
-    }
-    
-    private func startAccessorySessionWhenKeyConnected() {
-        assert(accessoryConnectedStateObservation == nil)
-        let accessorySession = YubiKitManager.shared.accessorySession as! YKFAccessorySession
-        // TODO: does not get called on key connection
-        accessoryConnectedStateObservation = accessorySession.observe(
-            \.isKeyConnected,
-            changeHandler: {
-                [weak self] (session, observedChange) in
-                self?.accessoryConnectedStateDidChange()
+    @available(iOS 13.0, *)
+    private func nfcSessionStateDidChange() {
+        let keySession = YubiKitManager.shared.nfcSession as! YKFNFCSession
+        switch keySession.iso7816SessionState {
+        case .opening:
+            print("NFC session -> opening")
+        case .open:
+            print("NFC session -> open")
+            queue.async { [weak self] in
+                guard let key = self?.currentKey else { assertionFailure(); return }
+                self?.performChallengeResponse(keySession, slot: key.slot)
+                keySession.stopIso7816Session()
             }
-        )
+        case .pooling:
+            print("NFC session -> pooling")
+        case .closed:
+            print("NFC session -> closed")
+            if !isResponseSent {
+                returnError(.cancelled)
+            }
+        }
     }
     
     // MARK: - Public challenge-response stuff
-    
-    private func returnResponse(_ response: SecureByteArray) {
-        queue.async { [weak self] in
-            self?.responseHandler?(response, nil)
-            self?.cancel()
-        }
-    }
-
-    private func returnError(_ error: ChallengeResponseError) {
-        queue.async { [weak self] in
-            self?.responseHandler?(SecureByteArray(), error)
-            self?.cancel()
-        }
-    }
     
     /// Performs challenge-response, by sending the `challenge` to the YubiKey interface/slot
     /// specified by `yubiKey`. Asynchronous call, returns immediately. Once the response is ready,
@@ -171,54 +138,102 @@ class ChallengeResponseManager {
         self.challenge = challenge.secureClone()
         self.responseHandler = responseHandler
         
+        isResponseSent = false
         switch yubiKey.interface {
         case .nfc:
-            guard #available(iOS 13, *), supportsNFC else {
-                let interfaceName = YubiKey.Interface.nfc.description
-                returnError(.notSupportedByDeviceOrSystem(interface: interfaceName))
-                return
-            }
-            let nfcSession = YubiKitManager.shared.nfcSession as! YKFNFCSession
-            nfcSession.startIso7816Session()
+            startNFCSession(with: yubiKey, challenge: challenge, responseHandler: responseHandler)
         case .mfi:
-            guard supportsMFI else {
-                let interfaceName = YubiKey.Interface.mfi.description
-                returnError(.notSupportedByDeviceOrSystem(interface: interfaceName))
-                return
-            }
-            let keySession = YubiKitManager.shared.accessorySession
-            if keySession.isKeyConnected {
-                keySession.startSessionSync()
-            } else {
-                startAccessorySessionWhenKeyConnected()
-            }
+            startMFISession(with: yubiKey, challenge: challenge, responseHandler: responseHandler)
         }
     }
     
+    private func returnResponse(_ response: SecureByteArray) {
+        queue.async { [weak self] in
+            guard let self = self else { return }
+            self.responseHandler?(response, nil)
+            self.isResponseSent = true
+            self.cancel()
+        }
+    }
+
+    private func returnError(_ error: ChallengeResponseError) {
+        queue.async { [weak self] in
+            guard let self = self else { return }
+            self.responseHandler?(SecureByteArray(), error)
+            self.isResponseSent = true
+            self.cancel()
+        }
+    }
+    
+    // MARK: - Internal session management
+    
+    private func startMFISession(
+        with yubiKey: YubiKey,
+        challenge: SecureByteArray,
+        responseHandler: @escaping ResponseHandler)
+    {
+        guard supportsMFI else {
+            returnError(.notSupportedByDeviceOrSystem(interface: yubiKey.interface.description))
+            return
+        }
+        currentKey = yubiKey
+        let keySession = YubiKitManager.shared.accessorySession
+        if keySession.isKeyConnected {
+            keySession.startSessionSync()
+        } else {
+            returnError(.keyNotConnected)
+        }
+    }
+    
+    private func startNFCSession(
+        with yubiKey: YubiKey,
+        challenge: SecureByteArray,
+        responseHandler: @escaping ResponseHandler)
+    {
+        guard #available(iOS 13, *), supportsNFC else {
+            returnError(.notSupportedByDeviceOrSystem(interface: yubiKey.interface.description))
+            return
+        }
+        currentKey = yubiKey
+        let nfcSession = YubiKitManager.shared.nfcSession as! YKFNFCSession
+        nfcSession.startIso7816Session()
+    }
+    
     /// Aborts any pending operations
-    public func cancel() {
-        // TODO: cancel only the current interface session, not both of them
+    private func cancel() {
+        guard let currentKey = currentKey else { assertionFailure(); return }
+        switch currentKey.interface {
+        case .mfi:
+            cancelMFISession()
+        case .nfc:
+            cancelNFCSession()
+        }
+        challenge?.erase()
+        responseHandler = nil
+        self.currentKey = nil
+    }
+    
+    private func cancelMFISession() {
         let accessorySession = YubiKitManager.shared.accessorySession
         if accessorySession.sessionState == .opening || accessorySession.sessionState == .open {
             accessorySession.stopSession()
         }
-        accessorySessionStateObservation = nil
-        accessoryConnectedStateObservation = nil
-        
-        if #available(iOS 13, *) {
-            let nfcSession = YubiKitManager.shared.nfcSession
-            nfcSession.cancelCommands()
-            nfcSession.stopIso7816Session()
-        }
-        nfcSessionStateObservation = nil
-
-        challenge?.erase()
-        responseHandler = nil
     }
     
-    // MARK: - Low-level exchange
+    private func cancelNFCSession() {
+        guard #available(iOS 13, *) else { assertionFailure(); return }
     
-    private func performChallengeResponse(_ accessorySession: YKFAccessorySession) {
+        let nfcSession = YubiKitManager.shared.nfcSession
+        nfcSession.cancelCommands()
+        nfcSession.stopIso7816Session()
+    }
+    
+    // MARK: - Low-level challenge-response communication
+    
+    private func performChallengeResponse(
+        _ accessorySession: YKFAccessorySession,
+        slot: YubiKey.Slot)
+    {
         assert(accessorySession.sessionState == .open)
         let keyName = accessorySession.accessoryDescription?.name ?? "(unknown)"
         Diag.info("Connecting to \(keyName)")
@@ -228,11 +243,14 @@ class ChallengeResponseManager {
             returnError(.communicationError(message: message))
             return
         }
-        performChallengeResponse(rawCommandService: rawCommandService)
+        performChallengeResponse(rawCommandService: rawCommandService, slot: slot)
     }
     
     @available(iOS 13.0, *)
-    private func performChallengeResponse(_ nfcSession: YKFNFCSession) {
+    private func performChallengeResponse(
+        _ nfcSession: YKFNFCSession,
+        slot: YubiKey.Slot)
+    {
         assert(nfcSession.iso7816SessionState == .open)
         let keyName = nfcSession.tagDescription?.identifier.description ?? "(unknown)"
         Diag.info("Found NFC tag \(keyName)")
@@ -242,17 +260,20 @@ class ChallengeResponseManager {
             returnError(.communicationError(message: message))
             return
         }
-        performChallengeResponse(rawCommandService: rawCommandService)
+        performChallengeResponse(rawCommandService: rawCommandService, slot: slot)
     }
 
     
-    private func performChallengeResponse(rawCommandService: YKFKeyRawCommandServiceProtocol) {
+    private func performChallengeResponse(
+        rawCommandService: YKFKeyRawCommandServiceProtocol,
+        slot: YubiKey.Slot)
+    {
         let appletID = Data([0xA0, 0x00, 0x00, 0x05, 0x27, 0x20, 0x01])
-        guard let selectAppletAPDU = YKFAPDU(cla: 0x00, ins: 0xA4, p1: 0x04, p2: 0x00, data: appletID, type: .short) else {
-            fatalError()
-        }
+        guard let selectAppletAPDU =
+            YKFAPDU(cla: 0x00, ins: 0xA4, p1: 0x04, p2: 0x00, data: appletID, type: .short)
+            else { fatalError() }
         
-        rawCommandService.executeSyncCommand(selectAppletAPDU, completion: {
+        rawCommandService.executeSyncCommand(selectAppletAPDU) {
             [weak self] (response, error) in
             guard let self = self else { return }
             if let error = error {
@@ -277,7 +298,7 @@ class ChallengeResponseManager {
                 Diag.error(message)
                 self.returnError(.communicationError(message: message))
             }
-        })
+        }
 
         guard var challengeBytes = challenge?.bytesCopy(),
             challengeBytes.count <= 64
@@ -287,11 +308,15 @@ class ChallengeResponseManager {
         let paddingLength = 64 - challengeBytes.count
         let pkcs7padding: [UInt8] = Array(repeating: UInt8(paddingLength), count: paddingLength)
         challengeBytes.append(contentsOf: pkcs7padding)
-        guard let chalRespAPDU = YKFAPDU(cla: 0x00, ins: 0x01, p1: 0x38, p2: 0x00, data: Data(challengeBytes), type: .short) else {
-            fatalError()
-        }
+        let challengeData = Data(challengeBytes)
+            
+        let slotID = getSlotID(for: slot)
+        guard let chalRespAPDU =
+            YKFAPDU(cla: 0x00, ins: 0x01, p1: slotID, p2: 0x00, data: challengeData, type: .short)
+            else { fatalError() }
         
-        rawCommandService.executeSyncCommand(chalRespAPDU, completion: { [weak self] (response, error) in
+        rawCommandService.executeSyncCommand(chalRespAPDU) {
+            [weak self] (response, error) in
             guard let self = self else { return }
             if let error = error {
                 Diag.error("YubiKey error while executing command [message: \(error.localizedDescription)]")
@@ -317,7 +342,16 @@ class ChallengeResponseManager {
                 Diag.error(message)
                 self.returnError(.communicationError(message: message))
             }
-        })
+        }
+    }
+    
+    private func getSlotID(for slot: YubiKey.Slot) -> UInt8 {
+        switch slot {
+        case .slot1:
+            return 0x30
+        case .slot2:
+            return 0x38
+        }
     }
 }
 
@@ -333,7 +367,7 @@ fileprivate class RawResponseParser {
     var statusCode: UInt16 {
         get {
             guard response.count >= 2 else {
-                return 0x00
+                return 0
             }
             return UInt16(response[response.count - 2]) << 8 + UInt16(response[response.count - 1])
         }
