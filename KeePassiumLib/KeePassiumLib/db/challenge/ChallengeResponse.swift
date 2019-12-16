@@ -15,6 +15,8 @@ public enum ChallengeResponseError: LocalizedError {
     case notSupportedByDatabaseFormat
     /// Challenge-response is not available in AutoFill extension
     case notAvailableInAutoFill
+    /// Hardware key is not plugged in
+    case keyNotConnected
     
     /// The user explicitly pressed cancel or did not provide the key in time
     case cancelled
@@ -45,6 +47,12 @@ public enum ChallengeResponseError: LocalizedError {
                 bundle: Bundle.framework,
                 value: "Hardware keys are not available in AutoFill.",
                 comment: "Error message when trying to use challenge-response hardware in AutoFill.")
+        case .keyNotConnected:
+            return NSLocalizedString(
+                "[ChallengeResponseError] keyNotConnected",
+                bundle: Bundle.framework,
+                value: "The hardware key is not connected.",
+                comment: "Error message when the hardware key is not plugged in.")
         case .cancelled:
             return NSLocalizedString(
                 "[ChallengeResponseError] cancelled",
