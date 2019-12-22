@@ -15,11 +15,12 @@ class ChangeMasterKeyVC: UIViewController {
     @IBOutlet weak var databaseIcon: UIImageView!
     @IBOutlet weak var passwordField: ValidatingTextField!
     @IBOutlet weak var repeatPasswordField: ValidatingTextField!
-    @IBOutlet weak var keyFileField: ValidatingTextField!
+    @IBOutlet weak var keyFileField: KeyFileTextField!
     @IBOutlet weak var passwordMismatchImage: UIImageView!
     
     private var databaseRef: URLReference!
     private var keyFileRef: URLReference?
+    private var yubiKey: YubiKey?
     
     static func make(dbRef: URLReference) -> UIViewController {
         let vc = ChangeMasterKeyVC.instantiateFromStoryboard()
@@ -44,6 +45,7 @@ class ChangeMasterKeyVC: UIViewController {
         repeatPasswordField.validityDelegate = self
         keyFileField.delegate = self
         keyFileField.validityDelegate = self
+        setupHardwareKeyPicker()
         
         // make background image
         view.backgroundColor = UIColor(patternImage: UIImage(asset: .backgroundPattern))
@@ -58,6 +60,44 @@ class ChangeMasterKeyVC: UIViewController {
         passwordField.becomeFirstResponder()
     }
     
+    // MARK: - YubiKey
+    
+    private func setupHardwareKeyPicker() {
+        keyFileField.yubikeyHandler = {
+            [weak self] (field) in
+            guard let self = self else { return }
+            let popoverAnchor = PopoverAnchor(
+                sourceView: self.keyFileField,
+                sourceRect: self.keyFileField.bounds)
+            self.showYubiKeyPicker(at: popoverAnchor)
+        }
+    }
+    
+    private func showYubiKeyPicker(at popoverAnchor: PopoverAnchor) {
+        let hardwareKeyPicker = HardwareKeyPicker.create(delegate: self)
+        hardwareKeyPicker.modalPresentationStyle = .popover
+        if let popover = hardwareKeyPicker.popoverPresentationController {
+            popoverAnchor.apply(to: popover)
+            popover.delegate = hardwareKeyPicker.dismissablePopoverDelegate
+        }
+        hardwareKeyPicker.key = yubiKey
+        present(hardwareKeyPicker, animated: true, completion: nil)
+    }
+    
+    /// Handles challenge-response interaction
+    func challengeHandler(challenge: SecureByteArray, responseHandler: @escaping ResponseHandler) {
+        guard let yubiKey = yubiKey else {
+            Diag.debug("Challenge-response is not used")
+            responseHandler(SecureByteArray(), nil)
+            return
+        }
+        ChallengeResponseManager.instance.perform(
+            with: yubiKey,
+            challenge: challenge,
+            responseHandler: responseHandler
+        )
+    }
+    
     // MARK: - Actions
     
     @IBAction func didPressCancel(_ sender: Any) {
@@ -70,16 +110,12 @@ class ChangeMasterKeyVC: UIViewController {
             return
         }
         
-        let challengeHandler: ChallengeHandler = {
-            (challenge: SecureByteArray, responseHandler: ResponseHandler) in
-            assertionFailure("Not implemented") // TODO: implement this
-        }
-        
+        let _challengeHandler = (yubiKey != nil) ? challengeHandler : nil
         DatabaseManager.createCompositeKey(
             keyHelper: db.keyHelper,
             password: passwordField.text ?? "",
             keyFile: keyFileRef,
-            challengeHandler: challengeHandler,
+            challengeHandler: _challengeHandler,
             success: {
                 [weak self] (_ newCompositeKey: CompositeKey) -> Void in
                 guard let _self = self else { return }
@@ -87,7 +123,7 @@ class ChangeMasterKeyVC: UIViewController {
                 dbm.changeCompositeKey(to: newCompositeKey)
                 try? dbm.rememberDatabaseKey(onlyIfExists: true) // throws KeychainError, ignored
                 dbm.addObserver(_self)
-                dbm.startSavingDatabase(challengeHandler: challengeHandler)
+                dbm.startSavingDatabase(challengeHandler: _challengeHandler)
             },
             error: {
                 [weak self] (_ errorMessage: String) -> Void in
@@ -219,6 +255,30 @@ extension ChangeMasterKeyVC: KeyFileChooserDelegate {
             present(errorAlert, animated: true, completion: nil)
         } else {
             keyFileField.text = keyFileRef.info.fileName
+        }
+    }
+}
+
+// MARK: - HardwareKeyPickerDelegate
+extension ChangeMasterKeyVC: HardwareKeyPickerDelegate {
+    func didPressCancel(in picker: HardwareKeyPicker) {
+        // ignored
+    }
+    func didSelectKey(yubiKey: YubiKey?, in picker: HardwareKeyPicker) {
+        setYubiKey(yubiKey)
+    }
+    
+    func setYubiKey(_ yubiKey: YubiKey?) {
+        self.yubiKey = yubiKey
+        keyFileField.isYubiKeyActive = (yubiKey != nil)
+
+        DatabaseSettingsManager.shared.updateSettings(for: databaseRef) { (dbSettings) in
+            dbSettings.maybeSetAssociatedYubiKey(yubiKey)
+        }
+        if let _yubiKey = yubiKey {
+            Diag.info("Hardware key selected [key: \(_yubiKey)]")
+        } else {
+            Diag.info("No hardware key selected")
         }
     }
 }
