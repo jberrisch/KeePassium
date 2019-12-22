@@ -168,27 +168,25 @@ class MainCoordinator: NSObject, Coordinator {
         // This flag will be reset to `true` after we successfully open the database.
         Settings.current.isAutoFillFinishedOK = false
         
+        let _challengeHandler = (yubiKey != nil) ? challengeHandler : nil
         isLoadingUsingStoredDatabaseKey = false
         DatabaseManager.shared.startLoadingDatabase(
             database: database,
             password: password,
             keyFile: keyFile,
-            challengeHandler: {
-                (challenge: SecureByteArray, responseHandler: ResponseHandler) in
-                assertionFailure("Not implemented") // TODO: implement this
-            }
+            challengeHandler: _challengeHandler
         )
     }
     
-    private func tryToUnlockDatabase(database: URLReference, compositeKey: CompositeKey) {
+    private func tryToUnlockDatabase(
+        database: URLReference,
+        compositeKey: CompositeKey,
+        yubiKey: YubiKey?)
+    {
         // This flag will be reset to `true` after we successfully open the database.
         Settings.current.isAutoFillFinishedOK = false
         
-        compositeKey.challengeHandler = {
-            (challenge: SecureByteArray, responseHandler: ResponseHandler) in
-            //Check if YK is required, and show an error that extensions don't support YK
-            assertionFailure("Not implemented") // TODO: implement this
-        }
+        compositeKey.challengeHandler = (yubiKey != nil) ? challengeHandler : nil
         isLoadingUsingStoredDatabaseKey = true
         DatabaseManager.shared.startLoadingDatabase(
             database: database,
@@ -284,7 +282,11 @@ class MainCoordinator: NSObject, Coordinator {
         navigationController.pushViewController(vc, animated: animated)
         completion?()
         if let storedDatabaseKey = storedDatabaseKey {
-            tryToUnlockDatabase(database: database, compositeKey: storedDatabaseKey)
+            tryToUnlockDatabase(
+                database: database,
+                compositeKey: storedDatabaseKey,
+                yubiKey: dbSettings?.associatedYubiKey
+            )
         }
     }
     
@@ -452,8 +454,34 @@ extension MainCoordinator: DatabaseUnlockerDelegate {
             yubiKey: yubiKey)
     }
     
+    func didPressSelectHardwareKey(in databaseUnlocker: DatabaseUnlockerVC, at popoverAnchor: PopoverAnchor) {
+        let hardwareKeyPicker = HardwareKeyPicker.create(delegate: self)
+        hardwareKeyPicker.modalPresentationStyle = .popover
+        if let popover = hardwareKeyPicker.popoverPresentationController {
+            popoverAnchor.apply(to: popover)
+            popover.delegate = hardwareKeyPicker.dismissablePopoverDelegate
+        }
+        hardwareKeyPicker.key = databaseUnlocker.yubiKey
+        navigationController.present(hardwareKeyPicker, animated: true, completion: nil)
+    }
+    
     func didPressNewsItem(in databaseUnlocker: DatabaseUnlockerVC, newsItem: NewsItem) {
         newsItem.show(in: databaseUnlocker)
+    }
+}
+
+// MARK: - HardwareKeyPickerDelegate
+extension MainCoordinator: HardwareKeyPickerDelegate {
+    func didPressCancel(in picker: HardwareKeyPicker) {
+        // ignored
+    }
+    func didSelectKey(yubiKey: YubiKey?, in picker: HardwareKeyPicker) {
+        watchdog.restart()
+        if let databaseUnlockerVC = navigationController.topViewController as? DatabaseUnlockerVC {
+            databaseUnlockerVC.setYubiKey(yubiKey)
+        } else {
+            assertionFailure()
+        }
     }
 }
 
