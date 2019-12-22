@@ -104,6 +104,8 @@ public class CompositeKey: Codable {
     
     private enum CodingKeys: String, CodingKey {
         case state
+        case passwordData
+        case keyFileData
         case combinedStaticComponents = "staticComponents"
         case finalKey
     }
@@ -132,14 +134,15 @@ public class CompositeKey: Codable {
         clone.passwordData = self.passwordData?.secureClone()
         clone.keyFileData = self.keyFileData?.clone()
         clone.combinedStaticComponents = self.combinedStaticComponents?.secureClone()
+        clone.finalKey = self.finalKey?.secureClone()
         clone.state = self.state
         return clone
     }
     
     func setProcessedComponents(passwordData: SecureByteArray, keyFileData: ByteArray) {
         assert(state == .rawComponents)
-        self.passwordData = passwordData
-        self.keyFileData = keyFileData
+        self.passwordData = passwordData.secureClone()
+        self.keyFileData = keyFileData.clone()
         state = .processedComponents
         
         self.password.erase()
@@ -151,7 +154,7 @@ public class CompositeKey: Codable {
     
     func setCombinedStaticComponents(_ staticComponents: SecureByteArray) {
         assert(state <= .combinedComponents)
-        self.combinedStaticComponents = staticComponents
+        self.combinedStaticComponents = staticComponents.secureClone()
         state = .combinedComponents
         
         self.password.erase()
@@ -168,7 +171,7 @@ public class CompositeKey: Codable {
     
     func setFinalKey(_ finalKey: SecureByteArray) {
         assert(state >= .combinedComponents)
-        self.finalKey = finalKey
+        self.finalKey = finalKey.secureClone()
         state = .final
         // keep the combined components and challengeHandler, will need them for saving
     }
