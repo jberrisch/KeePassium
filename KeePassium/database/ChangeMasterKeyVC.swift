@@ -84,20 +84,6 @@ class ChangeMasterKeyVC: UIViewController {
         present(hardwareKeyPicker, animated: true, completion: nil)
     }
     
-    /// Handles challenge-response interaction
-    func challengeHandler(challenge: SecureByteArray, responseHandler: @escaping ResponseHandler) {
-        guard let yubiKey = yubiKey else {
-            Diag.debug("Challenge-response is not used")
-            responseHandler(SecureByteArray(), nil)
-            return
-        }
-        ChallengeResponseManager.instance.perform(
-            with: yubiKey,
-            challenge: challenge,
-            responseHandler: responseHandler
-        )
-    }
-    
     // MARK: - Actions
     
     @IBAction func didPressCancel(_ sender: Any) {
@@ -110,7 +96,7 @@ class ChangeMasterKeyVC: UIViewController {
             return
         }
         
-        let _challengeHandler = (yubiKey != nil) ? challengeHandler : nil
+        let _challengeHandler = ChallengeResponseManager.makeHandler(for: yubiKey)
         DatabaseManager.createCompositeKey(
             keyHelper: db.keyHelper,
             password: passwordField.text ?? "",
@@ -123,7 +109,7 @@ class ChangeMasterKeyVC: UIViewController {
                 dbm.changeCompositeKey(to: newCompositeKey)
                 try? dbm.rememberDatabaseKey(onlyIfExists: true) // throws KeychainError, ignored
                 dbm.addObserver(_self)
-                dbm.startSavingDatabase(challengeHandler: _challengeHandler)
+                dbm.startSavingDatabase()
             },
             error: {
                 [weak self] (_ errorMessage: String) -> Void in

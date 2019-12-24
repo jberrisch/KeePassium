@@ -38,6 +38,24 @@ class ChallengeResponseManager {
         nfcSessionStateObservation = nil
     }
     
+    /// Creates a default challenge handler for the given key.
+    /// If the key is `nil`, the handler is also `nil`.
+    public static func makeHandler(for yubiKey: YubiKey?) -> ChallengeHandler? {
+        guard let yubiKey = yubiKey else {
+            Diag.debug("Challenge-response is not used")
+            return nil
+        }
+        let challengeHandler: ChallengeHandler = {
+            (challenge, responseHandler) in
+            instance.perform(
+                with: yubiKey,
+                challenge: challenge,
+                responseHandler: responseHandler
+            )
+        }
+        return challengeHandler
+    }
+    
     // MARK: - Initialization
     
     private func initSessionObservers() {

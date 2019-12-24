@@ -436,20 +436,6 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
     
     // MARK: - DB unlocking
     
-    /// Handles challenge-response interaction
-    func challengeHandler(challenge: SecureByteArray, responseHandler: @escaping ResponseHandler) {
-        guard let yubiKey = yubiKey else {
-            Diag.debug("Challenge-response is not used")
-            responseHandler(SecureByteArray(), nil)
-            return
-        }
-        ChallengeResponseManager.instance.perform(
-            with: yubiKey,
-            challenge: challenge,
-            responseHandler: responseHandler
-        )
-    }
-    
     func canAutoUnlock() -> Bool {
         guard isAutoUnlockEnabled else { return false }
         guard let splitVC = splitViewController, splitVC.isCollapsed else { return false }
@@ -469,7 +455,7 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
         hideWatchdogTimeoutMessage(animated: true)
         DatabaseManager.shared.addObserver(self)
         
-        let _challengeHandler = (yubiKey != nil) ? challengeHandler : nil
+        let _challengeHandler = ChallengeResponseManager.makeHandler(for: yubiKey)
         let dbSettings = DatabaseSettingsManager.shared.getSettings(for: databaseRef)
         if let databaseKey = dbSettings?.masterKey {
             // try to unlock automatically
