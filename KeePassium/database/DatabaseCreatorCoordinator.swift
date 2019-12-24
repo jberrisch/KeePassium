@@ -177,10 +177,7 @@ class DatabaseCreatorCoordinator: NSObject {
     /// Step 3: Save temporary database
     private func startSavingDatabase() {
         DatabaseManager.shared.addObserver(self)
-        DatabaseManager.shared.startSavingDatabase(challengeHandler: {
-            (challenge: SecureByteArray, responseHandler: ResponseHandler) -> Void in
-            assertionFailure("Not implemented") // TODO: implement this
-        })
+        DatabaseManager.shared.startSavingDatabase()
     }
     
     /// Step 4: Show picker to move temporary database to its final location

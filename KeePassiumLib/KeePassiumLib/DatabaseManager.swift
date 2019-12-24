@@ -199,22 +199,21 @@ public class DatabaseManager {
     
     /// Save previously opened database to its original path.
     /// Asynchronous call, returns immediately.
-    public func startSavingDatabase(challengeHandler: ChallengeHandler?) {
+    public func startSavingDatabase() {
         guard let databaseDocument = databaseDocument, let dbRef = databaseRef else {
             Diag.warning("Tried to save database before opening one.")
             assertionFailure("Tried to save database before opening one.")
             return
         }
         serialDispatchQueue.async {
-            self._saveDatabase(databaseDocument, dbRef: dbRef, challengeHandler: challengeHandler)
+            self._saveDatabase(databaseDocument, dbRef: dbRef)
             Diag.info("Async database saving finished")
         }
     }
     
     private func _saveDatabase(
         _ dbDoc: DatabaseDocument,
-        dbRef: URLReference,
-        challengeHandler: ChallengeHandler?)
+        dbRef: URLReference)
     {
         precondition(database != nil, "No database to save")
         Diag.info("Saving database")
@@ -228,7 +227,6 @@ public class DatabaseManager {
         databaseSaver = DatabaseSaver(
             databaseDocument: dbDoc,
             databaseRef: dbRef,
-            challengeHandler: challengeHandler,
             progress: progress,
             completion: databaseSaverFinished)
         databaseSaver!.save()
@@ -928,7 +926,6 @@ fileprivate class DatabaseSaver {
     
     private let dbDoc: DatabaseDocument
     private let dbRef: URLReference
-    private let challengeHandler: ChallengeHandler?
     private let progress: ProgressEx
     private var progressKVO: NSKeyValueObservation?
     private unowned var notifier: DatabaseManager
@@ -939,14 +936,12 @@ fileprivate class DatabaseSaver {
     init(
         databaseDocument dbDoc: DatabaseDocument,
         databaseRef dbRef: URLReference,
-        challengeHandler: ChallengeHandler?,
         progress: ProgressEx,
         completion: @escaping(CompletionHandler))
     {
         assert(dbDoc.documentState.contains(.normal))
         self.dbDoc = dbDoc
         self.dbRef = dbRef
-        self.challengeHandler = challengeHandler
         self.progress = progress
         notifier = DatabaseManager.shared
         self.completion = completion
@@ -1001,7 +996,6 @@ fileprivate class DatabaseSaver {
     
     func save() {
         guard let database = dbDoc.database else { fatalError("Database is nil") }
-        database.compositeKey.challengeHandler = self.challengeHandler
         
         startBackgroundTask()
         startObservingProgress()

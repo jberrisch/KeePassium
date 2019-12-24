@@ -372,10 +372,7 @@ class ViewEntryFilesVC: UITableViewController, Refreshable {
         guard let entry = entry else { return }
         entry.modified()
         DatabaseManager.shared.addObserver(self)
-        DatabaseManager.shared.startSavingDatabase(challengeHandler: {
-            (challenge: SecureByteArray, responseHandler: ResponseHandler) -> Void in
-            assertionFailure("Not implemented") // TODO: implement this
-        })
+        DatabaseManager.shared.startSavingDatabase()
     }
 }
 
