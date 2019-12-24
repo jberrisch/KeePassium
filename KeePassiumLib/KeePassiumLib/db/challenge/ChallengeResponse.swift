@@ -17,6 +17,8 @@ public enum ChallengeResponseError: LocalizedError {
     case notAvailableInAutoFill
     /// Hardware key is not plugged in
     case keyNotConnected
+    /// Hardware key is not configured for HMAC-SHA1 challenge-response
+    case keyNotConfigured
     
     /// The user explicitly pressed cancel or did not provide the key in time
     case cancelled
@@ -51,8 +53,14 @@ public enum ChallengeResponseError: LocalizedError {
             return NSLocalizedString(
                 "[ChallengeResponseError] keyNotConnected",
                 bundle: Bundle.framework,
-                value: "The hardware key is not connected.",
+                value: "Hardware key is not connected.",
                 comment: "Error message when the hardware key is not plugged in.")
+        case .keyNotConfigured:
+            return NSLocalizedString(
+                "[ChallengeResponseError] slotNotConfigured",
+                bundle: Bundle.framework,
+                value: "Hardware key is not configured for challenge-response.",
+                comment: "Error message: the hardware key (or its slot) was not configured for challenge-response operations.")
         case .cancelled:
             return NSLocalizedString(
                 "[ChallengeResponseError] cancelled",

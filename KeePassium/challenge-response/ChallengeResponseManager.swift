@@ -333,9 +333,9 @@ class ChallengeResponseManager {
             let statusCode = responseParser.statusCode
             if statusCode == YUBIKEY_SUCCESS {
                 guard let responseData = responseParser.responseData else {
-                    let message = "YubiKey response is empty"
+                    let message = "YubiKey response is empty. Slot not configured?"
                     Diag.error(message)
-                    self.returnError(.communicationError(message: message))
+                    self.returnError(.keyNotConfigured)
                     return
                 }
                 let responseHexString = ByteArray(data: responseData).asHexString
