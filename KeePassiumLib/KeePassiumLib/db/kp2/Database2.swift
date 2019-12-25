@@ -640,14 +640,12 @@ public class Database2: Database {
             preconditionFailure("Unexpected key state")
         }
         
-        let challenge = try header.kdf.getChallenge(header.kdfParams) // throws CryptoError.invalidKDFParam
-        let secureChallenge = SecureByteArray(challenge)
-        
         let secureMasterSeed = SecureByteArray(header.masterSeed)
         let joinedKey: SecureByteArray
         switch header.formatVersion {
         case .v3:
-            // In v3, the response is added after transforming the static components
+            // In v3, the response is added after transforming the static components.
+            // The challenge is the master seed.
             
             // 1. hash static components
             let keyToTransform = keyHelper.getKey(fromCombinedComponents: combinedComponents)
@@ -659,12 +657,16 @@ public class Database2: Database {
                 // throws CryptoError, ProgressInterruption
             
             // 3. insert the response to the mix
-            let challengeResponse = try compositeKey.getResponse(challenge: secureChallenge) // waits until ready
+            let challengeResponse = try compositeKey.getResponse(challenge: secureMasterSeed) // waits until ready
                 // throws `ChallengeResponseError`, `ProgressInterruption`
             joinedKey = SecureByteArray.concat(secureMasterSeed, challengeResponse, transformedKey)
         case .v4:
-            // In v4, the response is added before key transformation
+            // In v4, the response is added before key transformation.
+            // The challenge is the transform seed.
             
+            let challenge = try header.kdf.getChallenge(header.kdfParams) // throws CryptoError.invalidKDFParam
+            let secureChallenge = SecureByteArray(challenge)
+
             // 1. append the response to the static components
             let challengeResponse = try compositeKey.getResponse(challenge: secureChallenge) // waits until ready
                 // throws `ChallengeResponseError`, `ProgressInterruption`
