@@ -19,6 +19,8 @@ class KeyFileChooserVC: UITableViewController, Refreshable {
         static let keyFile = "KeyFileCell"
     }
 
+    @IBOutlet weak var addKeyFileBarButton: UIBarButtonItem!
+    
     weak var delegate: KeyFileChooserDelegate?
 
     var keyFileRefs = [URLReference]()
@@ -133,8 +135,8 @@ class KeyFileChooserVC: UITableViewController, Refreshable {
         delegate?.didSelectFile(in: self, urlRef: keyFileRefs[selectedFileIndex])
     }
     
-    @IBAction func didPressAddKeyFile(_ sender: UIBarButtonItem) {
-        let popoverAnchor = PopoverAnchor(barButtonItem: sender)
+    @IBAction func didPressAddKeyFile(_ sender: Any) {
+        let popoverAnchor = PopoverAnchor(barButtonItem: addKeyFileBarButton)
         delegate?.didPressAddKeyFile(in: self, popoverAnchor: popoverAnchor)
     }
     

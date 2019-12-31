@@ -4,6 +4,9 @@
 /* Class = "UILabel"; text = "Use only password"; ObjectID = "Ftb-fa-Dvb"; Note = "Explanation of the default option in key file picker: don't use key files."; */
 "Ftb-fa-Dvb.text" = "Nur Passwort verwenden";
 
+/* Class = "UIButton"; normalTitle = "Add Key File"; ObjectID = "8aU-C3-c3r"; */
+"8aU-C3-c3r.normalTitle" = "Schlüsseldatei hinzufügen";
+
 /* Class = "UILabel"; text = "No Key File"; ObjectID = "tGm-oo-awN"; Note = "Title of the default option in key file picker: don't use key files."; */
 "tGm-oo-awN.text" = "Keine Schlüsseldatei";
 
