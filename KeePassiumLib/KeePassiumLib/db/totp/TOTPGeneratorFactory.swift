@@ -73,8 +73,7 @@ fileprivate class GAuthFormat: SingleFieldFormat {
     
     static let defaultTimeStep = 30
     static let defaultLength = 6
-    static let defaultAlgorithm = "SHA1"
-    
+    static let defaultAlgorithm = TOTPHashAlgorithm.sha1
     
     /// Returns true iff given URI components match this format.
     static func isMatching(scheme: String?, host: String?) -> Bool {
@@ -110,18 +109,20 @@ fileprivate class GAuthFormat: SingleFieldFormat {
             return nil
         }
         
-        // algorithm must be either SHA1 or missing
-        if let algorithm = params[algorithmParam],
-            algorithm.caseInsensitiveCompare(defaultAlgorithm) != .orderedSame
-        {
-            Diag.warning("OTP algorithm is not supported [algorithm: \(algorithm)]")
-            return nil
-        }
-        
         // timeStep must be either a valid int or missing
         guard let timeStep = Int(params[timeStepParam] ?? "\(defaultTimeStep)") else {
             Diag.warning("OTP parameter cannot be parsed [parameter: \(timeStepParam)]")
             return nil
+        }
+        
+        // algorithm, if defined, must be a supported one
+        var algorithm: TOTPHashAlgorithm?
+        if let algorithmString = params[algorithmParam] {
+            guard let _algorithm = TOTPHashAlgorithm.fromString(algorithmString) else {
+                Diag.warning("OTP algorithm is not supported [algorithm: \(algorithmString)]")
+                return nil
+            }
+            algorithm = _algorithm
         }
         
         // length must be either a valid int or missing
@@ -133,7 +134,8 @@ fileprivate class GAuthFormat: SingleFieldFormat {
         return TOTPGeneratorRFC6238(
             seed: ByteArray(data: seedData),
             timeStep: timeStep,
-            length: length)
+            length: length,
+            hashAlgorithm: algorithm ?? defaultAlgorithm)
     }
 }
 
@@ -148,7 +150,7 @@ fileprivate class KeeOtpFormat: SingleFieldFormat {
     
     static let defaultTimeStep = 30
     static let defaultLength = 6
-    static let defaultAlgorithm = "sha1"
+    static let defaultAlgorithm = TOTPHashAlgorithm.sha1
     static let supportedType = "totp"
     
     /// Returns true iff given URI components match this format.
@@ -188,12 +190,14 @@ fileprivate class KeeOtpFormat: SingleFieldFormat {
             return nil
         }
         
-        // algorithm must be either SHA1 or missing
-        if let algorithm = params[algorithmParam],
-            algorithm.caseInsensitiveCompare(defaultAlgorithm) != .orderedSame
-        {
-            Diag.warning("OTP algorithm is not supported [algorithm: \(algorithm)]")
-            return nil
+        // algorithm, if defined, must be a supported one
+        var algorithm: TOTPHashAlgorithm?
+        if let algorithmString = params[algorithmParam] {
+            guard let _algorithm = TOTPHashAlgorithm.fromString(algorithmString) else {
+                Diag.warning("OTP algorithm is not supported [algorithm: \(algorithmString)]")
+                return nil
+            }
+            algorithm = _algorithm
         }
         
         // timeStep must be either a valid int or missing
@@ -211,7 +215,8 @@ fileprivate class KeeOtpFormat: SingleFieldFormat {
         return TOTPGeneratorRFC6238(
             seed: ByteArray(data: seedData),
             timeStep: timeStep,
-            length: length)
+            length: length,
+            hashAlgorithm: algorithm ?? defaultAlgorithm)
     }
 }
 
@@ -248,7 +253,12 @@ fileprivate class SplitFieldFormat {
         }
         
         if let length = Int(settings[1]) {
-            return TOTPGeneratorRFC6238(seed: seed, timeStep: timeStep, length: length)
+            return TOTPGeneratorRFC6238(
+                seed: seed,
+                timeStep: timeStep,
+                length: length,
+                hashAlgorithm: .sha1
+            )
         } else if settings[1] == TOTPGeneratorSteam.typeSymbol {
             return TOTPGeneratorSteam(seed: seed, timeStep: timeStep)
         } else {
