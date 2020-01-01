@@ -214,6 +214,7 @@ class ChallengeResponseManager {
         }
         currentKey = yubiKey
         let nfcSession = YubiKitManager.shared.nfcSession as! YKFNFCSession
+        Watchdog.shared.ignoreMinimizationOnce()
         nfcSession.startIso7816Session()
     }
     
