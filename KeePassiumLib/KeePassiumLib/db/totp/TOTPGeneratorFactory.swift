@@ -70,6 +70,7 @@ fileprivate class GAuthFormat: SingleFieldFormat {
     static let timeStepParam = "period"
     static let lengthParam = "digits"
     static let algorithmParam = "algorithm"
+    static let issuerParam = "issuer"
     
     static let defaultTimeStep = 30
     static let defaultLength = 6
@@ -113,6 +114,11 @@ fileprivate class GAuthFormat: SingleFieldFormat {
         guard let timeStep = Int(params[timeStepParam] ?? "\(defaultTimeStep)") else {
             Diag.warning("OTP parameter cannot be parsed [parameter: \(timeStepParam)]")
             return nil
+        }
+        
+        let isSteam = uriComponents.path.starts(with: "/Steam:") || (params[issuerParam] == "Steam")
+        if isSteam {
+            return TOTPGeneratorSteam(seed: ByteArray(data: seedData), timeStep: timeStep)
         }
         
         // algorithm, if defined, must be a supported one
