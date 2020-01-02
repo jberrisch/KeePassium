@@ -474,6 +474,7 @@ extension MainCoordinator: DatabaseManagerObserver {
             dbSettings.clearMasterKey()
         }
         Settings.current.isAutoFillFinishedOK = true
+        databaseUnlockerVC.clearPasswordField()
         databaseUnlockerVC.hideProgressOverlay()
     }
     
@@ -481,6 +482,7 @@ extension MainCoordinator: DatabaseManagerObserver {
         guard let databaseUnlockerVC = navigationController.topViewController
             as? DatabaseUnlockerVC else { return }
         Settings.current.isAutoFillFinishedOK = true
+        // Keep the entered password intact
         databaseUnlockerVC.hideProgressOverlay()
         databaseUnlockerVC.showMasterKeyInvalid(message: message)
     }
@@ -489,6 +491,7 @@ extension MainCoordinator: DatabaseManagerObserver {
         guard let databaseUnlockerVC = navigationController.topViewController
             as? DatabaseUnlockerVC else { return }
         Settings.current.isAutoFillFinishedOK = true
+        // Keep the entered password intact
         databaseUnlockerVC.hideProgressOverlay()
         
         if urlRef.info.hasPermissionError257 {
@@ -517,6 +520,11 @@ extension MainCoordinator: DatabaseManagerObserver {
             }
         }
         guard let database = DatabaseManager.shared.database else { fatalError() }
+
+        // Clear password field, just in case
+        guard let databaseUnlockerVC = navigationController.topViewController
+            as? DatabaseUnlockerVC else { return }
+        databaseUnlockerVC.clearPasswordField()
 
         Settings.current.isAutoFillFinishedOK = true
         showDatabaseContent(database: database, databaseRef: urlRef)

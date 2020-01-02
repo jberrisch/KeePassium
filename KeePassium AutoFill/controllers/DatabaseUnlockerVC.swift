@@ -66,6 +66,10 @@ class DatabaseUnlockerVC: UIViewController, Refreshable {
         }
     }
     
+    public func clearPasswordField() {
+        passwordField.text = ""
+    }
+    
     func showErrorMessage(
         _ text: String,
         reason: String?=nil,
@@ -260,7 +264,6 @@ class DatabaseUnlockerVC: UIViewController, Refreshable {
             database: databaseRef,
             password: passwordField.text ?? "",
             keyFile: keyFileRef)
-        passwordField.text = "" 
     }
     
     @IBAction func didPressAnouncementButton(_ sender: Any) {

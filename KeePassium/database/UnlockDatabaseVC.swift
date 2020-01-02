@@ -197,6 +197,10 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
         }
     }
     
+    private func clearPasswordField() {
+        passwordField.text = ""
+    }
+    
     // MARK: - In-app news announcements
     
     private var newsItem: NewsItem?
@@ -515,7 +519,6 @@ extension UnlockDatabaseVC: UITextFieldDelegate {
 // MARK: - DatabaseManagerDelegate extension
 extension UnlockDatabaseVC: DatabaseManagerObserver {
     func databaseManager(willLoadDatabase urlRef: URLReference) {
-        self.passwordField.text = "" // hide password length while decrypting
         showProgressOverlay(animated: true)
     }
     
@@ -526,6 +529,7 @@ extension UnlockDatabaseVC: DatabaseManagerObserver {
         }
         
         refresh()
+        clearPasswordField()
         hideProgressOverlay(quickly: true)
         // cancelled by the user, no errors to show
         maybeFocusOnPassword()
@@ -541,6 +545,7 @@ extension UnlockDatabaseVC: DatabaseManagerObserver {
             dbSettings.clearMasterKey()
         }
         refresh()
+        // Keep the entered password intact
         hideProgressOverlay(quickly: true)
         
         showErrorMessage(message, haptics: .wrongPassword)
@@ -560,6 +565,7 @@ extension UnlockDatabaseVC: DatabaseManagerObserver {
                 Diag.error("Failed to remember database key [message: \(error.localizedDescription)]")
             }
         }
+        clearPasswordField()
         hideProgressOverlay(quickly: false)
         showDatabaseRoot(loadingWarnings: warnings)
     }
@@ -567,6 +573,7 @@ extension UnlockDatabaseVC: DatabaseManagerObserver {
     func databaseManager(database urlRef: URLReference, loadingError message: String, reason: String?) {
         DatabaseManager.shared.removeObserver(self)
         refresh()
+        // Keep the entered password intact
         hideProgressOverlay(quickly: true)
         
         isAutoUnlockEnabled = false
