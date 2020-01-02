@@ -92,26 +92,26 @@ public class URLReference: Equatable, Codable {
     lazy private(set) var hash: ByteArray = CryptoManager.sha256(of: ByteArray(data: data))
     /// Location type of the original URL
     public let location: Location
+    /// Cached original URL (nil if needs resolving)
+    private var url: URL?
     
     private enum CodingKeys: String, CodingKey {
         case data = "data"
         case location = "location"
+        case url = "url"
     }
     
     public init(from url: URL, location: Location) throws {
-        let resourceKeys = Set<URLResourceKey>(
-            [.canonicalPathKey, .nameKey, .fileSizeKey,
-            .creationDateKey, .contentModificationDateKey]
-        )
         let isAccessed = url.startAccessingSecurityScopedResource()
         defer {
             if isAccessed {
                 url.stopAccessingSecurityScopedResource()
             }
         }
+        self.url = url
         data = try url.bookmarkData(
-            options: [], //.minimalBookmark,
-            includingResourceValuesForKeys: resourceKeys,
+            options: [.minimalBookmark],
+            includingResourceValuesForKeys: nil,
             relativeTo: nil) // throws an internal system error
         self.location = location
     }
@@ -139,13 +139,19 @@ public class URLReference: Equatable, Codable {
     }
     
     public func resolve() throws -> URL {
+        if let url = url, FileManager.default.fileExists(atPath: url.path) {
+            // skip resolving, use the cached URL
+            return url
+        }
+        
         var isStale = false
-        let url = try URL(
+        let resolvedUrl = try URL(
             resolvingBookmarkData: data,
             options: [URL.BookmarkResolutionOptions.withoutUI],
             relativeTo: nil,
             bookmarkDataIsStale: &isStale)
-        return url
+        self.url = resolvedUrl
+        return resolvedUrl
     }
     
     /// Identifies this reference among others.
