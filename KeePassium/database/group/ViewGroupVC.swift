@@ -528,6 +528,14 @@ open class ViewGroupVC: UITableViewController, Refreshable {
         }
         deleteAction.backgroundColor = UIColor.destructiveTint
      
+        let menuAction = UITableViewRowAction(style: .default, title: "...")
+        {
+            [unowned self] (_,_) in
+            self.setEditing(false, animated: true)
+            self.showActionsForItem(at: indexPath)
+        }
+        menuAction.backgroundColor = UIColor.lightGray
+        
         // items in RecycleBin can be deleted (permanently), but cannot be edited
         var allowedActions = [deleteAction]
         if let entry = getEntry(at: indexPath) {
@@ -535,6 +543,7 @@ open class ViewGroupVC: UITableViewController, Refreshable {
         } else if let group = getGroup(at: indexPath) {
             if !group.isDeleted { allowedActions.append(editAction) }
         }
+        allowedActions.append(menuAction)
         return allowedActions
     }
     
@@ -561,6 +570,65 @@ open class ViewGroupVC: UITableViewController, Refreshable {
 
     // MARK: - Action handlers
 
+    func showActionsForItem(at indexPath: IndexPath) {
+        let actions = getActionsForItem(at: indexPath)
+        guard !actions.isEmpty else { return }
+        
+        let menu = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        actions.forEach {
+            menu.addAction($0)
+        }
+        let pa = PopoverAnchor(tableView: tableView, at: indexPath)
+        if let popover = menu.popoverPresentationController {
+            pa.apply(to: popover)
+        }
+        present(menu, animated: true)
+    }
+    
+    func getActionsForItem(at indexPath: IndexPath) -> [UIAlertAction] {
+        let editAction = UIAlertAction(
+            title: LString.actionEdit,
+            style: .default,
+            handler: { [weak self] alertAction in
+                self?.onEditItemAction(at: indexPath)
+            }
+        )
+        let deleteAction = UIAlertAction(
+            title: LString.actionDelete,
+            style: .destructive,
+            handler: { [weak self] alertAction in
+                self?.onDeleteItemAction(at: indexPath)
+            }
+        )
+        let moveAction = UIAlertAction(
+            title: LString.actionMove,
+            style: .default,
+            handler: { [weak self] alertAction in
+                self?.onMoveItemAction(at: indexPath)
+            }
+        )
+        let cancelAction = UIAlertAction(title: LString.actionCancel, style: .cancel, handler: nil)
+        
+        var actions = [UIAlertAction]()
+        if let entry = getEntry(at: indexPath) {
+            if !entry.isDeleted {
+                actions.append(editAction)
+            }
+            actions.append(moveAction)
+            actions.append(deleteAction)
+            actions.append(cancelAction)
+        }
+        if let group = getGroup(at: indexPath) {
+            if !group.isDeleted {
+                actions.append(editAction)
+            }
+            actions.append(moveAction)
+            actions.append(deleteAction)
+            actions.append(cancelAction)
+        }
+        return actions
+    }
+    
     @objc func onCreateNewItemAction(sender: UIBarButtonItem) {
         let addItemSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         let createGroupAction = UIAlertAction(title: LString.actionCreateGroup, style: .default)
@@ -678,6 +746,32 @@ open class ViewGroupVC: UITableViewController, Refreshable {
         }
     }
     
+
+    /// The user wants to move something at `indexPath`
+    func onMoveItemAction(at indexPath: IndexPath) {
+        guard let cell = tableView.cellForRow(at: indexPath) else { return }
+    
+        if let selectedGroup = getGroup(at: indexPath) {
+            let groupPicker = GroupPickerVC.instantiateFromStoryboard()
+            guard let root = self.group?.database?.root else { return }
+            groupPicker.rootGroup = root
+            groupPicker.selectedGroup = selectedGroup
+
+            groupPicker.modalPresentationStyle = .popover
+            let pa = PopoverAnchor(tableView: tableView, at: indexPath)
+            pa.apply(to: groupPicker.popoverPresentationController)
+            present(groupPicker, animated: true, completion: nil)
+
+            return
+        }
+       
+        if let selectedEntry = getEntry(at: indexPath) {
+            //TODO: implement this
+            assertionFailure("Not implemented")
+            return
+        }
+    }
+
     @IBAction func didPressItemListSettings(_ sender: Any) {
         let itemListSettingsVC = SettingsItemListVC.make(
             barPopoverSource: sender as? UIBarButtonItem)
@@ -731,7 +825,7 @@ open class ViewGroupVC: UITableViewController, Refreshable {
             let indexPath = tableView.indexPathForRow(at: point),
             tableView(tableView, canEditRowAt: indexPath),
             let cell = tableView.cellForRow(at: indexPath) else { return }
-        cell.demoShowEditActions(lastActionColor: UIColor.destructiveTint)
+        showActionsForItem(at: indexPath)
     }
     
     // MARK: - Database saving
@@ -870,5 +964,13 @@ extension ViewGroupVC: UISearchResultsUpdating {
 extension ViewGroupVC: UISearchControllerDelegate {
     public func didDismissSearchController(_ searchController: UISearchController) {
         refresh()
+    }
+}
+
+// MARK: - GroupPickerDelegate
+extension ViewGroupVC: GroupPickerDelegate {
+    func didSelectGroup(_ group: Group?, in groupPicker: GroupPickerVC) {
+        //todo
+        groupPicker.dismiss(animated: true, completion: nil)
     }
 }

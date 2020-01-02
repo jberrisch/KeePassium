@@ -52,6 +52,11 @@ public enum LString {
         value: "Rename",
         comment: "Action/button to rename an item"
     )
+    public static let actionMove = NSLocalizedString(
+        "[Generic] Move",
+        value: "Move",
+        comment: "Action/button to move an item (to another group/folder/etc)"
+    )
     public static let actionDone = NSLocalizedString(
         "[Generic] Done",
         value: "Done",

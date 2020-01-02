@@ -345,6 +345,10 @@
 		75D1674A21464333005E33C3 /* AboutVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75D1674921464333005E33C3 /* AboutVC.swift */; };
 		75D3A3AF21BAE53F00255FC3 /* DatabaseFileListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75D3A3AE21BAE53F00255FC3 /* DatabaseFileListCell.swift */; };
 		75D3A3B121BAE66F00255FC3 /* DatabaseFileListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75D3A3AE21BAE53F00255FC3 /* DatabaseFileListCell.swift */; };
+		75D3AEB523BDD582003028FB /* GroupPickerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75D3AEB423BDD582003028FB /* GroupPickerVC.swift */; };
+		75D3AEB623BDD582003028FB /* GroupPickerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75D3AEB423BDD582003028FB /* GroupPickerVC.swift */; };
+		75D3AEB823BDD59B003028FB /* GroupPickerVC.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 75D3AEB723BDD59B003028FB /* GroupPickerVC.storyboard */; };
+		75D3AEB923BDD59B003028FB /* GroupPickerVC.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 75D3AEB723BDD59B003028FB /* GroupPickerVC.storyboard */; };
 		75D5D4012235CD720003CD55 /* CrashReportVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75D5D4002235CD720003CD55 /* CrashReportVC.swift */; };
 		75D7DF7C233E5E310029AD87 /* SKProduct+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 753F924D2290705D005E496F /* SKProduct+extension.swift */; };
 		75D7DF7D233E5E310029AD87 /* FileInfoVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7529310C21ADA46C00E4B0D2 /* FileInfoVC.swift */; };
@@ -836,6 +840,8 @@
 		75CFBE2921C2BDDF0029A80A /* DatabaseUnlockerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseUnlockerVC.swift; sourceTree = "<group>"; };
 		75D1674921464333005E33C3 /* AboutVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutVC.swift; sourceTree = "<group>"; };
 		75D3A3AE21BAE53F00255FC3 /* DatabaseFileListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseFileListCell.swift; sourceTree = "<group>"; };
+		75D3AEB423BDD582003028FB /* GroupPickerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupPickerVC.swift; sourceTree = "<group>"; };
+		75D3AEB723BDD59B003028FB /* GroupPickerVC.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = GroupPickerVC.storyboard; sourceTree = "<group>"; };
 		75D5D4002235CD720003CD55 /* CrashReportVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrashReportVC.swift; sourceTree = "<group>"; };
 		75D7DFBE233E5E310029AD87 /* KeePassiumPro AutoFill.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "KeePassiumPro AutoFill.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		75D7DFC0233E5E630029AD87 /* KeePassiumLibPrepaid.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = KeePassiumLibPrepaid.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1272,6 +1278,8 @@
 				750D127D20CF071600BE0CCE /* EditGroupVC.swift */,
 				751E0D002309AF150088BB10 /* EditGroupVC.storyboard */,
 				75DC043220E9E0C9007E63EC /* GroupChangeObserver+Notifier.swift */,
+				75D3AEB723BDD59B003028FB /* GroupPickerVC.storyboard */,
+				75D3AEB423BDD582003028FB /* GroupPickerVC.swift */,
 			);
 			path = group;
 			sourceTree = "<group>";
@@ -1592,6 +1600,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				75D3AEB823BDD59B003028FB /* GroupPickerVC.storyboard in Resources */,
 				751E0D102309AF4C0088BB10 /* ViewEntryHistoryVC.storyboard in Resources */,
 				751E0D132309AF540088BB10 /* ChooseDatabaseVC.storyboard in Resources */,
 				755B862E23054FA200E9FC83 /* AboutVC.storyboard in Resources */,
@@ -1640,6 +1649,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				75D3AEB923BDD59B003028FB /* GroupPickerVC.storyboard in Resources */,
 				75B38C51233E5B7C006BDEFC /* ViewEntryHistoryVC.storyboard in Resources */,
 				75B38C52233E5B7C006BDEFC /* ChooseDatabaseVC.storyboard in Resources */,
 				75B38C53233E5B7C006BDEFC /* AboutVC.storyboard in Resources */,
@@ -1818,6 +1828,7 @@
 				751BE253211C395D0071050A /* ViewDiagnosticsVC.swift in Sources */,
 				75E4CA5D232C455D00EB6805 /* UserNameHelper.swift in Sources */,
 				7561850320E033DB00EEFAEE /* WatchdogAwareTextView.swift in Sources */,
+				75D3AEB523BDD582003028FB /* GroupPickerVC.swift in Sources */,
 				7546FBC620C1027700C5D834 /* SettingsVC.swift in Sources */,
 				757EF2F520EB3D1C0024AACD /* PasswordGeneratorVC.swift in Sources */,
 				75C94C5720B373BA004FA29D /* ViewGroupVC.swift in Sources */,
@@ -1919,6 +1930,7 @@
 				75B38BF9233E5B7C006BDEFC /* ViewDiagnosticsVC.swift in Sources */,
 				75B38BFA233E5B7C006BDEFC /* UserNameHelper.swift in Sources */,
 				75B38BFB233E5B7C006BDEFC /* WatchdogAwareTextView.swift in Sources */,
+				75D3AEB623BDD582003028FB /* GroupPickerVC.swift in Sources */,
 				75B38BFC233E5B7C006BDEFC /* SettingsVC.swift in Sources */,
 				75B38BFD233E5B7C006BDEFC /* PasswordGeneratorVC.swift in Sources */,
 				75B38BFE233E5B7C006BDEFC /* ViewGroupVC.swift in Sources */,
