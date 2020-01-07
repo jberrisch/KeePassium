@@ -63,7 +63,7 @@ public class EntryField: Eraseable {
     }
 }
 
-public class Entry: Eraseable {
+public class Entry: DatabaseItem, Eraseable {
     public static let defaultIconID = IconID.key
     
     public weak var database: Database?
@@ -130,6 +130,8 @@ public class Entry: Eraseable {
         lastModificationTime = now
         lastAccessTime = now
         expiryTime = now
+        
+        super.init()
         
         canExpire = false
         populateStandardFields()

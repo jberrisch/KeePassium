@@ -8,7 +8,7 @@
 
 import Foundation
 
-public class Group: Eraseable {
+public class Group: DatabaseItem, Eraseable {
     public static let defaultIconID = IconID.folder
     public static let defaultOpenIconID = IconID.folderOpen
     
