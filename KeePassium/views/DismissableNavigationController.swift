@@ -9,6 +9,10 @@
 import UIKit
 
 class DismissableNavigationController: UINavigationController {
+    typealias DismissHandler = () -> Void
+    
+    /// Called after the controller is dismissed
+    public var dismissHandler: DismissHandler?
     
     /// By default, the controller is created with a "Done" button on the right.
     /// Alternatively, it can be a left "Cancel" button, or both —
@@ -45,6 +49,8 @@ class DismissableNavigationController: UINavigationController {
     }
     
     @objc func didPressButton() {
-        self.dismiss(animated: true, completion: nil)
+        self.dismiss(animated: true) { // strong self
+            self.dismissHandler?()
+        }
     }
 }
