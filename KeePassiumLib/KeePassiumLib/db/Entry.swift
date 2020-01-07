@@ -67,7 +67,6 @@ public class Entry: DatabaseItem, Eraseable {
     public static let defaultIconID = IconID.key
     
     public weak var database: Database?
-    public weak var parent: Group?
     public var uuid: UUID
     public var iconID: IconID
 
@@ -117,7 +116,6 @@ public class Entry: DatabaseItem, Eraseable {
     
     init(database: Database?) {
         self.database = database
-        parent = nil
         attachments = []
         fields = []
 

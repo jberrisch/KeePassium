@@ -8,6 +8,18 @@
 
 
 /// A common parent for groups and entries
-public class DatabaseItem {
+open class DatabaseItem {
+    public weak var parent: Group?
     
+    /// True iff this item is a parent (at any level) of the given `item`.
+    public func isAncestor(of item: DatabaseItem) -> Bool {
+        var parent = item.parent
+        while parent != nil {
+            if self === parent {
+                return true
+            }
+            parent = parent?.parent
+        }
+        return false
+    }
 }

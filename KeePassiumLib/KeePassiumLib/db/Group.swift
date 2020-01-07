@@ -14,7 +14,6 @@ public class Group: DatabaseItem, Eraseable {
     
     // "up" refs are weak, refs to children are strong
     public weak var database: Database?
-    public weak var parent: Group?
     public var uuid: UUID
     public var iconID: IconID
     public var name: String
@@ -44,7 +43,6 @@ public class Group: DatabaseItem, Eraseable {
 
     init(database: Database?) {
         self.database = database
-        parent = nil
         
         uuid = UUID.ZERO
         iconID = Group.defaultIconID
@@ -61,6 +59,8 @@ public class Group: DatabaseItem, Eraseable {
         lastModificationTime = now
         lastAccessTime = now
         expiryTime = now
+        
+        super.init()
     }
     deinit {
         erase()
