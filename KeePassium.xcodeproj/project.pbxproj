@@ -182,6 +182,12 @@
 		75A26778228F4E820097C693 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 75A26777228F4E820097C693 /* StoreKit.framework */; };
 		75A2677D22904E0D0097C693 /* PremiumFeature+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75A2677C22904E0D0097C693 /* PremiumFeature+extension.swift */; };
 		75A2677E22904E0D0097C693 /* PremiumFeature+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75A2677C22904E0D0097C693 /* PremiumFeature+extension.swift */; };
+		75A5312023C0D2D300900ED1 /* Coordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75CBAB9C21C166D600B8AFE2 /* Coordinator.swift */; };
+		75A5312123C0D2D400900ED1 /* Coordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75CBAB9C21C166D600B8AFE2 /* Coordinator.swift */; };
+		75A5312323C0D35500900ED1 /* NavigationRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75A5312223C0D35500900ED1 /* NavigationRouter.swift */; };
+		75A5312423C0D35500900ED1 /* NavigationRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75A5312223C0D35500900ED1 /* NavigationRouter.swift */; };
+		75A5312523C0D35500900ED1 /* NavigationRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75A5312223C0D35500900ED1 /* NavigationRouter.swift */; };
+		75A5312623C0D35500900ED1 /* NavigationRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75A5312223C0D35500900ED1 /* NavigationRouter.swift */; };
 		75B24DB821C3C594003C9486 /* ProgressOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75E371932108CA08002602BD /* ProgressOverlay.swift */; };
 		75B24DBA21C3CADB003C9486 /* EntryFinderVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75B24DB921C3CADB003C9486 /* EntryFinderVC.swift */; };
 		75B24DD521C523AE003C9486 /* SearchHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75B24DD421C523AE003C9486 /* SearchHelper.swift */; };
@@ -643,6 +649,7 @@
 		75A26775228F02C70097C693 /* PremiumCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumCoordinator.swift; sourceTree = "<group>"; };
 		75A26777228F4E820097C693 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		75A2677C22904E0D0097C693 /* PremiumFeature+extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PremiumFeature+extension.swift"; sourceTree = "<group>"; };
+		75A5312223C0D35500900ED1 /* NavigationRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationRouter.swift; sourceTree = "<group>"; };
 		75AC35BC23549DE700B60614 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		75AC35BD23549DE700B60614 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		75AC35BE23549DE700B60614 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/ChangeMasterKeyVC.strings; sourceTree = "<group>"; };
@@ -1100,7 +1107,6 @@
 			children = (
 				75CBABA421C16DD400B8AFE2 /* controllers */,
 				75B24DD321C5239D003C9486 /* util */,
-				75CBAB9C21C166D600B8AFE2 /* Coordinator.swift */,
 				75CBAB9E21C1671F00B8AFE2 /* MainCoordinator.swift */,
 				750CFBCA21BA9ACD00E62B09 /* CredentialProviderViewController.swift */,
 				750CFBCC21BA9ACD00E62B09 /* MainInterface.storyboard */,
@@ -1184,6 +1190,7 @@
 				754FCBAF20A86785004DA0E7 /* util */,
 				7546FBDC20C3ACFD00C5D834 /* KPApplication.swift */,
 				754BF07E2082A6BD00E3A292 /* AppDelegate.swift */,
+				75CBAB9C21C166D600B8AFE2 /* Coordinator.swift */,
 				7546FBDA20C3AC5E00C5D834 /* main.swift */,
 				754BF0862082A6BD00E3A292 /* Main.storyboard */,
 				754BF08B2082A6BD00E3A292 /* LaunchScreen.storyboard */,
@@ -1223,6 +1230,7 @@
 				758544632351FE8D000D5E5E /* UIFont+monospace.swift */,
 				7535079F23783729003B65C9 /* HapticFeedback.swift */,
 				75B59A6723887A2C00239CFF /* SystemIssueDetector.swift */,
+				75A5312223C0D35500900ED1 /* NavigationRouter.swift */,
 			);
 			path = util;
 			sourceTree = "<group>";
@@ -1769,6 +1777,7 @@
 				75480504238E51AF0068C863 /* PopoverAnchor.swift in Sources */,
 				7532A24D21C5A035005DF56F /* KeyFileChooserVC.swift in Sources */,
 				750CFBCB21BA9ACD00E62B09 /* CredentialProviderViewController.swift in Sources */,
+				75A5312423C0D35500900ED1 /* NavigationRouter.swift in Sources */,
 				757FB3CF21F9C51C00F016FA /* UITextView+border.swift in Sources */,
 				75CBAB9F21C1671F00B8AFE2 /* MainCoordinator.swift in Sources */,
 				7514CC9F22D5D14B00A0D7A4 /* LongPressAwareNavigationController.swift in Sources */,
@@ -1829,6 +1838,7 @@
 				75E4CA5D232C455D00EB6805 /* UserNameHelper.swift in Sources */,
 				7561850320E033DB00EEFAEE /* WatchdogAwareTextView.swift in Sources */,
 				75D3AEB523BDD582003028FB /* GroupPickerVC.swift in Sources */,
+				75A5312323C0D35500900ED1 /* NavigationRouter.swift in Sources */,
 				7546FBC620C1027700C5D834 /* SettingsVC.swift in Sources */,
 				757EF2F520EB3D1C0024AACD /* PasswordGeneratorVC.swift in Sources */,
 				75C94C5720B373BA004FA29D /* ViewGroupVC.swift in Sources */,
@@ -1898,6 +1908,7 @@
 				7546FBC120BFB8DD00C5D834 /* WelcomeVC.swift in Sources */,
 				758D8E902274D2BE00644FA6 /* DatabaseCreatorVC.swift in Sources */,
 				7529EAE9211416170093B117 /* SettingsAppLockVC.swift in Sources */,
+				75A5312123C0D2D400900ED1 /* Coordinator.swift in Sources */,
 				753507A023783729003B65C9 /* HapticFeedback.swift in Sources */,
 				758BF0D820D1B1DA00897C83 /* ValidatingTextField.swift in Sources */,
 				754BF09A20984DEE00E3A292 /* UnlockDatabaseVC.swift in Sources */,
@@ -1931,6 +1942,7 @@
 				75B38BFA233E5B7C006BDEFC /* UserNameHelper.swift in Sources */,
 				75B38BFB233E5B7C006BDEFC /* WatchdogAwareTextView.swift in Sources */,
 				75D3AEB623BDD582003028FB /* GroupPickerVC.swift in Sources */,
+				75A5312523C0D35500900ED1 /* NavigationRouter.swift in Sources */,
 				75B38BFC233E5B7C006BDEFC /* SettingsVC.swift in Sources */,
 				75B38BFD233E5B7C006BDEFC /* PasswordGeneratorVC.swift in Sources */,
 				75B38BFE233E5B7C006BDEFC /* ViewGroupVC.swift in Sources */,
@@ -2000,6 +2012,7 @@
 				75B38C3C233E5B7C006BDEFC /* WelcomeVC.swift in Sources */,
 				75B38C3D233E5B7C006BDEFC /* DatabaseCreatorVC.swift in Sources */,
 				75B38C3E233E5B7C006BDEFC /* SettingsAppLockVC.swift in Sources */,
+				75A5312023C0D2D300900ED1 /* Coordinator.swift in Sources */,
 				753507A223783729003B65C9 /* HapticFeedback.swift in Sources */,
 				75B38C3F233E5B7C006BDEFC /* ValidatingTextField.swift in Sources */,
 				75B38C40233E5B7C006BDEFC /* UnlockDatabaseVC.swift in Sources */,
@@ -2029,6 +2042,7 @@
 				75480506238E51AF0068C863 /* PopoverAnchor.swift in Sources */,
 				75D7DF80233E5E310029AD87 /* KeyFileChooserVC.swift in Sources */,
 				75D7DF81233E5E310029AD87 /* CredentialProviderViewController.swift in Sources */,
+				75A5312623C0D35500900ED1 /* NavigationRouter.swift in Sources */,
 				75D7DF82233E5E310029AD87 /* UITextView+border.swift in Sources */,
 				75D7DF83233E5E310029AD87 /* MainCoordinator.swift in Sources */,
 				75D7DF84233E5E310029AD87 /* LongPressAwareNavigationController.swift in Sources */,
