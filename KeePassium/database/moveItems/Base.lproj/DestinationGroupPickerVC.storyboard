@@ -11,13 +11,13 @@
         <!--Move Item-->
         <scene sceneID="0To-bW-YDD">
             <objects>
-                <tableViewController storyboardIdentifier="GroupPickerVC" id="H7A-yj-ZNo" customClass="GroupPickerVC" customModule="KeePassium" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController storyboardIdentifier="DestinationGroupPickerVC" id="H7A-yj-ZNo" customClass="DestinationGroupPickerVC" customModule="KeePassium" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="18" id="j7o-nQ-Dn4">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="20" reuseIdentifier="GroupCell" id="YvK-qJ-VKA" customClass="GroupPickerCell" customModule="KeePassium" customModuleProvider="target">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="20" reuseIdentifier="GroupCell" id="YvK-qJ-VKA" customClass="DestinationGroupPickerCell" customModule="KeePassium" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="55.5" width="320" height="51"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="YvK-qJ-VKA" id="0Sn-Ia-Pw7">
@@ -85,11 +85,17 @@
                                 <action selector="didPressCancelButton:" destination="H7A-yj-ZNo" id="y6m-EX-sou"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" title="Move" style="done" id="zLH-Pd-Hlr">
+                        <barButtonItem key="rightBarButtonItem" title="{Move}" style="done" id="zLH-Pd-Hlr">
+                            <attributedString key="userComments">
+                                <fragment content="#bc-ignore!"/>
+                            </attributedString>
                             <connections>
                                 <action selector="didPressDoneButton:" destination="H7A-yj-ZNo" id="G1B-BX-akA"/>
                             </connections>
                         </barButtonItem>
+                        <attributedString key="userComments">
+                            <fragment content="Title of the dialog for moving entries/groups to other groups"/>
+                        </attributedString>
                     </navigationItem>
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>

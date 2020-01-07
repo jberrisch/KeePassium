@@ -9,14 +9,14 @@
 import Foundation
 import KeePassiumLib
 
-protocol GroupPickerDelegate: class {
-    func didPressCancel(in groupPicker: GroupPickerVC)
-    func shouldSelectGroup(_ group: Group, in groupPicker: GroupPickerVC) -> Bool
-    func didSelectGroup(_ group: Group, in groupPicker: GroupPickerVC)
+protocol DestinationGroupPickerDelegate: class {
+    func didPressCancel(in groupPicker: DestinationGroupPickerVC)
+    func shouldSelectGroup(_ group: Group, in groupPicker: DestinationGroupPickerVC) -> Bool
+    func didSelectGroup(_ group: Group, in groupPicker: DestinationGroupPickerVC)
 }
 
 /// Custom cell of the `GroupPickerVC`
-class GroupPickerCell: UITableViewCell {
+class DestinationGroupPickerCell: UITableViewCell {
     enum CellState {
         case none
         case expanded
@@ -67,7 +67,7 @@ class GroupPickerCell: UITableViewCell {
     }
 }
 
-class GroupPickerVC: UITableViewController, Refreshable {
+class DestinationGroupPickerVC: UITableViewController, Refreshable {
     private let cellID = "GroupCell"
     class Node {
         weak var group: Group?
@@ -84,7 +84,7 @@ class GroupPickerVC: UITableViewController, Refreshable {
     
     @IBOutlet weak var doneButton: UIBarButtonItem!
     
-    public weak var delegate: GroupPickerDelegate?
+    public weak var delegate: DestinationGroupPickerDelegate?
     
     /// The group selected by user
     public private(set) weak var selectedGroup: Group? {
@@ -116,6 +116,7 @@ class GroupPickerVC: UITableViewController, Refreshable {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        doneButton.title = LString.actionMove
     }
     
     func refresh() {
@@ -131,7 +132,8 @@ class GroupPickerVC: UITableViewController, Refreshable {
         refresh()
         
         guard let rowForNode = (flatNodes.firstIndex { $0 === expandedNode }) else { return }
-        DispatchQueue.main.async { [weak self] in
+        DispatchQueue.main.async { [weak self, weak group] in
+            self?.selectedGroup = group
             self?.tableView.selectRow(
                 at: IndexPath(row: rowForNode, section: 0),
                 animated: true,
@@ -215,7 +217,7 @@ class GroupPickerVC: UITableViewController, Refreshable {
         let cell = tableView.dequeueReusableCell(
             withIdentifier: cellID,
             for: indexPath)
-            as! GroupPickerCell
+            as! DestinationGroupPickerCell
         
         let row = indexPath.row
         let node = flatNodes[row]
@@ -308,7 +310,7 @@ class GroupPickerVC: UITableViewController, Refreshable {
 }
 
 // MARK: UIAdaptivePresentationControllerDelegate
-extension GroupPickerVC: UIAdaptivePresentationControllerDelegate {
+extension DestinationGroupPickerVC: UIAdaptivePresentationControllerDelegate {
     func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
         didPressCancelButton(self)
     }

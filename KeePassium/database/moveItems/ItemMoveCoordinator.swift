@@ -22,7 +22,7 @@ class ItemMoveCoordinator: Coordinator {
     public var itemsToMove = [Weak<DatabaseItem>]()
     
     private let navigationController: UINavigationController
-    private var groupPickerVC: GroupPickerVC
+    private var groupPicker: DestinationGroupPickerVC
     private weak var destinationGroup: Group?
     private var savingProgressOverlay: ProgressOverlay?
     
@@ -30,9 +30,9 @@ class ItemMoveCoordinator: Coordinator {
         self.database = database
         self.parentViewController = parentViewController
 
-        let groupPicker = GroupPickerVC.instantiateFromStoryboard()
-        self.groupPickerVC = groupPicker
-        navigationController = UINavigationController(rootViewController: groupPickerVC)
+        let groupPicker = DestinationGroupPickerVC.instantiateFromStoryboard()
+        self.groupPicker = groupPicker
+        navigationController = UINavigationController(rootViewController: groupPicker)
         navigationController.modalPresentationStyle = .pageSheet
         
         navigationController.presentationController?.delegate = groupPicker
@@ -44,10 +44,10 @@ class ItemMoveCoordinator: Coordinator {
             let rootGroup = database.root
             else { return }
 
-        groupPickerVC.rootGroup = rootGroup
+        groupPicker.rootGroup = rootGroup
         parentViewController.present(navigationController, animated: true) { [weak self] in
             let currentGroup = self?.itemsToMove.first?.value?.parent
-            self?.groupPickerVC.expandGroup(currentGroup)
+            self?.groupPicker.expandGroup(currentGroup)
         }
 
         DatabaseManager.shared.addObserver(self)
@@ -119,16 +119,16 @@ class ItemMoveCoordinator: Coordinator {
 }
 
 // MARK: - GroupPickerDelegate
-extension ItemMoveCoordinator: GroupPickerDelegate {
-    func didPressCancel(in groupPicker: GroupPickerVC) {
+extension ItemMoveCoordinator: DestinationGroupPickerDelegate {
+    func didPressCancel(in groupPicker: DestinationGroupPickerVC) {
         stop()
     }
     
-    func shouldSelectGroup(_ group: Group, in groupPicker: GroupPickerVC) -> Bool {
+    func shouldSelectGroup(_ group: Group, in groupPicker: DestinationGroupPickerVC) -> Bool {
         return isAllowedDestination(group)
     }
     
-    func didSelectGroup(_ group: Group, in groupPicker: GroupPickerVC) {
+    func didSelectGroup(_ group: Group, in groupPicker: DestinationGroupPickerVC) {
         destinationGroup = group
         moveItems(to: group)
         DatabaseManager.shared.startSavingDatabase()

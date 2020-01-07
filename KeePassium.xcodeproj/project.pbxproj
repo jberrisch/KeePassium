@@ -68,6 +68,8 @@
 		752BB12520F089B30070FAC0 /* SettingsItemListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 752BB12420F089B30070FAC0 /* SettingsItemListVC.swift */; };
 		752ED68D2235547D00C20D3E /* SettingsDataProtectionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 752ED68C2235547D00C20D3E /* SettingsDataProtectionVC.swift */; };
 		7532A24D21C5A035005DF56F /* KeyFileChooserVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7532A24C21C5A035005DF56F /* KeyFileChooserVC.swift */; };
+		7533030F23C52A1500F38CC7 /* DestinationGroupPickerVC.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7533031223C52A1500F38CC7 /* DestinationGroupPickerVC.storyboard */; };
+		7533031023C52A1500F38CC7 /* DestinationGroupPickerVC.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7533031223C52A1500F38CC7 /* DestinationGroupPickerVC.storyboard */; };
 		753507A023783729003B65C9 /* HapticFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7535079F23783729003B65C9 /* HapticFeedback.swift */; };
 		753507A123783729003B65C9 /* HapticFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7535079F23783729003B65C9 /* HapticFeedback.swift */; };
 		753507A223783729003B65C9 /* HapticFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7535079F23783729003B65C9 /* HapticFeedback.swift */; };
@@ -353,10 +355,8 @@
 		75D1674A21464333005E33C3 /* AboutVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75D1674921464333005E33C3 /* AboutVC.swift */; };
 		75D3A3AF21BAE53F00255FC3 /* DatabaseFileListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75D3A3AE21BAE53F00255FC3 /* DatabaseFileListCell.swift */; };
 		75D3A3B121BAE66F00255FC3 /* DatabaseFileListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75D3A3AE21BAE53F00255FC3 /* DatabaseFileListCell.swift */; };
-		75D3AEB523BDD582003028FB /* GroupPickerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75D3AEB423BDD582003028FB /* GroupPickerVC.swift */; };
-		75D3AEB623BDD582003028FB /* GroupPickerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75D3AEB423BDD582003028FB /* GroupPickerVC.swift */; };
-		75D3AEB823BDD59B003028FB /* GroupPickerVC.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 75D3AEB723BDD59B003028FB /* GroupPickerVC.storyboard */; };
-		75D3AEB923BDD59B003028FB /* GroupPickerVC.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 75D3AEB723BDD59B003028FB /* GroupPickerVC.storyboard */; };
+		75D3AEB523BDD582003028FB /* DestinationGroupPickerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75D3AEB423BDD582003028FB /* DestinationGroupPickerVC.swift */; };
+		75D3AEB623BDD582003028FB /* DestinationGroupPickerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75D3AEB423BDD582003028FB /* DestinationGroupPickerVC.swift */; };
 		75D5D4012235CD720003CD55 /* CrashReportVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75D5D4002235CD720003CD55 /* CrashReportVC.swift */; };
 		75D7DF7C233E5E310029AD87 /* SKProduct+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 753F924D2290705D005E496F /* SKProduct+extension.swift */; };
 		75D7DF7D233E5E310029AD87 /* FileInfoVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7529310C21ADA46C00E4B0D2 /* FileInfoVC.swift */; };
@@ -560,6 +560,16 @@
 		752BB12420F089B30070FAC0 /* SettingsItemListVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsItemListVC.swift; sourceTree = "<group>"; };
 		752ED68C2235547D00C20D3E /* SettingsDataProtectionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsDataProtectionVC.swift; sourceTree = "<group>"; };
 		7532A24C21C5A035005DF56F /* KeyFileChooserVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyFileChooserVC.swift; sourceTree = "<group>"; };
+		7533031123C52A1500F38CC7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/DestinationGroupPickerVC.storyboard; sourceTree = "<group>"; };
+		7533031423C52A1900F38CC7 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/DestinationGroupPickerVC.strings; sourceTree = "<group>"; };
+		7533031623C52A1D00F38CC7 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/DestinationGroupPickerVC.strings"; sourceTree = "<group>"; };
+		7533031823C52A2200F38CC7 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/DestinationGroupPickerVC.strings"; sourceTree = "<group>"; };
+		7533031A23C52A2400F38CC7 /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/DestinationGroupPickerVC.strings; sourceTree = "<group>"; };
+		7533031C23C52A2500F38CC7 /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/DestinationGroupPickerVC.strings; sourceTree = "<group>"; };
+		7533031E23C52A2700F38CC7 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/DestinationGroupPickerVC.strings; sourceTree = "<group>"; };
+		7533032023C52A2900F38CC7 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/DestinationGroupPickerVC.strings; sourceTree = "<group>"; };
+		7533032223C52A2A00F38CC7 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/DestinationGroupPickerVC.strings; sourceTree = "<group>"; };
+		7533032423C52A2C00F38CC7 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/DestinationGroupPickerVC.strings; sourceTree = "<group>"; };
 		7535079F23783729003B65C9 /* HapticFeedback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticFeedback.swift; sourceTree = "<group>"; };
 		753A3EE920D3776D00A1CF70 /* Refreshable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Refreshable.swift; sourceTree = "<group>"; };
 		753F924A22905621005E496F /* PremiumUpgradeHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumUpgradeHelper.swift; sourceTree = "<group>"; };
@@ -850,8 +860,7 @@
 		75CFBE2921C2BDDF0029A80A /* DatabaseUnlockerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseUnlockerVC.swift; sourceTree = "<group>"; };
 		75D1674921464333005E33C3 /* AboutVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutVC.swift; sourceTree = "<group>"; };
 		75D3A3AE21BAE53F00255FC3 /* DatabaseFileListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseFileListCell.swift; sourceTree = "<group>"; };
-		75D3AEB423BDD582003028FB /* GroupPickerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupPickerVC.swift; sourceTree = "<group>"; };
-		75D3AEB723BDD59B003028FB /* GroupPickerVC.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = GroupPickerVC.storyboard; sourceTree = "<group>"; };
+		75D3AEB423BDD582003028FB /* DestinationGroupPickerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DestinationGroupPickerVC.swift; sourceTree = "<group>"; };
 		75D5D4002235CD720003CD55 /* CrashReportVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrashReportVC.swift; sourceTree = "<group>"; };
 		75D7DFBE233E5E310029AD87 /* KeePassiumPro AutoFill.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "KeePassiumPro AutoFill.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		75D7DFC0233E5E630029AD87 /* KeePassiumLibPrepaid.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = KeePassiumLibPrepaid.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1121,6 +1130,16 @@
 			path = "KeePassium AutoFill";
 			sourceTree = "<group>";
 		};
+		7533032523C52AB600F38CC7 /* moveItems */ = {
+			isa = PBXGroup;
+			children = (
+				75A5312723C0DFE900900ED1 /* ItemMoveCoordinator.swift */,
+				7533031223C52A1500F38CC7 /* DestinationGroupPickerVC.storyboard */,
+				75D3AEB423BDD582003028FB /* DestinationGroupPickerVC.swift */,
+			);
+			path = moveItems;
+			sourceTree = "<group>";
+		};
 		753F9247229055E1005E496F /* premium */ = {
 			isa = PBXGroup;
 			children = (
@@ -1289,8 +1308,6 @@
 				750D127D20CF071600BE0CCE /* EditGroupVC.swift */,
 				751E0D002309AF150088BB10 /* EditGroupVC.storyboard */,
 				75DC043220E9E0C9007E63EC /* GroupChangeObserver+Notifier.swift */,
-				75D3AEB723BDD59B003028FB /* GroupPickerVC.storyboard */,
-				75D3AEB423BDD582003028FB /* GroupPickerVC.swift */,
 			);
 			path = group;
 			sourceTree = "<group>";
@@ -1298,6 +1315,7 @@
 		756FF64720BAB56A00FF890B /* database */ = {
 			isa = PBXGroup;
 			children = (
+				7533032523C52AB600F38CC7 /* moveItems */,
 				756FF64620BAB55000FF890B /* group */,
 				756FF64520BAB52C00FF890B /* entry */,
 				75D3A3AE21BAE53F00255FC3 /* DatabaseFileListCell.swift */,
@@ -1312,7 +1330,6 @@
 				751E0D1E2309AF670088BB10 /* UnlockDatabaseVC.storyboard */,
 				758D8E8F2274D2BE00644FA6 /* DatabaseCreatorVC.swift */,
 				751E0D212309AF6B0088BB10 /* DatabaseCreatorVC.storyboard */,
-				75A5312723C0DFE900900ED1 /* ItemMoveCoordinator.swift */,
 			);
 			path = database;
 			sourceTree = "<group>";
@@ -1612,7 +1629,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				75D3AEB823BDD59B003028FB /* GroupPickerVC.storyboard in Resources */,
+				7533030F23C52A1500F38CC7 /* DestinationGroupPickerVC.storyboard in Resources */,
 				751E0D102309AF4C0088BB10 /* ViewEntryHistoryVC.storyboard in Resources */,
 				751E0D132309AF540088BB10 /* ChooseDatabaseVC.storyboard in Resources */,
 				755B862E23054FA200E9FC83 /* AboutVC.storyboard in Resources */,
@@ -1661,7 +1678,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				75D3AEB923BDD59B003028FB /* GroupPickerVC.storyboard in Resources */,
+				7533031023C52A1500F38CC7 /* DestinationGroupPickerVC.storyboard in Resources */,
 				75B38C51233E5B7C006BDEFC /* ViewEntryHistoryVC.storyboard in Resources */,
 				75B38C52233E5B7C006BDEFC /* ChooseDatabaseVC.storyboard in Resources */,
 				75B38C53233E5B7C006BDEFC /* AboutVC.storyboard in Resources */,
@@ -1841,7 +1858,7 @@
 				751BE253211C395D0071050A /* ViewDiagnosticsVC.swift in Sources */,
 				75E4CA5D232C455D00EB6805 /* UserNameHelper.swift in Sources */,
 				7561850320E033DB00EEFAEE /* WatchdogAwareTextView.swift in Sources */,
-				75D3AEB523BDD582003028FB /* GroupPickerVC.swift in Sources */,
+				75D3AEB523BDD582003028FB /* DestinationGroupPickerVC.swift in Sources */,
 				75A5312323C0D35500900ED1 /* NavigationRouter.swift in Sources */,
 				7546FBC620C1027700C5D834 /* SettingsVC.swift in Sources */,
 				757EF2F520EB3D1C0024AACD /* PasswordGeneratorVC.swift in Sources */,
@@ -1946,7 +1963,7 @@
 				75B38BF9233E5B7C006BDEFC /* ViewDiagnosticsVC.swift in Sources */,
 				75B38BFA233E5B7C006BDEFC /* UserNameHelper.swift in Sources */,
 				75B38BFB233E5B7C006BDEFC /* WatchdogAwareTextView.swift in Sources */,
-				75D3AEB623BDD582003028FB /* GroupPickerVC.swift in Sources */,
+				75D3AEB623BDD582003028FB /* DestinationGroupPickerVC.swift in Sources */,
 				75A5312523C0D35500900ED1 /* NavigationRouter.swift in Sources */,
 				75B38BFC233E5B7C006BDEFC /* SettingsVC.swift in Sources */,
 				75B38BFD233E5B7C006BDEFC /* PasswordGeneratorVC.swift in Sources */,
@@ -2580,6 +2597,23 @@
 				75AC35CF23549DE700B60614 /* es */,
 			);
 			name = DiagnosticsViewerVC.storyboard;
+			sourceTree = "<group>";
+		};
+		7533031223C52A1500F38CC7 /* DestinationGroupPickerVC.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				7533031123C52A1500F38CC7 /* Base */,
+				7533031423C52A1900F38CC7 /* en */,
+				7533031623C52A1D00F38CC7 /* zh-Hans */,
+				7533031823C52A2200F38CC7 /* zh-Hant */,
+				7533031A23C52A2400F38CC7 /* cs */,
+				7533031C23C52A2500F38CC7 /* nl */,
+				7533031E23C52A2700F38CC7 /* de */,
+				7533032023C52A2900F38CC7 /* ru */,
+				7533032223C52A2A00F38CC7 /* es */,
+				7533032423C52A2C00F38CC7 /* sv */,
+			);
+			name = DestinationGroupPickerVC.storyboard;
 			sourceTree = "<group>";
 		};
 		7547C9D4234804B5004B159C /* PremiumProVC.storyboard */ = {
