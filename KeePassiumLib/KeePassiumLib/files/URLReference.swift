@@ -88,8 +88,8 @@ public class URLReference: Equatable, Codable {
     
     /// Bookmark data
     private let data: Data
-    /// sha256 hash of `data`
-    lazy private(set) var hash: ByteArray = CryptoManager.sha256(of: ByteArray(data: data))
+    /// sha256 hash describing this reference (URL or bookmark)
+    lazy private(set) var hash: ByteArray = getHash()
     /// Location type of the original URL
     public let location: Location
     /// Cached original URL (nil if needs resolving)
@@ -109,11 +109,17 @@ public class URLReference: Equatable, Codable {
             }
         }
         self.url = url
-        data = try url.bookmarkData(
-            options: [.minimalBookmark],
-            includingResourceValuesForKeys: nil,
-            relativeTo: nil) // throws an internal system error
         self.location = location
+        if location.isInternal {
+            data = Data() // for backward compatibility
+            hash = ByteArray(data: url.dataRepresentation).sha256
+        } else {
+            data = try url.bookmarkData(
+                options: [.minimalBookmark],
+                includingResourceValuesForKeys: nil,
+                relativeTo: nil) // throws an internal system error
+            hash = ByteArray(data: data).sha256
+        }
     }
 
     public static func == (lhs: URLReference, rhs: URLReference) -> Bool {
@@ -127,7 +133,7 @@ public class URLReference: Equatable, Codable {
         } else {
             // For external files, URL references are stored, so same refs
             // will have same hash.
-            return lhs.hash == rhs.hash
+            return !lhs.hash.isEmpty && (lhs.hash == rhs.hash)
         }
     }
     
@@ -135,7 +141,28 @@ public class URLReference: Equatable, Codable {
         return try! JSONEncoder().encode(self)
     }
     public static func deserialize(from data: Data) -> URLReference? {
-        return try? JSONDecoder().decode(URLReference.self, from: data)
+        guard let ref = try? JSONDecoder().decode(URLReference.self, from: data) else {
+            return nil
+        }
+        // legacy stored refs don't have stored hash, so we set it
+        ref.hash = ref.getHash()
+        return ref
+    }
+    
+    /// Returns a sha256 hash of the URL (if internal) or bookmark (if external)
+    private func getHash() -> ByteArray {
+        guard location.isInternal else {
+            // external location: sha256(bookmark data)
+            return ByteArray(data: data).sha256
+        }
+
+        // internal location
+        // URL might be deserialized as nil, resolving might fail
+        guard let _url = try? resolve() else {
+            Diag.warning("Failed to resolve the URL")
+            return ByteArray() // empty hash as a sign of error
+        }
+        return ByteArray(data: _url.dataRepresentation).sha256
     }
     
     public func resolve() throws -> URL {
