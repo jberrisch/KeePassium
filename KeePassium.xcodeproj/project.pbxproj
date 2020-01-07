@@ -188,6 +188,8 @@
 		75A5312423C0D35500900ED1 /* NavigationRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75A5312223C0D35500900ED1 /* NavigationRouter.swift */; };
 		75A5312523C0D35500900ED1 /* NavigationRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75A5312223C0D35500900ED1 /* NavigationRouter.swift */; };
 		75A5312623C0D35500900ED1 /* NavigationRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75A5312223C0D35500900ED1 /* NavigationRouter.swift */; };
+		75A5312823C0DFE900900ED1 /* ItemMoveCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75A5312723C0DFE900900ED1 /* ItemMoveCoordinator.swift */; };
+		75A5312923C0DFE900900ED1 /* ItemMoveCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75A5312723C0DFE900900ED1 /* ItemMoveCoordinator.swift */; };
 		75B24DB821C3C594003C9486 /* ProgressOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75E371932108CA08002602BD /* ProgressOverlay.swift */; };
 		75B24DBA21C3CADB003C9486 /* EntryFinderVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75B24DB921C3CADB003C9486 /* EntryFinderVC.swift */; };
 		75B24DD521C523AE003C9486 /* SearchHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75B24DD421C523AE003C9486 /* SearchHelper.swift */; };
@@ -650,6 +652,7 @@
 		75A26777228F4E820097C693 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		75A2677C22904E0D0097C693 /* PremiumFeature+extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PremiumFeature+extension.swift"; sourceTree = "<group>"; };
 		75A5312223C0D35500900ED1 /* NavigationRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationRouter.swift; sourceTree = "<group>"; };
+		75A5312723C0DFE900900ED1 /* ItemMoveCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemMoveCoordinator.swift; sourceTree = "<group>"; };
 		75AC35BC23549DE700B60614 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		75AC35BD23549DE700B60614 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		75AC35BE23549DE700B60614 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/ChangeMasterKeyVC.strings; sourceTree = "<group>"; };
@@ -1309,6 +1312,7 @@
 				751E0D1E2309AF670088BB10 /* UnlockDatabaseVC.storyboard */,
 				758D8E8F2274D2BE00644FA6 /* DatabaseCreatorVC.swift */,
 				751E0D212309AF6B0088BB10 /* DatabaseCreatorVC.storyboard */,
+				75A5312723C0DFE900900ED1 /* ItemMoveCoordinator.swift */,
 			);
 			path = database;
 			sourceTree = "<group>";
@@ -1915,6 +1919,7 @@
 				7578488F22C1DFF400BBEF9A /* SettingsBackupTimeoutPickerVC.swift in Sources */,
 				758544642351FE8D000D5E5E /* UIFont+monospace.swift in Sources */,
 				75C5C3762129DE0800CD7FE3 /* UIAlertController+extensions.swift in Sources */,
+				75A5312823C0DFE900900ED1 /* ItemMoveCoordinator.swift in Sources */,
 				75F4ACFC21776F4800B22D8B /* LString.swift in Sources */,
 				750D127E20CF071600BE0CCE /* EditGroupVC.swift in Sources */,
 				75C94C5B20B4B8C2004FA29D /* ViewEntryVC.swift in Sources */,
@@ -2019,6 +2024,7 @@
 				75B38C41233E5B7C006BDEFC /* SettingsBackupTimeoutPickerVC.swift in Sources */,
 				758544662351FE8D000D5E5E /* UIFont+monospace.swift in Sources */,
 				75B38C42233E5B7C006BDEFC /* UIAlertController+extensions.swift in Sources */,
+				75A5312923C0DFE900900ED1 /* ItemMoveCoordinator.swift in Sources */,
 				75B38C43233E5B7C006BDEFC /* LString.swift in Sources */,
 				75B38C44233E5B7C006BDEFC /* EditGroupVC.swift in Sources */,
 				75B38C46233E5B7C006BDEFC /* ViewEntryVC.swift in Sources */,

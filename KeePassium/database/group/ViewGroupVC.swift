@@ -465,6 +465,16 @@ open class ViewGroupVC: UITableViewController, Refreshable {
         }
     }
 
+    func getItem(at indexPath: IndexPath) -> DatabaseItem? {
+        if let entry = getEntry(at: indexPath) {
+            return entry
+        }
+        if let group = getGroup(at: indexPath) {
+            return group
+        }
+        return nil
+    }
+    
     func handleItemSelection(indexPath: IndexPath?) {
         guard let indexPath = indexPath else {
             // nothing selected
@@ -567,6 +577,27 @@ open class ViewGroupVC: UITableViewController, Refreshable {
         }
         return true
     }
+    
+    /// True iff the given group can be moved to another parent group
+    private func canMove(_ group: Group) -> Bool {
+        // cannot move the root group
+        guard !group.isRoot else { return false }
+        
+        // KP1: cannot move the backup group
+        if let group1 = group as? Group1,
+            let database1 = group1.database as? Database1,
+            group1 === database1.getBackupGroup(createIfMissing: false)
+        {
+            return false
+        }
+        return true
+    }
+    
+    /// True iff the given entry can be moved to another parent group
+    private func canMove(_ entry: Entry) -> Bool {
+        // any entry can be moved, even deleted ones
+        return true
+    }
 
     // MARK: - Action handlers
 
@@ -614,7 +645,9 @@ open class ViewGroupVC: UITableViewController, Refreshable {
             if !entry.isDeleted {
                 actions.append(editAction)
             }
-            actions.append(moveAction)
+            if canMove(entry) {
+                actions.append(moveAction)
+            }
             actions.append(deleteAction)
             actions.append(cancelAction)
         }
@@ -622,7 +655,9 @@ open class ViewGroupVC: UITableViewController, Refreshable {
             if !group.isDeleted {
                 actions.append(editAction)
             }
-            actions.append(moveAction)
+            if canMove(group) {
+                actions.append(moveAction)
+            }
             actions.append(deleteAction)
             actions.append(cancelAction)
         }
@@ -747,29 +782,23 @@ open class ViewGroupVC: UITableViewController, Refreshable {
     }
     
 
+    var itemMoveCoordinator: ItemMoveCoordinator?
+    
     /// The user wants to move something at `indexPath`
     func onMoveItemAction(at indexPath: IndexPath) {
         guard let cell = tableView.cellForRow(at: indexPath) else { return }
-    
-        if let selectedGroup = getGroup(at: indexPath) {
-            let groupPicker = GroupPickerVC.instantiateFromStoryboard()
-            guard let root = self.group?.database?.root else { return }
-            groupPicker.rootGroup = root
-            groupPicker.selectedGroup = selectedGroup
-
-            groupPicker.modalPresentationStyle = .popover
-            let pa = PopoverAnchor(tableView: tableView, at: indexPath)
-            pa.apply(to: groupPicker.popoverPresentationController)
-            present(groupPicker, animated: true, completion: nil)
-
-            return
+        guard let database = group?.database else { return }
+        
+        assert(itemMoveCoordinator == nil)
+        itemMoveCoordinator = ItemMoveCoordinator(database: database, parentViewController: self)
+        itemMoveCoordinator?.delegate = self
+        
+        if let selectedItem = getItem(at: indexPath) {
+            itemMoveCoordinator?.itemsToMove = [Weak(selectedItem)]
+        } else {
+            assertionFailure()
         }
-       
-        if let selectedEntry = getEntry(at: indexPath) {
-            //TODO: implement this
-            assertionFailure("Not implemented")
-            return
-        }
+        itemMoveCoordinator?.start()
     }
 
     @IBAction func didPressItemListSettings(_ sender: Any) {
@@ -824,7 +853,7 @@ open class ViewGroupVC: UITableViewController, Refreshable {
         guard gestureRecognizer.state == .began,
             let indexPath = tableView.indexPathForRow(at: point),
             tableView(tableView, canEditRowAt: indexPath),
-            let cell = tableView.cellForRow(at: indexPath) else { return }
+            let _ = tableView.cellForRow(at: indexPath) else { return }
         showActionsForItem(at: indexPath)
     }
     
@@ -967,10 +996,10 @@ extension ViewGroupVC: UISearchControllerDelegate {
     }
 }
 
-// MARK: - GroupPickerDelegate
-extension ViewGroupVC: GroupPickerDelegate {
-    func didSelectGroup(_ group: Group?, in groupPicker: GroupPickerVC) {
-        //todo
-        groupPicker.dismiss(animated: true, completion: nil)
+// MARK: - ItemMoveCoordinatorDelegate
+extension ViewGroupVC: ItemMoveCoordinatorDelegate {
+    func didFinish(_ coordinator: ItemMoveCoordinator) {
+        assert(self.itemMoveCoordinator != nil)
+        itemMoveCoordinator = nil
     }
 }

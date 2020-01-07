@@ -124,6 +124,7 @@ public class Group: DatabaseItem, Eraseable {
     }
     
     public func add(group: Group) {
+        assert(group !== self)
         group.parent = self
         groups.append(group)
         group.deepSetDeleted(self.isDeleted)
