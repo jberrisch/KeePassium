@@ -263,6 +263,12 @@ public class Entry: DatabaseItem, Eraseable {
         parent?.remove(entry: self)
     }
     
+    public func move(to newGroup: Group) {
+        guard newGroup !== parent else { return }
+        parent?.remove(entry: self)
+        newGroup.add(entry: self)
+    }
+    
     /// Returns the names of the groups this entry is in, much like a file system path.
     public func getGroupPath() -> String {
         var groupNames = Array<String>()

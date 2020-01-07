@@ -243,7 +243,10 @@ public class Database2: Database {
             // parse XML
             try load(xmlData: xmlData, warnings: warnings) // throws FormatError.parsingError, ProgressInterruption
             
-            propagateDeletedStatus()
+            // propagate the deleted status inside the Backup group
+            if let backupGroup = getBackupGroup(createIfMissing: false) {
+                backupGroup.deepSetDeleted(backupGroup.isDeleted)
+            }
             
             // check if there are any missing or redundant (unreferenced) binaries
             checkAttachmentsIntegrity(warnings: warnings)
@@ -610,17 +613,6 @@ public class Database2: Database {
             default:
                 throw Xml2.ParsingError.unexpectedTag(actual: tag.name, expected: "DeletedObjects/*")
             }
-        }
-    }
-    
-    /// Sets `isDeleted` property on all siblings of Backup group, if any.
-    private func propagateDeletedStatus() {
-        if let backupGroup = getBackupGroup(createIfMissing: false) {
-            var deletedGroups = [Group2]() as [Group]
-            var deletedEntries = [Entry2]() as [Entry]
-            backupGroup.collectAllChildren(groups: &deletedGroups, entries: &deletedEntries)
-            deletedGroups.forEach { $0.isDeleted = true }
-            deletedEntries.forEach { $0.isDeleted = true }
         }
     }
     
@@ -1318,7 +1310,7 @@ public class Database2: Database {
             let backupGroup = getBackupGroup(createIfMissing: meta.isRecycleBinEnabled)
         {
             entry.accessed()
-            backupGroup.moveEntry(entry: entry)
+            entry.move(to: backupGroup)
         } else {
             // Backup is disabled, so we delete the entry permanently
             // and mention it in DeletedObjects to facilitate synchronization.

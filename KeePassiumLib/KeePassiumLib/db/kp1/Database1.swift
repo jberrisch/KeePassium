@@ -300,6 +300,8 @@ public class Database1: Database {
                 group.add(entry: entry)
             }
         }
+        // Mark everything inside the backup group as deleted
+        backupGroup?.deepSetDeleted(true)
     }
     
     /// Decrypts DB data using current master key.
@@ -452,7 +454,7 @@ public class Database1: Database {
         
         // kp1 does not backup subgroups, so move only entries
         subEntries.forEach { (entry) in
-            backupGroup.moveEntry(entry: entry)
+            entry.move(to: backupGroup)
             entry.accessed()
         }
         Diag.debug("Delete group OK")
@@ -472,7 +474,7 @@ public class Database1: Database {
         }
         
         entry.accessed()
-        backupGroup.moveEntry(entry: entry)
+        entry.move(to: backupGroup)
         Diag.info("Delete entry OK")
     }
     

@@ -126,7 +126,15 @@ public class Group: DatabaseItem, Eraseable {
     public func add(group: Group) {
         group.parent = self
         groups.append(group)
+        group.deepSetDeleted(self.isDeleted)
         isChildrenModified = true
+    }
+    
+    /// Sets the `isDeleted` flag of this group and all its children.
+    public func deepSetDeleted(_ isDeleted: Bool) {
+        self.isDeleted = isDeleted
+        groups.forEach { $0.deepSetDeleted(isDeleted) }
+        entries.forEach { $0.isDeleted = isDeleted }
     }
     
     public func remove(group: Group) {
@@ -153,13 +161,12 @@ public class Group: DatabaseItem, Eraseable {
         entry.parent = nil
         isChildrenModified = true
     }
-
-    /// Moves entry from its parent group to this one.
-    public func moveEntry(entry: Entry) {
-        if let oldParent = entry.parent {
-            oldParent.remove(entry: entry)
-        }
-        self.add(entry: entry)
+    
+    /// Moves this group to another parent group.
+    public func move(to newGroup: Group) {
+        guard parent !== newGroup else { return }
+        parent?.remove(group: self)
+        newGroup.add(group: self)
     }
 
     /// Finds (sub)group with the given UUID (searching the full tree).

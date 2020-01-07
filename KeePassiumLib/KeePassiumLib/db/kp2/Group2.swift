@@ -182,6 +182,8 @@ public class Group2: Group {
                 throw Xml2.ParsingError.unexpectedTag(actual: tag.name, expected: "Group/*")
             }
         }
+        /// Propagate the deleted state to all children
+        deepSetDeleted(self.isDeleted)
     }
     
     
