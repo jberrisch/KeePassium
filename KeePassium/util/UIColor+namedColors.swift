@@ -33,6 +33,9 @@ extension UIColor {
     static var auxiliaryText: UIColor {
         return UIColor(named: "AuxiliaryText") ?? .darkGray
     }
+    static var disabledText: UIColor {
+        return UIColor(named: "DisabledText") ?? .darkGray
+    }
 
 //    static var navBarTint: UIColor {
 //        return UIColor(named: "NavBarTint") ?? UIColor.systemBlue
