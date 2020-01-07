@@ -276,21 +276,7 @@ public class FileKeeper {
     /// Returns references to both local and external files.
     public func getAllReferences(fileType: FileType, includeBackup: Bool) -> [URLReference] {
         var result: [URLReference] = []
-//        result.append(contentsOf:
-//            scanLocalDirectory(fileType: fileType, location: .internalDocuments))
         result.append(contentsOf:getStoredReferences(fileType: fileType, forExternalFiles: true))
-        if AppGroup.isMainApp {
-            let sandboxFileRefs = scanLocalDirectory(docDirURL, fileType: fileType)
-            // store app's sandboxed file refs for the app extension
-            storeReferences(sandboxFileRefs, fileType: fileType, forExternalFiles: false)
-            result.append(contentsOf: sandboxFileRefs)
-        } else {
-            // App extension has no access to app sandbox,
-            // so we use pre-saved references to sandbox contents instead.
-            result.append(contentsOf:
-                getStoredReferences(fileType: fileType, forExternalFiles: false))
-        }
-
         if includeBackup {
             result.append(contentsOf:scanLocalDirectory(backupDirURL, fileType: fileType))
         }
