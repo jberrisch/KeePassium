@@ -147,7 +147,10 @@ class DestinationGroupPickerVC: UITableViewController, Refreshable {
     private func buildNodeTree(parent: Node) {
         guard let group = parent.group else { return }
         parent.children.removeAll()
-        group.groups.forEach {
+        
+        let groupSortOrder = Settings.current.groupSortOrder
+        let subGroupsSorted = group.groups.sorted { return groupSortOrder.compare($0, $1) }
+        subGroupsSorted.forEach {
             let subNode = Node(group: $0, level: parent.level + 1)
             parent.children.append(subNode)
             buildNodeTree(parent: subNode)
