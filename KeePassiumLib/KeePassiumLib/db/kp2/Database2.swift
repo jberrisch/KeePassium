@@ -243,9 +243,9 @@ public class Database2: Database {
             // parse XML
             try load(xmlData: xmlData, warnings: warnings) // throws FormatError.parsingError, ProgressInterruption
             
-            // propagate the deleted status inside the Backup group
+            // mark the backup group and all its siblings as deleted
             if let backupGroup = getBackupGroup(createIfMissing: false) {
-                backupGroup.deepSetDeleted(backupGroup.isDeleted)
+                backupGroup.deepSetDeleted(true)
             }
             
             // check if there are any missing or redundant (unreferenced) binaries
@@ -661,6 +661,7 @@ public class Database2: Database {
             // no such group - create one
             let backupGroup = meta.createRecycleBinGroup()
             root.add(group: backupGroup)
+            backupGroup.isDeleted = true
             Diag.verbose("RecycleBin group created")
             return backupGroup
         }

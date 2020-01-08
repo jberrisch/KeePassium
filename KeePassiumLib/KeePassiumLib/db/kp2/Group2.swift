@@ -127,6 +127,7 @@ public class Group2: Group {
         
         let db2: Database2 = database as! Database2
         let meta: Meta2 = db2.meta
+        var isRecycleBin = false
         
         for tag in xml.children {
             switch tag.name {
@@ -134,7 +135,7 @@ public class Group2: Group {
                 self.uuid = UUID(base64Encoded: tag.value) ?? UUID.ZERO
                 if uuid == meta.recycleBinGroupUUID && meta.isRecycleBinEnabled {
                     Diag.verbose("Is a backup group")
-                    self.isDeleted = true // may also be set higher in call stack
+                    isRecycleBin = true
                 }
             case Xml2.name:
                 self.name = tag.value ?? ""
@@ -182,8 +183,12 @@ public class Group2: Group {
                 throw Xml2.ParsingError.unexpectedTag(actual: tag.name, expected: "Group/*")
             }
         }
-        /// Propagate the deleted state to all children
-        deepSetDeleted(self.isDeleted)
+        if isRecycleBin {
+            // Mark all children as deleted.
+            deepSetDeleted(true)
+            // This is reset when the group is added to the root one.
+            // So the database.load() will re-apply the flags again.
+        }
     }
     
     
