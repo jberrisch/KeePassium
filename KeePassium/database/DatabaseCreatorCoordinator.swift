@@ -256,13 +256,14 @@ extension DatabaseCreatorCoordinator: DatabaseManagerObserver {
     
     func databaseManager(didSaveDatabase urlRef: URLReference) {
         DatabaseManager.shared.removeObserver(self)
-        databaseCreatorVC.hideProgressView()
+        // databaseCreatorVC.hideProgressView() - keep it shown until the whole procedure is finished
         DatabaseManager.shared.closeDatabase(
             clearStoredKey: true,
             ignoreErrors: false,
             completion: { [weak self] (errorMessage) in
                 if let errorMessage = errorMessage {
                     // there was a problem closing/saving the DB
+                    self?.databaseCreatorVC.hideProgressView()
                     let errorAlert = UIAlertController.make(
                         title: LString.titleError,
                         message: errorMessage,
@@ -271,6 +272,7 @@ extension DatabaseCreatorCoordinator: DatabaseManagerObserver {
                 } else {
                     // all good, choose the saving location
                     DispatchQueue.main.async { [weak self] in
+                        // the 100% progress overlay remains shown until the picker has finished
                         self?.pickTargetLocation(for: urlRef)
                     }
                 }
@@ -299,6 +301,9 @@ extension DatabaseCreatorCoordinator: DatabaseManagerObserver {
 // MARK: - UIDocumentPickerDelegate
 extension DatabaseCreatorCoordinator: UIDocumentPickerDelegate {
     func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
+        // Hide the 100% progress overlay
+        databaseCreatorVC.hideProgressView()
+        
         // cancel overall database creation
         if let initialTopController = self.initialTopController {
             self.navigationController.popToViewController(initialTopController, animated: false)
@@ -311,6 +316,12 @@ extension DatabaseCreatorCoordinator: UIDocumentPickerDelegate {
         didPickDocumentsAt urls: [URL])
     {
         guard let url = urls.first else { return }
-        addCreatedDatabase(at: url)
+        
+        // Give the file provider a little time to settle down.
+        // In the meanwhile, keep showing the 100% progress overlay.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { // strong self
+            self.databaseCreatorVC.hideProgressView()
+            self.addCreatedDatabase(at: url)
+        }
     }
 }
