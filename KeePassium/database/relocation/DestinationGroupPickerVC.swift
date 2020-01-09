@@ -85,6 +85,7 @@ class DestinationGroupPickerVC: UITableViewController, Refreshable {
     @IBOutlet weak var doneButton: UIBarButtonItem!
     
     public weak var delegate: DestinationGroupPickerDelegate?
+    public private(set) var mode: ItemRelocationMode = .move
     
     /// The group selected by user
     public private(set) weak var selectedGroup: Group? {
@@ -114,9 +115,23 @@ class DestinationGroupPickerVC: UITableViewController, Refreshable {
     private var rootNode: Node?
     private var flatNodes = [Node]()
     
+    
+    public static func create(mode: ItemRelocationMode) -> DestinationGroupPickerVC {
+        let vc = DestinationGroupPickerVC.instantiateFromStoryboard()
+        vc.mode = mode
+        return vc
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        doneButton.title = LString.actionMove
+        switch mode {
+        case .move:
+            doneButton.title = LString.actionMove
+            title = LString.titleMoveItems
+        case .copy:
+            doneButton.title = LString.actionCopy
+            title = LString.titleCopyItems
+        }
     }
     
     func refresh() {

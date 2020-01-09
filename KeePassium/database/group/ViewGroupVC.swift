@@ -635,7 +635,14 @@ open class ViewGroupVC: UITableViewController, Refreshable {
             title: LString.actionMove,
             style: .default,
             handler: { [weak self] alertAction in
-                self?.onMoveItemAction(at: indexPath)
+                self?.onRelocateItemAction(at: indexPath, mode: .move)
+            }
+        )
+        let copyAction = UIAlertAction(
+            title: LString.actionCopy,
+            style: .default,
+            handler: { [weak self] alertAction in
+                self?.onRelocateItemAction(at: indexPath, mode: .copy)
             }
         )
         let cancelAction = UIAlertAction(title: LString.actionCancel, style: .cancel, handler: nil)
@@ -647,6 +654,7 @@ open class ViewGroupVC: UITableViewController, Refreshable {
             }
             if canMove(entry) {
                 actions.append(moveAction)
+                actions.append(copyAction)
             }
             actions.append(deleteAction)
             actions.append(cancelAction)
@@ -657,6 +665,7 @@ open class ViewGroupVC: UITableViewController, Refreshable {
             }
             if canMove(group) {
                 actions.append(moveAction)
+                actions.append(copyAction)
             }
             actions.append(deleteAction)
             actions.append(cancelAction)
@@ -785,20 +794,22 @@ open class ViewGroupVC: UITableViewController, Refreshable {
     var itemRelocationCoordinator: ItemRelocationCoordinator?
     
     /// The user wants to move something at `indexPath`
-    func onMoveItemAction(at indexPath: IndexPath) {
-        guard let cell = tableView.cellForRow(at: indexPath) else { return }
+    func onRelocateItemAction(at indexPath: IndexPath, mode: ItemRelocationMode) {
         guard let database = group?.database else { return }
         
-        assert(itemMoveCoordinator == nil)
-        itemMoveCoordinator = ItemMoveCoordinator(database: database, parentViewController: self)
-        itemMoveCoordinator?.delegate = self
+        assert(itemRelocationCoordinator == nil)
+        itemRelocationCoordinator = ItemRelocationCoordinator(
+            database: database,
+            mode: mode,
+            parentViewController: self)
+        itemRelocationCoordinator?.delegate = self
         
         if let selectedItem = getItem(at: indexPath) {
-            itemMoveCoordinator?.itemsToMove = [Weak(selectedItem)]
+            itemRelocationCoordinator?.itemsToRelocate = [Weak(selectedItem)]
         } else {
             assertionFailure()
         }
-        itemMoveCoordinator?.start()
+        itemRelocationCoordinator?.start()
     }
 
     @IBAction func didPressItemListSettings(_ sender: Any) {

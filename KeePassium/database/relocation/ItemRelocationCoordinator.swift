@@ -27,18 +27,20 @@ class ItemRelocationCoordinator: Coordinator {
     
     public let parentViewController: UIViewController
     private weak var database: Database?
-    public var itemsToMove = [Weak<DatabaseItem>]()
+    private let mode: ItemRelocationMode
+    public var itemsToRelocate = [Weak<DatabaseItem>]()
     
     private let navigationController: UINavigationController
     private var groupPicker: DestinationGroupPickerVC
     private weak var destinationGroup: Group?
     private var savingProgressOverlay: ProgressOverlay?
     
-    init(database: Database, parentViewController: UIViewController) {
+    init(database: Database, mode: ItemRelocationMode, parentViewController: UIViewController) {
         self.database = database
+        self.mode = mode
         self.parentViewController = parentViewController
 
-        let groupPicker = DestinationGroupPickerVC.instantiateFromStoryboard()
+        let groupPicker = DestinationGroupPickerVC.create(mode: mode)
         self.groupPicker = groupPicker
         navigationController = UINavigationController(rootViewController: groupPicker)
         navigationController.modalPresentationStyle = .pageSheet
@@ -54,7 +56,7 @@ class ItemRelocationCoordinator: Coordinator {
 
         groupPicker.rootGroup = rootGroup
         parentViewController.present(navigationController, animated: true) { [weak self] in
-            let currentGroup = self?.itemsToMove.first?.value?.parent
+            let currentGroup = self?.itemsToRelocate.first?.value?.parent
             self?.groupPicker.expandGroup(currentGroup)
         }
 
@@ -77,7 +79,7 @@ class ItemRelocationCoordinator: Coordinator {
             let root1 = database1.root,
             group === root1
         {
-            for item in itemsToMove {
+            for item in itemsToRelocate {
                 if item.value is Entry1 {
                     return false
                 }
@@ -85,7 +87,7 @@ class ItemRelocationCoordinator: Coordinator {
         }
         
         // Cannot move a group to itself or its subgroup
-        for item in itemsToMove {
+        for item in itemsToRelocate {
             guard let groupToMove = item.value else { continue }
             if groupToMove === group || groupToMove.isAncestor(of: group) {
                 return false
@@ -99,7 +101,7 @@ class ItemRelocationCoordinator: Coordinator {
     
     /// Moves all the items to the given destination group.
     private func moveItems(to destinationGroup: Group) {
-        for item in itemsToMove {
+        for item in itemsToRelocate {
             if let entry = item.value as? Entry {
                 entry.move(to: destinationGroup)
             } else if let group = item.value as? Group {
@@ -109,10 +111,25 @@ class ItemRelocationCoordinator: Coordinator {
             }
         }
     }
+
+    /// Copies all the items to the given destination group.
+    private func copyItems(to destinationGroup: Group) {
+        for item in itemsToRelocate {
+            if let entry = item.value as? Entry {
+                let cloneEntry = entry.clone()
+                cloneEntry.move(to: destinationGroup)
+            } else if let group = item.value as? Group {
+                let cloneGroup = group.deepClone()
+                cloneGroup.move(to: destinationGroup)
+            } else {
+                assertionFailure()
+            }
+        }
+    }
     
     /// Send notifications that source and destination groups have changed.
     private func notifyContentChanged() {
-        for item in itemsToMove {
+        for item in itemsToRelocate {
             if let entry = item.value as? Entry, let group = entry.parent {
                 EntryChangeNotifications.post(entryDidChange: entry)
                 GroupChangeNotifications.post(groupDidChange: group)
@@ -138,7 +155,12 @@ extension ItemRelocationCoordinator: DestinationGroupPickerDelegate {
     
     func didSelectGroup(_ group: Group, in groupPicker: DestinationGroupPickerVC) {
         destinationGroup = group
-        moveItems(to: group)
+        switch mode {
+        case .move:
+            moveItems(to: group)
+        case .copy:
+            copyItems(to: group)
+        }
         DatabaseManager.shared.startSavingDatabase()
     }
 }

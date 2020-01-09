@@ -93,6 +93,22 @@ public class Group: DatabaseItem, Eraseable {
         fatalError("Pure virtual method")
     }
     
+    /// Creates a deep copy of this group and all its siblings.
+    public func deepClone() -> Group {
+        let selfCopy = clone() // shallow clone
+        // append deep clones of children items
+        groups.forEach {
+            let subgroupDeepCopy = $0.deepClone()
+            selfCopy.add(group: subgroupDeepCopy)
+        }
+        entries.forEach {
+            let entryClone = $0.clone()
+            selfCopy.add(entry: entryClone)
+        }
+        return selfCopy
+    }
+
+    
     /// Copies properties of this group to `target`. Complex properties are cloned.
     /// Does not affect children items, parent group or parent database.
     public func apply(to target: Group) {
