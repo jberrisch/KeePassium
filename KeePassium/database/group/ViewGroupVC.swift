@@ -782,7 +782,7 @@ open class ViewGroupVC: UITableViewController, Refreshable {
     }
     
 
-    var itemMoveCoordinator: ItemMoveCoordinator?
+    var itemRelocationCoordinator: ItemRelocationCoordinator?
     
     /// The user wants to move something at `indexPath`
     func onMoveItemAction(at indexPath: IndexPath) {
@@ -997,9 +997,9 @@ extension ViewGroupVC: UISearchControllerDelegate {
 }
 
 // MARK: - ItemMoveCoordinatorDelegate
-extension ViewGroupVC: ItemMoveCoordinatorDelegate {
-    func didFinish(_ coordinator: ItemMoveCoordinator) {
-        assert(self.itemMoveCoordinator != nil)
-        itemMoveCoordinator = nil
+extension ViewGroupVC: ItemRelocationCoordinatorDelegate {
+    func didFinish(_ coordinator: ItemRelocationCoordinator) {
+        assert(itemRelocationCoordinator != nil)
+        itemRelocationCoordinator = nil
     }
 }

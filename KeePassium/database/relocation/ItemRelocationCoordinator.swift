@@ -8,14 +8,22 @@
 
 import KeePassiumLib
 
-protocol ItemMoveCoordinatorDelegate: class {
-    func didFinish(_ coordinator: ItemMoveCoordinator)
+public enum ItemRelocationMode {
+    /// The items should be moved
+    case move
+    /// The items should be copied
+    case copy
 }
 
-class ItemMoveCoordinator: Coordinator {
+protocol ItemRelocationCoordinatorDelegate: class {
+    func didFinish(_ coordinator: ItemRelocationCoordinator)
+}
+
+class ItemRelocationCoordinator: Coordinator {
+    
     var childCoordinators = [Coordinator]()
     
-    public weak var delegate: ItemMoveCoordinatorDelegate?
+    public weak var delegate: ItemRelocationCoordinatorDelegate?
     
     public let parentViewController: UIViewController
     private weak var database: Database?
@@ -119,7 +127,7 @@ class ItemMoveCoordinator: Coordinator {
 }
 
 // MARK: - GroupPickerDelegate
-extension ItemMoveCoordinator: DestinationGroupPickerDelegate {
+extension ItemRelocationCoordinator: DestinationGroupPickerDelegate {
     func didPressCancel(in groupPicker: DestinationGroupPickerVC) {
         stop()
     }
@@ -136,7 +144,7 @@ extension ItemMoveCoordinator: DestinationGroupPickerDelegate {
 }
 
 // MARK: - ProgressViewHost
-extension ItemMoveCoordinator: ProgressViewHost {
+extension ItemRelocationCoordinator: ProgressViewHost {
     
     func showSavingProgressView() {
         showProgressView(title: LString.databaseStatusSaving, allowCancelling: false)
@@ -176,7 +184,7 @@ extension ItemMoveCoordinator: ProgressViewHost {
 }
 
 // MARK: - DatabaseManagerObserver
-extension ItemMoveCoordinator: DatabaseManagerObserver {
+extension ItemRelocationCoordinator: DatabaseManagerObserver {
     func databaseManager(willSaveDatabase urlRef: URLReference) {
         showSavingProgressView()
     }
