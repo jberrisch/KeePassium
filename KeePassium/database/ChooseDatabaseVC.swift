@@ -168,6 +168,50 @@ class ChooseDatabaseVC: UITableViewController, Refreshable {
         tableView.reloadData()
     }
     
+    /// For deletion, the action name depends on where that file is.
+    /// This function returns the appropriate title.
+    private func getDeleteActionName(for urlRef: URLReference) -> String {
+        let fileInfo = urlRef.getInfo()
+        let deleteActionTitle: String
+        if urlRef.location == .external || fileInfo.hasError {
+            return LString.actionRemoveFile
+        } else {
+            return LString.actionDeleteFile
+        }
+    }
+    
+    /// Shows a context menu with actions suitable for the given item.
+    private func showActions(for indexPath: IndexPath) {
+        let urlRef = databaseRefs[indexPath.row]
+        let exportAction = UIAlertAction(
+            title: LString.actionExport,
+            style: .default,
+            handler: { [weak self] alertAction in
+                self?.didPressExportDatabase(at: indexPath)
+            }
+        )
+        let deleteAction = UIAlertAction(
+            title: getDeleteActionName(for: urlRef),
+            style: .destructive,
+            handler: { [weak self] alertAction in
+                self?.didPressDeleteDatabase(at: indexPath)
+            }
+        )
+        let cancelAction = UIAlertAction(title: LString.actionCancel, style: .cancel, handler: nil)
+        
+        let menu = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        menu.addAction(exportAction)
+        menu.addAction(deleteAction)
+        menu.addAction(cancelAction)
+        
+        let pa = PopoverAnchor(tableView: tableView, at: indexPath)
+        if let popover = menu.popoverPresentationController {
+            pa.apply(to: popover)
+        }
+        present(menu, animated: true)
+    }
+    
+    
     // MARK: - Action handlers
     
     @IBAction func didPressSortButton(_ sender: Any) {
@@ -190,9 +234,9 @@ class ChooseDatabaseVC: UITableViewController, Refreshable {
         let point = gestureRecognizer.location(in: tableView)
         guard gestureRecognizer.state == .began,
             let indexPath = tableView.indexPathForRow(at: point),
-            tableView(tableView, canEditRowAt: indexPath),
-            let cell = tableView.cellForRow(at: indexPath) else { return }
-        cell.demoShowEditActions(lastActionColor: UIColor.destructiveTint)
+            tableView(tableView, canEditRowAt: indexPath)
+            else { return }
+        showActions(for: indexPath)
     }
 
     @IBAction func didPressAddDatabase(_ sender: Any) {
@@ -449,17 +493,9 @@ class ChooseDatabaseVC: UITableViewController, Refreshable {
         
         // For deletion, the action name depends on where that file is.
         let urlRef = databaseRefs[indexPath.row]
-        let fileInfo = urlRef.getInfo()
-        let deleteActionTitle: String
-        if urlRef.location == .external || fileInfo.hasError {
-            deleteActionTitle = LString.actionRemoveFile
-        } else {
-            deleteActionTitle = LString.actionDeleteFile
-        }
-        
         let deleteAction = UITableViewRowAction(
             style: .destructive,
-            title: deleteActionTitle)
+            title: getDeleteActionName(for: urlRef))
         {
             [unowned self] (_,_) in
             self.setEditing(false, animated: true)
