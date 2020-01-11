@@ -71,16 +71,16 @@ public class Group1: Group {
     
     /// Creates a shallow copy of this group with the same properties, but no children items.
     /// The clone belongs to the same DB, but has no parent group.
-    override public func clone() -> Group {
+    override public func clone(makeNewUUID: Bool) -> Group {
         let copy = Group1(database: database)
-        apply(to: copy)
+        apply(to: copy, makeNewUUID: makeNewUUID)
         return copy
     }
     
     /// Copies properties of this group to `target`. Complex properties are cloned.
     /// Does not affect children items, parent group or parent database.
-    public func apply(to target: Group1) {
-        super.apply(to: target)
+    public func apply(to target: Group1, makeNewUUID: Bool) {
+        super.apply(to: target, makeNewUUID: makeNewUUID)
         
         // Group1 specific stuff
         target.id = id

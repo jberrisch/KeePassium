@@ -116,10 +116,10 @@ class ItemRelocationCoordinator: Coordinator {
     private func copyItems(to destinationGroup: Group) {
         for item in itemsToRelocate {
             if let entry = item.value as? Entry {
-                let cloneEntry = entry.clone()
+                let cloneEntry = entry.clone(makeNewUUID: true)
                 cloneEntry.move(to: destinationGroup)
             } else if let group = item.value as? Group {
-                let cloneGroup = group.deepClone()
+                let cloneGroup = group.deepClone(makeNewUUIDs: true)
                 cloneGroup.move(to: destinationGroup)
             } else {
                 assertionFailure()

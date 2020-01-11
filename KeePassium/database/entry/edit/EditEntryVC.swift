@@ -124,7 +124,7 @@ class EditEntryVC: UITableViewController, Refreshable {
         if mode == .edit {
             entry.backupState() //FIXME: creates redundant backups if editing is cancelled
         }
-        originalEntry = entry.clone()
+        originalEntry = entry.clone(makeNewUUID: false)
     }
     
     func restoreOriginalState() {
@@ -133,7 +133,7 @@ class EditEntryVC: UITableViewController, Refreshable {
             entry?.deleteWithoutBackup()
         case .edit:
             if let entry = entry, let originalEntry = originalEntry {
-                originalEntry.apply(to: entry)
+                originalEntry.apply(to: entry, makeNewUUID: false)
             }
         }
     }

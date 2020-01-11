@@ -89,20 +89,21 @@ public class Group: DatabaseItem, Eraseable {
     
     /// Creates a shallow copy of this group with the same properties, but no children items.
     /// Subclasses must override and return an instance of a version-appropriate Group subclass.
-    public func clone() -> Group {
+    public func clone(makeNewUUID: Bool) -> Group {
         fatalError("Pure virtual method")
     }
     
     /// Creates a deep copy of this group and all its siblings.
-    public func deepClone() -> Group {
-        let selfCopy = clone() // shallow clone
+    /// - Parameter makeNewUUIDs: if `true`, a new UUID will be generated for each item.
+    public func deepClone(makeNewUUIDs: Bool) -> Group {
+        let selfCopy = clone(makeNewUUID: makeNewUUIDs) // shallow clone
         // append deep clones of children items
         groups.forEach {
-            let subgroupDeepCopy = $0.deepClone()
+            let subgroupDeepCopy = $0.deepClone(makeNewUUIDs: makeNewUUIDs)
             selfCopy.add(group: subgroupDeepCopy)
         }
         entries.forEach {
-            let entryClone = $0.clone()
+            let entryClone = $0.clone(makeNewUUID: makeNewUUIDs)
             selfCopy.add(entry: entryClone)
         }
         return selfCopy
@@ -111,8 +112,12 @@ public class Group: DatabaseItem, Eraseable {
     
     /// Copies properties of this group to `target`. Complex properties are cloned.
     /// Does not affect children items, parent group or parent database.
-    public func apply(to target: Group) {
-        target.uuid = uuid
+    public func apply(to target: Group, makeNewUUID: Bool) {
+        if makeNewUUID {
+            target.uuid = UUID()
+        } else {
+            target.uuid = uuid
+        }
         target.iconID = iconID
         target.name = name
         target.notes = notes

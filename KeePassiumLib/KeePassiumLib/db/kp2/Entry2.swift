@@ -306,9 +306,9 @@ public class Entry2: Entry {
     }
     
     /// Returns a new entry instance with the same properties.
-    override public func clone() -> Entry {
+    override public func clone(makeNewUUID: Bool) -> Entry {
         let newEntry = Entry2(database: self.database)
-        self.apply(to: newEntry)
+        self.apply(to: newEntry, makeNewUUID: makeNewUUID)
         
         // The clone is not inserted in any group because
         // the clone might be needed in entry history (and thus have no parent group)
@@ -319,8 +319,8 @@ public class Entry2: Entry {
     /// Copies properties of this entry to the `target`.
     /// Complex properties are cloned.
     /// Does not affect group membership.
-    func apply(to target: Entry2) {
-        super.apply(to: target)
+    func apply(to target: Entry2, makeNewUUID: Bool) {
+        super.apply(to: target, makeNewUUID: makeNewUUID)
         target.customIconUUID = self.customIconUUID
         target.foregroundColor = self.foregroundColor
         target.backgroundColor = self.backgroundColor
@@ -336,7 +336,8 @@ public class Entry2: Entry {
 
         target.history.removeAll()
         for histEntry in history {
-            target.history.append(histEntry.clone() as! Entry2)
+            let histEntryClone = histEntry.clone(makeNewUUID: makeNewUUID) as! Entry2
+            target.history.append(histEntryClone)
         }
     }
     
@@ -383,7 +384,7 @@ public class Entry2: Entry {
     /// - Returns: true if successful, false otherwise.
     override public func backupState() {
         // In KP2, historical items preserve the same UUID (unlike KP1)
-        let entryClone = self.clone() as! Entry2
+        let entryClone = self.clone(makeNewUUID: false) as! Entry2
         entryClone.clearHistory()
         addToHistory(entry: entryClone)
         maintainHistorySize()

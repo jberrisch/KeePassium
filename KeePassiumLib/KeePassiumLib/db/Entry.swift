@@ -211,16 +211,20 @@ public class Entry: DatabaseItem, Eraseable {
 
     /// Returns a new entry instance with the same property values.
     /// (A pure virtual method, must be overriden)
-    public func clone() -> Entry {
+    public func clone(makeNewUUID: Bool) -> Entry {
         fatalError("Pure virtual method")
     }
     
     /// Copies properties of this entry to the `target`.
     /// Complex properties are cloned.
     /// Does not affect group membership.
-    public func apply(to target: Entry) {
+    public func apply(to target: Entry, makeNewUUID: Bool) {
         // target.database and target.parent are not changed
-        target.uuid = uuid
+        if makeNewUUID {
+            target.uuid = UUID()
+        } else {
+            target.uuid = uuid
+        }
         target.iconID = iconID
         target.isDeleted = isDeleted
         target.lastModificationTime = lastModificationTime

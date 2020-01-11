@@ -86,9 +86,9 @@ public class Entry1: Entry {
     }
     
     /// Returns a new entry instance with the same field values.
-    override public func clone() -> Entry {
+    override public func clone(makeNewUUID: Bool) -> Entry {
         let newEntry = Entry1(database: self.database)
-        apply(to: newEntry)
+        apply(to: newEntry, makeNewUUID: makeNewUUID)
         // newEntry.groupID = self.groupID -- to be set when moved to a group
 
         return newEntry
@@ -97,8 +97,8 @@ public class Entry1: Entry {
     /// Copies properties of this entry to the `target`.
     /// Complex properties are cloned.
     /// Does not affect group membership.
-    func apply(to target: Entry1) {
-        super.apply(to: target)
+    func apply(to target: Entry1, makeNewUUID: Bool) {
+        super.apply(to: target, makeNewUUID: makeNewUUID)
         // target.groupID is not changed
     }
     
@@ -306,10 +306,9 @@ public class Entry1: Entry {
     /// Makes a backup copy of the current values/state of the entry.
     /// For KP1 means copying the whole entry to the Backup group.
     override public func backupState() {
-        let copy = self.clone()
+        let copy = self.clone(makeNewUUID: true)
+        // KP1 backup copies must have unique UUIDs
 
-        // Backup copies must have unique IDs, so make one
-        copy.uuid = UUID()
         database?.delete(entry: copy) // moves copy to Backup group
     }
     

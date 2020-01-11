@@ -112,13 +112,13 @@ class EditGroupVC: UIViewController, Refreshable {
     /// Remembers the original (before editing) values of group properties
     func rememberOriginalState() {
         guard let group = group else { fatalError() }
-        originalGroup = group.clone()
+        originalGroup = group.clone(makeNewUUID: false)
     }
     
     /// Restores the original group properties, if editing cancelled
     func restoreOriginalState() {
         if let group = group, let originalGroup = originalGroup {
-            originalGroup.apply(to: group)
+            originalGroup.apply(to: group, makeNewUUID: false)
         }
     }
     
