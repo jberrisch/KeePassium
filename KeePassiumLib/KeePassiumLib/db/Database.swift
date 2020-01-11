@@ -137,6 +137,7 @@ open class Database: Eraseable {
     /// Tries to decrypt the given DB with the given composite master key.
     ///
     /// - Parameters:
+    ///   - dbFileName: name of the database file (without path)
     ///   - dbFileData: content of the database file
     ///   - compositeKey: pre-built composite key
     ///   - warnings: will contain messages about database issues, that are not-blocking
@@ -144,6 +145,7 @@ open class Database: Eraseable {
     ///               For example, orphaned attachments in KP2 binary pool.
     /// - Throws: `DatabaseError`, `ProgressInterruption`
     public func load(
+        dbFileName: String,
         dbFileData: ByteArray,
         compositeKey: SecureByteArray,
         warnings: DatabaseLoadingWarnings

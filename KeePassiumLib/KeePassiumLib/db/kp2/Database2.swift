@@ -172,6 +172,7 @@ public class Database2: Database {
     /// Decrypts DB data using the given compositeKey.
     /// - Throws: DatabaseError.loadError, DatabaseError.invalidKey, ProgressInterruption
     override public func load(
+        dbFileName: String,
         dbFileData: ByteArray,
         compositeKey: SecureByteArray,
         warnings: DatabaseLoadingWarnings

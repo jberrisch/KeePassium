@@ -157,6 +157,7 @@ public class Database1: Database {
     /// Decrypts DB data using the given compositeKey.
     /// - Throws: `DatabaseError.loadError`, `DatabaseError.invalidKey`, `ProgressInterruption`
     override public func load(
+        dbFileName: String,
         dbFileData: ByteArray,
         compositeKey: SecureByteArray,
         warnings: DatabaseLoadingWarnings
@@ -183,7 +184,8 @@ public class Database1: Database {
             }
             
             /// Reading and parsing data
-            try loadContent(data: decryptedData) // throws FormatError, ProgressInterruption
+            try loadContent(data: decryptedData, dbFileName: dbFileName)
+                // throws FormatError, ProgressInterruption
             Diag.debug("Content loaded OK")
 
             // all good, so remember combinedKey for eventual saving
@@ -221,7 +223,7 @@ public class Database1: Database {
     /// Reads groups and entries from plain-text `data`
     /// and arranges them into a hierarchy.
     /// - Throws: `Database1.FormatError`, `ProgressInterruption`
-    private func loadContent(data: ByteArray) throws {
+    private func loadContent(data: ByteArray, dbFileName: String) throws {
         let stream = data.asInputStream()
         stream.open()
         defer { stream.close() }
@@ -272,7 +274,7 @@ public class Database1: Database {
         let _root = Group1(database: self)
         _root.level = -1 // because its children should have level 0
         _root.iconID = Group.defaultIconID // created subgroups will use this icon
-        _root.name = "/" // TODO: give the "virtual" root group a more meaningful name
+        _root.name = dbFileName
         self.root = _root
         
         // restore group hierarchy

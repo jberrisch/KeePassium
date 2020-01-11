@@ -806,6 +806,7 @@ fileprivate class DatabaseLoader {
             progress.addChild(db.initProgress(), withPendingUnitCount: ProgressSteps.decryptDatabase)
             Diag.info("Loading database")
             try db.load(
+                dbFileName: dbDoc.fileURL.lastPathComponent,
                 dbFileData: dbDoc.encryptedData,
                 compositeKey: compositeKey,
                 warnings: warnings
