@@ -172,7 +172,6 @@ class ChooseDatabaseVC: UITableViewController, Refreshable {
     /// This function returns the appropriate title.
     private func getDeleteActionName(for urlRef: URLReference) -> String {
         let fileInfo = urlRef.getInfo()
-        let deleteActionTitle: String
         if urlRef.location == .external || fileInfo.hasError {
             return LString.actionRemoveFile
         } else {
