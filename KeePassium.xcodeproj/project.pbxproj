@@ -565,15 +565,6 @@
 		752ED68C2235547D00C20D3E /* SettingsDataProtectionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsDataProtectionVC.swift; sourceTree = "<group>"; };
 		7532A24C21C5A035005DF56F /* KeyFileChooserVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyFileChooserVC.swift; sourceTree = "<group>"; };
 		7533031123C52A1500F38CC7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/DestinationGroupPickerVC.storyboard; sourceTree = "<group>"; };
-		7533031423C52A1900F38CC7 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/DestinationGroupPickerVC.strings; sourceTree = "<group>"; };
-		7533031623C52A1D00F38CC7 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/DestinationGroupPickerVC.strings"; sourceTree = "<group>"; };
-		7533031823C52A2200F38CC7 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/DestinationGroupPickerVC.strings"; sourceTree = "<group>"; };
-		7533031A23C52A2400F38CC7 /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/DestinationGroupPickerVC.strings; sourceTree = "<group>"; };
-		7533031C23C52A2500F38CC7 /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/DestinationGroupPickerVC.strings; sourceTree = "<group>"; };
-		7533031E23C52A2700F38CC7 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/DestinationGroupPickerVC.strings; sourceTree = "<group>"; };
-		7533032023C52A2900F38CC7 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/DestinationGroupPickerVC.strings; sourceTree = "<group>"; };
-		7533032223C52A2A00F38CC7 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/DestinationGroupPickerVC.strings; sourceTree = "<group>"; };
-		7533032423C52A2C00F38CC7 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/DestinationGroupPickerVC.strings; sourceTree = "<group>"; };
 		753376F023CA650C00603F4A /* PasswordStringHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasswordStringHelper.swift; sourceTree = "<group>"; };
 		7535079F23783729003B65C9 /* HapticFeedback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticFeedback.swift; sourceTree = "<group>"; };
 		753A3EE920D3776D00A1CF70 /* Refreshable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Refreshable.swift; sourceTree = "<group>"; };
@@ -2613,15 +2604,6 @@
 			isa = PBXVariantGroup;
 			children = (
 				7533031123C52A1500F38CC7 /* Base */,
-				7533031423C52A1900F38CC7 /* en */,
-				7533031623C52A1D00F38CC7 /* zh-Hans */,
-				7533031823C52A2200F38CC7 /* zh-Hant */,
-				7533031A23C52A2400F38CC7 /* cs */,
-				7533031C23C52A2500F38CC7 /* nl */,
-				7533031E23C52A2700F38CC7 /* de */,
-				7533032023C52A2900F38CC7 /* ru */,
-				7533032223C52A2A00F38CC7 /* es */,
-				7533032423C52A2C00F38CC7 /* sv */,
 			);
 			name = DestinationGroupPickerVC.storyboard;
 			sourceTree = "<group>";

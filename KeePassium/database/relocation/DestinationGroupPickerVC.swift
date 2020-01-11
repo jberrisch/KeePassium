@@ -127,14 +127,17 @@ class DestinationGroupPickerVC: UITableViewController, Refreshable {
         switch mode {
         case .move:
             doneButton.title = LString.actionMove
-            title = LString.titleMoveItems
         case .copy:
             doneButton.title = LString.actionCopy
-            title = LString.titleCopyItems
         }
     }
     
     func refresh() {
+        if let rootGroup = rootGroup {
+            title = rootGroup.name
+        } else {
+            title = nil
+        }
         rebuildFlatNodes()
         tableView.reloadData()
     }
@@ -217,9 +220,9 @@ class DestinationGroupPickerVC: UITableViewController, Refreshable {
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         guard section == 0 else { return nil }
         return NSLocalizedString(
-            "[General/MoveItem] Select destination",
-            value: "Select destination",
-            comment: "Title of a hierarchy of group when moving an entry/group to another group")
+            "[General/DestinationGroup/title] Choose a Destination",
+            value: "Choose a Destination",
+            comment: "Title of the dialog for picking the destination group for move/copy operations")
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

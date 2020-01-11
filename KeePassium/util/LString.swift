@@ -233,17 +233,6 @@ public enum LString {
         value: "Edit Group",
         comment: "Title of a form for editing a group"
     )
-    public static let titleMoveItems = NSLocalizedString(
-        "[Item/Move/title] Move Items",
-        value: "Move Items",
-        comment: "Title of a form moving items (groups and/or entries) to another group"
-    )
-    public static let titleCopyItems = NSLocalizedString(
-        "[Item/Copy/title] Copy Items",
-        value: "Copy Items",
-        comment: "Title of a form copying items (groups and/or entries) to another group"
-    )
-
     // Entry editing/creation
     public static let actionCreateEntry = NSLocalizedString(
         "[Entry/Create/action] Create Entry",

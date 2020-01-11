@@ -8,7 +8,7 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Move Item-->
+        <!--{Database Name}-->
         <scene sceneID="0To-bW-YDD">
             <objects>
                 <tableViewController storyboardIdentifier="DestinationGroupPickerVC" id="H7A-yj-ZNo" customClass="DestinationGroupPickerVC" customModule="KeePassium" customModuleProvider="target" sceneMemberID="viewController">
@@ -79,22 +79,19 @@
                         </connections>
                     </tableView>
                     <toolbarItems/>
-                    <navigationItem key="navigationItem" title="Move Item" id="t1g-Uj-JUq">
+                    <navigationItem key="navigationItem" title="{Database Name}" id="t1g-Uj-JUq">
                         <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="tcC-AS-3N1">
                             <connections>
                                 <action selector="didPressCancelButton:" destination="H7A-yj-ZNo" id="y6m-EX-sou"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" title="{Move}" style="done" id="zLH-Pd-Hlr">
-                            <attributedString key="userComments">
-                                <fragment content="#bc-ignore!"/>
-                            </attributedString>
+                        <barButtonItem key="rightBarButtonItem" style="done" id="zLH-Pd-Hlr">
                             <connections>
                                 <action selector="didPressDoneButton:" destination="H7A-yj-ZNo" id="G1B-BX-akA"/>
                             </connections>
                         </barButtonItem>
                         <attributedString key="userComments">
-                            <fragment content="Title of the dialog for moving entries/groups to other groups"/>
+                            <fragment content="#bc-ignore!"/>
                         </attributedString>
                     </navigationItem>
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
