@@ -93,7 +93,11 @@ class PasswordGeneratorVC: UITableViewController, Refreshable {
                 length: settings.passwordGeneratorLength,
                 parameters: params)
                 // throws CryptoManager.rngError
-            passwordLabel.text = password
+            //passwordLabel.text = password
+            passwordLabel.attributedText = PasswordStringHelper.decorate(
+                password,
+                font: passwordLabel.font
+            )
         } catch {
             Diag.error("RNG error [message: \(error.localizedDescription)]")
             let alert = UIAlertController.make(

@@ -36,6 +36,15 @@ extension UIColor {
     static var disabledText: UIColor {
         return UIColor(named: "DisabledText") ?? .darkGray
     }
+    static var passwordLetters: UIColor {
+        return primaryText
+    }
+    static var passwordDigits: UIColor {
+        return UIColor(named: "PasswordDigits") ?? .systemBlue
+    }
+    static var passwordSymbols: UIColor {
+        return UIColor(named: "PasswordSymbols") ?? .systemRed
+    }
 
 //    static var navBarTint: UIColor {
 //        return UIColor(named: "NavBarTint") ?? UIColor.systemBlue

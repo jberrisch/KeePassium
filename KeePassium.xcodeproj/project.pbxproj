@@ -70,6 +70,10 @@
 		7532A24D21C5A035005DF56F /* KeyFileChooserVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7532A24C21C5A035005DF56F /* KeyFileChooserVC.swift */; };
 		7533030F23C52A1500F38CC7 /* DestinationGroupPickerVC.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7533031223C52A1500F38CC7 /* DestinationGroupPickerVC.storyboard */; };
 		7533031023C52A1500F38CC7 /* DestinationGroupPickerVC.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7533031223C52A1500F38CC7 /* DestinationGroupPickerVC.storyboard */; };
+		753376F123CA650C00603F4A /* PasswordStringHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 753376F023CA650C00603F4A /* PasswordStringHelper.swift */; };
+		753376F223CA650C00603F4A /* PasswordStringHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 753376F023CA650C00603F4A /* PasswordStringHelper.swift */; };
+		753376F323CA650C00603F4A /* PasswordStringHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 753376F023CA650C00603F4A /* PasswordStringHelper.swift */; };
+		753376F423CA650C00603F4A /* PasswordStringHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 753376F023CA650C00603F4A /* PasswordStringHelper.swift */; };
 		753507A023783729003B65C9 /* HapticFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7535079F23783729003B65C9 /* HapticFeedback.swift */; };
 		753507A123783729003B65C9 /* HapticFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7535079F23783729003B65C9 /* HapticFeedback.swift */; };
 		753507A223783729003B65C9 /* HapticFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7535079F23783729003B65C9 /* HapticFeedback.swift */; };
@@ -570,6 +574,7 @@
 		7533032023C52A2900F38CC7 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/DestinationGroupPickerVC.strings; sourceTree = "<group>"; };
 		7533032223C52A2A00F38CC7 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/DestinationGroupPickerVC.strings; sourceTree = "<group>"; };
 		7533032423C52A2C00F38CC7 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/DestinationGroupPickerVC.strings; sourceTree = "<group>"; };
+		753376F023CA650C00603F4A /* PasswordStringHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasswordStringHelper.swift; sourceTree = "<group>"; };
 		7535079F23783729003B65C9 /* HapticFeedback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticFeedback.swift; sourceTree = "<group>"; };
 		753A3EE920D3776D00A1CF70 /* Refreshable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Refreshable.swift; sourceTree = "<group>"; };
 		753F924A22905621005E496F /* PremiumUpgradeHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumUpgradeHelper.swift; sourceTree = "<group>"; };
@@ -1228,6 +1233,7 @@
 		754FCBAF20A86785004DA0E7 /* util */ = {
 			isa = PBXGroup;
 			children = (
+				753376F023CA650C00603F4A /* PasswordStringHelper.swift */,
 				75F4ACFB21776F4800B22D8B /* LString.swift */,
 				75679ACA22F8095F00372301 /* AppInfo.swift */,
 				7546FBD820C3A3F600C5D834 /* Watchdog.swift */,
@@ -1833,6 +1839,7 @@
 				757FB3CB21F8D34A00F016FA /* PasscodeInputVC.swift in Sources */,
 				75B24DD521C523AE003C9486 /* SearchHelper.swift in Sources */,
 				7582544B2211BB830053FCC9 /* Watchdog.swift in Sources */,
+				753376F223CA650C00603F4A /* PasswordStringHelper.swift in Sources */,
 				750CFC0721BAD98B00E62B09 /* LString.swift in Sources */,
 				75151D3423268AB300F3C411 /* UILabel+strikethrough.swift in Sources */,
 				757ADC5123A5180600D708D2 /* DismissablePopover.swift in Sources */,
@@ -1934,6 +1941,7 @@
 				758BF0D820D1B1DA00897C83 /* ValidatingTextField.swift in Sources */,
 				754BF09A20984DEE00E3A292 /* UnlockDatabaseVC.swift in Sources */,
 				7578488F22C1DFF400BBEF9A /* SettingsBackupTimeoutPickerVC.swift in Sources */,
+				753376F123CA650C00603F4A /* PasswordStringHelper.swift in Sources */,
 				758544642351FE8D000D5E5E /* UIFont+monospace.swift in Sources */,
 				75C5C3762129DE0800CD7FE3 /* UIAlertController+extensions.swift in Sources */,
 				75A5312823C0DFE900900ED1 /* ItemRelocationCoordinator.swift in Sources */,
@@ -2039,6 +2047,7 @@
 				75B38C3F233E5B7C006BDEFC /* ValidatingTextField.swift in Sources */,
 				75B38C40233E5B7C006BDEFC /* UnlockDatabaseVC.swift in Sources */,
 				75B38C41233E5B7C006BDEFC /* SettingsBackupTimeoutPickerVC.swift in Sources */,
+				753376F323CA650C00603F4A /* PasswordStringHelper.swift in Sources */,
 				758544662351FE8D000D5E5E /* UIFont+monospace.swift in Sources */,
 				75B38C42233E5B7C006BDEFC /* UIAlertController+extensions.swift in Sources */,
 				75A5312923C0DFE900900ED1 /* ItemRelocationCoordinator.swift in Sources */,
@@ -2100,6 +2109,7 @@
 				75D7DF9F233E5E310029AD87 /* PasscodeInputVC.swift in Sources */,
 				75D7DFA0233E5E310029AD87 /* SearchHelper.swift in Sources */,
 				75D7DFA1233E5E310029AD87 /* Watchdog.swift in Sources */,
+				753376F423CA650C00603F4A /* PasswordStringHelper.swift in Sources */,
 				75D7DFA2233E5E310029AD87 /* LString.swift in Sources */,
 				75D7DFA3233E5E310029AD87 /* UILabel+strikethrough.swift in Sources */,
 				757ADC5323A5180600D708D2 /* DismissablePopover.swift in Sources */,
