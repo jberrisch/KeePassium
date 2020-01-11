@@ -56,7 +56,7 @@ public final class CryptoManager {
     }
     
     public static func hmacSHA1(data: ByteArray, key: ByteArray) -> ByteArray {
-        assert(key.count == CC_SHA1_BLOCK_BYTES)
+        //assert(key.count == CC_SHA1_BLOCK_BYTES)
         let out = ByteArray(count: Int(CC_SHA1_DIGEST_LENGTH))
         hmacSHA(algorithm: CCHmacAlgorithm(kCCHmacAlgSHA1), data: data, key: key, out: out)
         return out
