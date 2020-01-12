@@ -64,17 +64,19 @@ public class DatabaseManager {
         completion callback: ((String?) -> Void)?)
     {
         guard database != nil else { return }
-        Diag.debug("Will close database")
+        Diag.verbose("Will queue close database")
 
         // Clear the key synchronously, otherwise auto-unlock might be racing with the closing.
         if clearStoredKey, let urlRef = databaseRef {
             DatabaseSettingsManager.shared.updateSettings(for: urlRef) { (dbSettings) in
                 dbSettings.clearMasterKey()
+                Diag.verbose("Master key cleared")
             }
         }
 
         serialDispatchQueue.async {
             guard let dbDoc = self.databaseDocument else { return }
+            Diag.debug("Will close database")
             
             let completionSemaphore = DispatchSemaphore(value: 0)
             
@@ -123,6 +125,7 @@ public class DatabaseManager {
         password: String,
         keyFile keyFileRef: URLReference?)
     {
+        Diag.verbose("Will queue load database")
         serialDispatchQueue.async {
             self._loadDatabase(dbRef: dbRef, compositeKey: nil, password: password, keyFileRef: keyFileRef)
         }
@@ -132,6 +135,7 @@ public class DatabaseManager {
     /// (as opposed to password/keyfile pair).
     /// Returns immediately, works asynchronously.
     public func startLoadingDatabase(database dbRef: URLReference, compositeKey: SecureByteArray) {
+        Diag.verbose("Will queue load database")
         /// compositeKey might be erased when we leave this block.
         /// So keep a local copy.
         let compositeKeyClone = compositeKey.secureClone()

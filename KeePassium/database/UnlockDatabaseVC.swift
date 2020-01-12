@@ -184,6 +184,7 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
     private func refreshInputMode() {
         let dbSettings = DatabaseSettingsManager.shared.getSettings(for: databaseRef)
         let isDatabaseKeyStored = dbSettings?.hasMasterKey ?? false
+        Diag.verbose("isDatabaseKeyStored: \(isDatabaseKeyStored)")
         
         let shouldInputMasterKey = !isDatabaseKeyStored
         masterKeyKnownLabel.isHidden = shouldInputMasterKey
@@ -406,11 +407,13 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
         
         let dbSettings = DatabaseSettingsManager.shared.getSettings(for: databaseRef)
         let hasKey = dbSettings?.hasMasterKey ?? false
+        Diag.verbose("canAutoUnlock: \(hasKey)")
         return hasKey
     }
     
     func tryToUnlockDatabase(isAutomaticUnlock: Bool) {
         Diag.clear()
+        Diag.verbose("Will try to unlock database [automatically: \(isAutomaticUnlock)]")
         self.isAutomaticUnlock = isAutomaticUnlock
         let password = passwordField.text ?? ""
         passwordField.resignFirstResponder()
