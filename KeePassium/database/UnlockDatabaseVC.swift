@@ -329,6 +329,11 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
             title: LString.databaseStatusLoading,
             animated: animated)
         progressOverlay?.isCancellable = true
+        progressOverlay?.unresponsiveCancelHandler = { [weak self] in
+            guard let self = self else { return }
+            let diagInfoVC = ViewDiagnosticsVC.make()
+            self.present(diagInfoVC, animated: true, completion: nil)
+        }
         
         // Disable navigation so the user won't switch to another DB while unlocking.
         if let leftNavController = splitViewController?.viewControllers.first as? UINavigationController,
