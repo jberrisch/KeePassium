@@ -29,8 +29,7 @@ public struct FileInfo {
 }
 
 /// Represents a URL as a URL bookmark. Useful for handling external (cloud-based) files.
-public class URLReference: Equatable, Codable {
-
+public class URLReference: Equatable, Codable, CustomDebugStringConvertible {
     public typealias Descriptor = String
     
     /// Specifies possible storage locations of files.
@@ -148,6 +147,13 @@ public class URLReference: Equatable, Codable {
         ref.hash = ref.getHash()
         return ref
     }
+    
+    public var debugDescription: String {
+        return " ‣ Location: \(location)\n" +
+            " ‣ URL: \(url?.relativeString ?? "nil")\n" +
+            " ‣ data: \(data.count) bytes"
+    }
+    
     
     /// Returns a sha256 hash of the URL (if internal) or bookmark (if external)
     private func getHash() -> ByteArray {
