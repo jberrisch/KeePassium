@@ -164,16 +164,17 @@ public class URLReference: Equatable, Codable, CustomDebugStringConvertible {
 
         // internal location
         // URL might be deserialized as nil, resolving might fail
-        guard let _url = try? resolve() else {
-            Diag.warning("Failed to resolve the URL")
+        do {
+            let _url = try resolve()
+            return ByteArray(data: _url.dataRepresentation).sha256
+        } catch {
+            Diag.warning("Failed to resolve the URL: \(error.localizedDescription)")
             return ByteArray() // empty hash as a sign of error
         }
-        return ByteArray(data: _url.dataRepresentation).sha256
     }
     
     public func resolve() throws -> URL {
-        if let url = url, FileManager.default.fileExists(atPath: url.path) {
-            // skip resolving, use the cached URL
+        if let url = url, location.isInternal {
             return url
         }
         
