@@ -107,6 +107,12 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
             DispatchQueue.main.async { [weak self] in
                 self?.tryToUnlockDatabase(isAutomaticUnlock: true)
             }
+        } else {
+            // On launch, the database can be locked by watchdog
+            // between viewWillAppear() and viewDidAppear() calls.
+            // So we ensure the overlay does not remain hovering above the UI.
+            hideProgressOverlay(quickly: true)
+            refreshInputMode()
         }
 
         if FileKeeper.shared.hasPendingFileOperations {
@@ -122,6 +128,7 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
         } else {
             hideWatchdogTimeoutMessage(animated: false)
         }
+        refreshInputMode()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -424,8 +431,18 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
         if let databaseKey = dbSettings?.masterKey {
             DatabaseManager.shared.startLoadingDatabase(
                 database: databaseRef,
-                compositeKey: databaseKey)
+                compositeKey: databaseKey.secureClone())
         } else {
+            guard !isAutomaticUnlock else {
+                // Automatic unlock, but there is no master key?
+                // This means the key was just cleared by the watchdog.
+                // So let's abort auto-unlock and pretend this never happened.
+                Diag.debug("Aborting auto-unlock, there is no stored key")
+                refreshInputMode()
+                hideProgressOverlay(quickly: true)
+                return
+            }
+
             DatabaseManager.shared.startLoadingDatabase(
                 database: databaseRef,
                 password: password,
