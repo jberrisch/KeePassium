@@ -137,7 +137,12 @@ class FileInfoVC: UITableViewController {
         context: UnsafeMutableRawPointer?)
     {
         // adjust popover height to fit table content
-        preferredContentSize = tableView.contentSize
+        var preferredSize = tableView.contentSize
+        if #available(iOS 13, *) {
+            // on iOS 13, the table becomes too wide, so we limit it.
+            preferredSize.width = 400
+        }
+        self.preferredContentSize = preferredSize
     }
 
     // MARK: - Table view data source
