@@ -36,6 +36,8 @@ class FileInfoCell: UITableViewCell {
 class FileInfoVC: UITableViewController {
     private var fields = [(String, String)]()
     
+    private var dismissablePopoverDelegate = DismissablePopover()
+    
     /// - Parameters:
     ///   - urlRef: reference to the file
     ///   - popoverSource: optional, use `nil` for non-popover presentation
@@ -162,28 +164,5 @@ class FileInfoVC: UITableViewController {
         cell.name = fields[fieldIndex].0
         cell.value = fields[fieldIndex].1
         return cell
-    }
-}
-
-extension FileInfoVC: UIPopoverPresentationControllerDelegate {
-    func presentationController(
-        _ controller: UIPresentationController,
-        viewControllerForAdaptivePresentationStyle style: UIModalPresentationStyle
-        ) -> UIViewController?
-    {
-        let navVC = UINavigationController(rootViewController: controller.presentedViewController)
-        if style != .popover {
-            let doneButton = UIBarButtonItem(
-                barButtonSystemItem: .done,
-                target: self,
-                action: #selector(dismissPopover))
-            navVC.topViewController?.navigationItem.rightBarButtonItem = doneButton
-        }
-        return navVC
-    }
-    
-    @objc
-    private func dismissPopover() {
-        dismiss(animated: true, completion: nil)
     }
 }
