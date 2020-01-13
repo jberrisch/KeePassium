@@ -151,8 +151,30 @@ class KeyFileChooserVC: UITableViewController, Refreshable {
         let point = gestureRecognizer.location(in: tableView)
         guard gestureRecognizer.state == .began,
             let indexPath = tableView.indexPathForRow(at: point),
-            tableView(tableView, canEditRowAt: indexPath),
-            let cell = tableView.cellForRow(at: indexPath) else { return }
-        cell.demoShowEditActions(lastActionColor: UIColor.destructiveTint)
+            tableView(tableView, canEditRowAt: indexPath) else { return }
+        showActions(for: indexPath)
+    }
+    
+    /// Shows a context menu with actions suitable for the given item.
+    private func showActions(for indexPath: IndexPath) {
+        let removeAction = UIAlertAction(
+            title: LString.actionRemoveFile,
+            style: .destructive,
+            handler: { [weak self] _ in
+                guard let self = self else { return }
+                self.didPressRemoveKeyFile(at: indexPath)
+            }
+        )
+        let cancelAction = UIAlertAction(title: LString.actionCancel, style: .cancel, handler: nil)
+        
+        let menu = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        menu.addAction(removeAction)
+        menu.addAction(cancelAction)
+        
+        let pa = PopoverAnchor(tableView: tableView, at: indexPath)
+        if let popover = menu.popoverPresentationController {
+            pa.apply(to: popover)
+        }
+        present(menu, animated: true)
     }
 }
