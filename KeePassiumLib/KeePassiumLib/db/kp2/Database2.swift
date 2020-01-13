@@ -51,9 +51,9 @@ public class Database2: Database {
             case .parsingError(let reason):
                 return String.localizedStringWithFormat(
                     NSLocalizedString(
-                        "[Database2/FormatError] Cannot parse database. %s",
+                        "[Database2/FormatError] Cannot parse database. %@",
                         bundle: Bundle.framework,
-                        value: "Cannot parse database. %s",
+                        value: "Cannot parse database. %@",
                         comment: "Error message. Parsing refers to the analysis/understanding of file content. [reason: String]"),
                     reason)
             case .blockIDMismatch:

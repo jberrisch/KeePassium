@@ -101,7 +101,7 @@
 "[Database2/backupGroupName] Recycle Bin" = "Papierkorb";
 
 /* Error message. Parsing refers to the analysis/understanding of file content. [reason: String] */
-"[Database2/FormatError] Cannot parse database. %s" = "Datenbank kann nicht analysiert werden. %s";
+"[Database2/FormatError] Cannot parse database. %@" = "Datenbank kann nicht analysiert werden. %@";
 
 /* Error message [blockIndex: Int] */
 "[Database2/FormatError] Corrupted database file (block %d has negative size)" = "Fehlerhafte Datenbankdatei (Block %d hat negative Größe)";
