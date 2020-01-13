@@ -67,12 +67,24 @@ class ChooseKeyFileVC: UITableViewController, Refreshable {
         self.clearsSelectionOnViewWillAppear = true
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        // automatic popover height
+        tableView.addObserver(self, forKeyPath: "contentSize", options: .new, context: nil)
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         fileKeeperNotifications.startObserving()
         if FileKeeper.shared.hasPendingFileOperations {
             processPendingFileOperations()
         }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        tableView.removeObserver(self, forKeyPath: "contentSize")
+        super.viewWillDisappear(animated)
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -85,10 +97,6 @@ class ChooseKeyFileVC: UITableViewController, Refreshable {
     @objc func refresh() {
         // Key files are non-modifiable, so no backups
         urlRefs = FileKeeper.shared.getAllReferences(fileType: .keyFile, includeBackup: false)
-        let navBarHeight = navigationController?.navigationBar.frame.height ?? 0.0
-        let preferredHeight = 44.0 * CGFloat(tableView.numberOfRows(inSection: 0)) + navBarHeight // FIXME: replace magic-constant row height
-        preferredContentSize = CGSize(width: 300, height: preferredHeight)
-
         fileInfoReloader.reload(urlRefs) { [weak self] in
             guard let self = self else { return }
             self.sortFileList()
@@ -102,6 +110,22 @@ class ChooseKeyFileVC: UITableViewController, Refreshable {
         let fileSortOrder = Settings.current.filesSortOrder
         self.urlRefs.sort { return fileSortOrder.compare($0, $1) }
         tableView.reloadData()
+    }
+    
+    /// Updates popover height depending on table content
+    override func observeValue(
+        forKeyPath keyPath: String?,
+        of object: Any?,
+        change: [NSKeyValueChangeKey : Any]?,
+        context: UnsafeMutableRawPointer?)
+    {
+        // adjust popover height to fit table content
+        var preferredSize = tableView.contentSize
+        if #available(iOS 13, *) {
+            // on iOS 13, the table becomes too wide, so we limit it.
+            preferredSize.width = 400
+        }
+        self.preferredContentSize = preferredSize
     }
     
     // MARK: - Action handlers
