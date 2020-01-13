@@ -39,18 +39,19 @@ class FileInfoVC: UITableViewController {
     /// - Parameters:
     ///   - urlRef: reference to the file
     ///   - popoverSource: optional, use `nil` for non-popover presentation
-    public static func make(urlRef: URLReference, popoverSource: UIView?) -> FileInfoVC {
+    public static func make(urlRef: URLReference, at popoverAnchor: PopoverAnchor?) -> FileInfoVC {
         let vc = FileInfoVC.instantiateFromStoryboard()
         vc.setupFields(urlRef: urlRef)
         
-        if let popoverSource = popoverSource {
-            vc.modalPresentationStyle = .popover
-            if let popover = vc.popoverPresentationController {
-                popover.sourceView = popoverSource
-                popover.sourceRect = popoverSource.bounds
-                popover.permittedArrowDirections = [.left]
-                popover.delegate = vc
-            }
+        guard let popoverAnchor = popoverAnchor else {
+            return vc
+        }
+
+        vc.modalPresentationStyle = .popover
+        if let popover = vc.popoverPresentationController {
+            popoverAnchor.apply(to: popover)
+            popover.permittedArrowDirections = [.left]
+            popover.delegate = vc.dismissablePopoverDelegate
         }
         return vc
     }

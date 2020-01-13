@@ -249,7 +249,7 @@ class MainCoordinator: NSObject, Coordinator {
     }
 
     func showDatabaseFileInfo(fileRef: URLReference) {
-        let databaseInfoVC = FileInfoVC.make(urlRef: fileRef, popoverSource: nil)
+        let databaseInfoVC = FileInfoVC.make(urlRef: fileRef, at: nil)
         navigationController.pushViewController(databaseInfoVC, animated: true)
     }
 

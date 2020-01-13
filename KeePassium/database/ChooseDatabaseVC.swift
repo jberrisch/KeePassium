@@ -203,9 +203,10 @@ class ChooseDatabaseVC: UITableViewController, Refreshable {
         menu.addAction(deleteAction)
         menu.addAction(cancelAction)
         
-        let pa = PopoverAnchor(tableView: tableView, at: indexPath)
+        let popoverAnchor = PopoverAnchor(tableView: tableView, at: indexPath)
         if let popover = menu.popoverPresentationController {
-            pa.apply(to: popover)
+            popoverAnchor.apply(to: popover)
+            popover.permittedArrowDirections = [.left]
         }
         present(menu, animated: true)
     }
@@ -466,8 +467,8 @@ class ChooseDatabaseVC: UITableViewController, Refreshable {
         accessoryButtonTappedForRowWith indexPath: IndexPath)
     {
         let urlRef = databaseRefs[indexPath.row]
-        guard let cell = tableView.cellForRow(at: indexPath) else { assertionFailure(); return }
-        let databaseInfoVC = FileInfoVC.make(urlRef: urlRef, popoverSource: cell)
+        let popoverAnchor = PopoverAnchor(tableView: tableView, at: indexPath)
+        let databaseInfoVC = FileInfoVC.make(urlRef: urlRef, at: popoverAnchor)
         present(databaseInfoVC, animated: true, completion: nil)
     }
     
