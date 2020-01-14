@@ -9,8 +9,6 @@
 /* Begin PBXBuildFile section */
 		750433AF2274CDD5000FE96B /* DatabaseCreatorCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 750433AE2274CDD5000FE96B /* DatabaseCreatorCoordinator.swift */; };
 		75065A3522C41B5200958243 /* SettingsAutoFillVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75065A3422C41B5200958243 /* SettingsAutoFillVC.swift */; };
-		7509CFA4239662D3007C5C66 /* ChallengeResponseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7509CFA3239662D3007C5C66 /* ChallengeResponseManager.swift */; };
-		7509CFA5239662D3007C5C66 /* ChallengeResponseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7509CFA3239662D3007C5C66 /* ChallengeResponseManager.swift */; };
 		750C683220D767F6001A6AA0 /* EditEntryVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 750C683120D767F6001A6AA0 /* EditEntryVC.swift */; };
 		750CFBC821BA9ACD00E62B09 /* AuthenticationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7550D231215D758800360E0C /* AuthenticationServices.framework */; };
 		750CFBCB21BA9ACD00E62B09 /* CredentialProviderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 750CFBCA21BA9ACD00E62B09 /* CredentialProviderViewController.swift */; };
@@ -118,6 +116,8 @@
 		7550D242215D792000360E0C /* AuthenticationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7550D231215D758800360E0C /* AuthenticationServices.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		7550D24C215FDEC500360E0C /* AppCoverVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7550D24B215FDEC500360E0C /* AppCoverVC.swift */; };
 		75514A3420DF5B6200202340 /* EditEntryFieldsCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75514A3320DF5B6200202340 /* EditEntryFieldsCells.swift */; };
+		7558D06223CE2F3E00547621 /* ChallengeResponseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7558D06123CE2F3E00547621 /* ChallengeResponseManager.swift */; };
+		7558D06323CE2F4100547621 /* ChallengeResponseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7558D06123CE2F3E00547621 /* ChallengeResponseManager.swift */; };
 		755B862E23054FA200E9FC83 /* AboutVC.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 755B863023054FA200E9FC83 /* AboutVC.storyboard */; };
 		755B863123054FAD00E9FC83 /* PasscodeInputVC.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 755B863423054FAD00E9FC83 /* PasscodeInputVC.storyboard */; };
 		755B863223054FAD00E9FC83 /* PasscodeInputVC.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 755B863423054FAD00E9FC83 /* PasscodeInputVC.storyboard */; };
@@ -156,14 +156,6 @@
 		7578487E22C02A9100BBEF9A /* UITableViewCell+demoEditActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7578487C22C02A9100BBEF9A /* UITableViewCell+demoEditActions.swift */; };
 		7578488622C165C900BBEF9A /* SettingsBackupVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7578488522C165C900BBEF9A /* SettingsBackupVC.swift */; };
 		7578488F22C1DFF400BBEF9A /* SettingsBackupTimeoutPickerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7578488E22C1DFF400BBEF9A /* SettingsBackupTimeoutPickerVC.swift */; };
-		757ADC5023A5180600D708D2 /* DismissablePopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = 757ADC4E23A5180600D708D2 /* DismissablePopover.swift */; };
-		757ADC5123A5180600D708D2 /* DismissablePopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = 757ADC4E23A5180600D708D2 /* DismissablePopover.swift */; };
-		757ADC5223A5180600D708D2 /* DismissablePopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = 757ADC4E23A5180600D708D2 /* DismissablePopover.swift */; };
-		757ADC5323A5180600D708D2 /* DismissablePopover.swift in Sources */ = {isa = PBXBuildFile; fileRef = 757ADC4E23A5180600D708D2 /* DismissablePopover.swift */; };
-		757ADC5423A5180600D708D2 /* DismissableNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 757ADC4F23A5180600D708D2 /* DismissableNavigationController.swift */; };
-		757ADC5523A5180600D708D2 /* DismissableNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 757ADC4F23A5180600D708D2 /* DismissableNavigationController.swift */; };
-		757ADC5623A5180600D708D2 /* DismissableNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 757ADC4F23A5180600D708D2 /* DismissableNavigationController.swift */; };
-		757ADC5723A5180600D708D2 /* DismissableNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 757ADC4F23A5180600D708D2 /* DismissableNavigationController.swift */; };
 		757ADC4523A1047600D708D2 /* HardwareKeyPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 757ADC4423A1047600D708D2 /* HardwareKeyPicker.swift */; };
 		757ADC4623A1047600D708D2 /* HardwareKeyPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 757ADC4423A1047600D708D2 /* HardwareKeyPicker.swift */; };
 		757ADC4723A1047600D708D2 /* HardwareKeyPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 757ADC4423A1047600D708D2 /* HardwareKeyPicker.swift */; };
@@ -530,7 +522,6 @@
 /* Begin PBXFileReference section */
 		750433AE2274CDD5000FE96B /* DatabaseCreatorCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseCreatorCoordinator.swift; sourceTree = "<group>"; };
 		75065A3422C41B5200958243 /* SettingsAutoFillVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsAutoFillVC.swift; sourceTree = "<group>"; };
-		7509CFA3239662D3007C5C66 /* ChallengeResponseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChallengeResponseManager.swift; sourceTree = "<group>"; };
 		750C683120D767F6001A6AA0 /* EditEntryVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditEntryVC.swift; sourceTree = "<group>"; };
 		750CFBC721BA9ACD00E62B09 /* KeePassium AutoFill.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "KeePassium AutoFill.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		750CFBCA21BA9ACD00E62B09 /* CredentialProviderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialProviderViewController.swift; sourceTree = "<group>"; };
@@ -624,6 +615,7 @@
 		75514A3320DF5B6200202340 /* EditEntryFieldsCells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditEntryFieldsCells.swift; sourceTree = "<group>"; };
 		75530C8E233E603000EC557E /* KeePassiumLibPro.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = KeePassiumLibPro.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		75530C94233E604E00EC557E /* KeePassiumLibPro.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = KeePassiumLibPro.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		7558D06123CE2F3E00547621 /* ChallengeResponseManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChallengeResponseManager.swift; sourceTree = "<group>"; };
 		755B862F23054FA200E9FC83 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/AboutVC.storyboard; sourceTree = "<group>"; };
 		755B863323054FAD00E9FC83 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/PasscodeInputVC.storyboard; sourceTree = "<group>"; };
 		755B863623054FBF00E9FC83 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/ViewDiagnosticsVC.storyboard; sourceTree = "<group>"; };
@@ -665,8 +657,6 @@
 		7578487C22C02A9100BBEF9A /* UITableViewCell+demoEditActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableViewCell+demoEditActions.swift"; sourceTree = "<group>"; };
 		7578488522C165C900BBEF9A /* SettingsBackupVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsBackupVC.swift; sourceTree = "<group>"; };
 		7578488E22C1DFF400BBEF9A /* SettingsBackupTimeoutPickerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsBackupTimeoutPickerVC.swift; sourceTree = "<group>"; };
-		757ADC4E23A5180600D708D2 /* DismissablePopover.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DismissablePopover.swift; sourceTree = "<group>"; };
-		757ADC4F23A5180600D708D2 /* DismissableNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DismissableNavigationController.swift; sourceTree = "<group>"; };
 		757ADC4423A1047600D708D2 /* HardwareKeyPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HardwareKeyPicker.swift; sourceTree = "<group>"; };
 		757ADC4923A12DD100D708D2 /* HardwareKeyPicker.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = HardwareKeyPicker.storyboard; sourceTree = "<group>"; };
 		757ADC4E23A5180600D708D2 /* DismissablePopover.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DismissablePopover.swift; sourceTree = "<group>"; };
@@ -1287,7 +1277,6 @@
 				7535079F23783729003B65C9 /* HapticFeedback.swift */,
 				75B59A6723887A2C00239CFF /* SystemIssueDetector.swift */,
 				75A5312223C0D35500900ED1 /* NavigationRouter.swift */,
-				7509CFA3239662D3007C5C66 /* ChallengeResponseManager.swift */,
 			);
 			path = util;
 			sourceTree = "<group>";
@@ -1383,7 +1372,7 @@
 		757ADC4323A1045C00D708D2 /* challenge-response */ = {
 			isa = PBXGroup;
 			children = (
-				7509CFA3239662D3007C5C66 /* ChallengeResponseManager.swift */,
+				7558D06123CE2F3E00547621 /* ChallengeResponseManager.swift */,
 				757ADC4423A1047600D708D2 /* HardwareKeyPicker.swift */,
 				757ADC4923A12DD100D708D2 /* HardwareKeyPicker.storyboard */,
 			);
@@ -1431,8 +1420,6 @@
 				7561850220E033DB00EEFAEE /* WatchdogAwareTextView.swift */,
 				7548BC1721B07BFE001B00E9 /* ProtectedTextField.swift */,
 				7573FD8A2321664F00DCDA5A /* MultilineButton.swift */,
-				757ADC4F23A5180600D708D2 /* DismissableNavigationController.swift */,
-				757ADC4E23A5180600D708D2 /* DismissablePopover.swift */,
 				754D7C08238C2135005652E1 /* KeyFileTextField.swift */,
 				757ADC4F23A5180600D708D2 /* DismissableNavigationController.swift */,
 				757ADC4E23A5180600D708D2 /* DismissablePopover.swift */,
@@ -1960,7 +1947,6 @@
 				7548BC1821B07BFE001B00E9 /* ProtectedTextField.swift in Sources */,
 				75D3A3AF21BAE53F00255FC3 /* DatabaseFileListCell.swift in Sources */,
 				753A3EEA20D3776D00A1CF70 /* Refreshable.swift in Sources */,
-				7509CFA4239662D3007C5C66 /* ChallengeResponseManager.swift in Sources */,
 				7546FBC320BFC03700C5D834 /* RootNavigationVC.swift in Sources */,
 				75480503238E51AF0068C863 /* PopoverAnchor.swift in Sources */,
 				75EA64182098FC0500DDB941 /* ChooseDatabaseVC.swift in Sources */,
@@ -1996,6 +1982,7 @@
 				75C5C3762129DE0800CD7FE3 /* UIAlertController+extensions.swift in Sources */,
 				75A5312823C0DFE900900ED1 /* ItemRelocationCoordinator.swift in Sources */,
 				75F4ACFC21776F4800B22D8B /* LString.swift in Sources */,
+				7558D06223CE2F3E00547621 /* ChallengeResponseManager.swift in Sources */,
 				750D127E20CF071600BE0CCE /* EditGroupVC.swift in Sources */,
 				757ADC4523A1047600D708D2 /* HardwareKeyPicker.swift in Sources */,
 				75C94C5B20B4B8C2004FA29D /* ViewEntryVC.swift in Sources */,
@@ -2069,7 +2056,6 @@
 				75B38C23233E5B7C006BDEFC /* ProtectedTextField.swift in Sources */,
 				75B38C25233E5B7C006BDEFC /* DatabaseFileListCell.swift in Sources */,
 				75B38C26233E5B7C006BDEFC /* Refreshable.swift in Sources */,
-				7509CFA5239662D3007C5C66 /* ChallengeResponseManager.swift in Sources */,
 				75B38C27233E5B7C006BDEFC /* RootNavigationVC.swift in Sources */,
 				75480505238E51AF0068C863 /* PopoverAnchor.swift in Sources */,
 				75B38C28233E5B7C006BDEFC /* ChooseDatabaseVC.swift in Sources */,
@@ -2105,6 +2091,7 @@
 				75B38C42233E5B7C006BDEFC /* UIAlertController+extensions.swift in Sources */,
 				75A5312923C0DFE900900ED1 /* ItemRelocationCoordinator.swift in Sources */,
 				75B38C43233E5B7C006BDEFC /* LString.swift in Sources */,
+				7558D06323CE2F4100547621 /* ChallengeResponseManager.swift in Sources */,
 				75B38C44233E5B7C006BDEFC /* EditGroupVC.swift in Sources */,
 				757ADC4723A1047600D708D2 /* HardwareKeyPicker.swift in Sources */,
 				75B38C46233E5B7C006BDEFC /* ViewEntryVC.swift in Sources */,
