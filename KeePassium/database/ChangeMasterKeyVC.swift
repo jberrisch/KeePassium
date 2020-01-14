@@ -104,11 +104,17 @@ class ChangeMasterKeyVC: UIViewController {
             challengeHandler: _challengeHandler,
             success: {
                 [weak self] (_ newCompositeKey: CompositeKey) -> Void in
-                guard let _self = self else { return }
+                guard let self = self else { return }
                 let dbm = DatabaseManager.shared
                 dbm.changeCompositeKey(to: newCompositeKey)
-                try? dbm.rememberDatabaseKey(onlyIfExists: true) // throws KeychainError, ignored
-                dbm.addObserver(_self)
+                DatabaseSettingsManager.shared.updateSettings(for: self.databaseRef) {
+                    [weak self] (dbSettings) in
+                    guard let self = self else { return }
+                    dbSettings.maybeSetMasterKey(newCompositeKey)
+                    dbSettings.maybeSetAssociatedKeyFile(self.keyFileRef)
+                    dbSettings.maybeSetAssociatedYubiKey(self.yubiKey)
+                }
+                dbm.addObserver(self)
                 dbm.startSavingDatabase()
             },
             error: {
