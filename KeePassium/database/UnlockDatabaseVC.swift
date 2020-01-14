@@ -21,6 +21,7 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
     @IBOutlet private weak var watchdogTimeoutLabel: UILabel!
     @IBOutlet private weak var databaseIconImage: UIImageView!
     @IBOutlet weak var masterKeyKnownLabel: UILabel!
+    @IBOutlet weak var lockDatabaseButton: UIButton!
     @IBOutlet weak var getPremiumButton: UIButton!
     @IBOutlet weak var announcementButton: UIButton!
     
@@ -209,6 +210,7 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
         
         let shouldInputMasterKey = !isDatabaseKeyStored
         masterKeyKnownLabel.isHidden = shouldInputMasterKey
+        lockDatabaseButton.isHidden = masterKeyKnownLabel.isHidden
         inputPanel.isHidden = !shouldInputMasterKey
     }
 
@@ -424,6 +426,13 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
     
     @IBAction func didPressUnlock(_ sender: Any) {
         tryToUnlockDatabase(isAutomaticUnlock: false)
+    }
+    
+    @IBAction func didPressLockDatabase(_ sender: Any) {
+        DatabaseSettingsManager.shared.updateSettings(for: databaseRef) {
+            $0.clearMasterKey()
+        }
+        refreshInputMode()
     }
     
     private var premiumCoordinator: PremiumCoordinator?
