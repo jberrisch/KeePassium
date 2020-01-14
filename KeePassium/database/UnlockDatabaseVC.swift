@@ -506,7 +506,7 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
 }
 
 extension UnlockDatabaseVC: HardwareKeyPickerDelegate {
-    func didPressCancel(in picker: HardwareKeyPicker) {
+    func didDismiss(_ picker: HardwareKeyPicker) {
         // ignored
     }
     

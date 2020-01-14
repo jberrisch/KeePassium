@@ -9,7 +9,7 @@
 import KeePassiumLib
 
 protocol HardwareKeyPickerDelegate: class {
-    func didPressCancel(in picker: HardwareKeyPicker)
+    func didDismiss(_ picker: HardwareKeyPicker)
     func didSelectKey(yubiKey: YubiKey?, in picker: HardwareKeyPicker)
 }
 
@@ -59,7 +59,7 @@ class HardwareKeyPicker: UITableViewController, Refreshable {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         if !isChoiceMade {
-            delegate?.didPressCancel(in: self)
+            delegate?.didDismiss(self)
         }
     }
     
@@ -176,5 +176,6 @@ extension HardwareKeyPicker: UIPopoverPresentationControllerDelegate {
     
     @objc func dismissPopover() {
         dismiss(animated: true, completion: nil)
+        // delegate will be notified from viewWillDisappear()
     }
 }

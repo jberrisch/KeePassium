@@ -472,7 +472,7 @@ extension MainCoordinator: DatabaseUnlockerDelegate {
 
 // MARK: - HardwareKeyPickerDelegate
 extension MainCoordinator: HardwareKeyPickerDelegate {
-    func didPressCancel(in picker: HardwareKeyPicker) {
+    func didDismiss(_ picker: HardwareKeyPicker) {
         // ignored
     }
     func didSelectKey(yubiKey: YubiKey?, in picker: HardwareKeyPicker) {

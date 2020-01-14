@@ -247,7 +247,7 @@ extension ChangeMasterKeyVC: KeyFileChooserDelegate {
 
 // MARK: - HardwareKeyPickerDelegate
 extension ChangeMasterKeyVC: HardwareKeyPickerDelegate {
-    func didPressCancel(in picker: HardwareKeyPicker) {
+    func didDismiss(_ picker: HardwareKeyPicker) {
         // ignored
     }
     func didSelectKey(yubiKey: YubiKey?, in picker: HardwareKeyPicker) {
