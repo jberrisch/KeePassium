@@ -46,6 +46,9 @@ class HardwareKeyPicker: UITableViewController, Refreshable {
             }
         }
     }
+    private var isNFCAvailable = false
+    private var isMFIAvailable = false
+    
     private var isChoiceMade = false
     
     // MARK: - VC lifecycle
@@ -54,6 +57,17 @@ class HardwareKeyPicker: UITableViewController, Refreshable {
         let vc = HardwareKeyPicker.instantiateFromStoryboard()
         vc.delegate = delegate
         return vc
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        #if MAIN_APP
+        isNFCAvailable = ChallengeResponseManager.instance.supportsNFC
+        isMFIAvailable = ChallengeResponseManager.instance.supportsMFI
+        #elseif AUTOFILL_EXT
+        isNFCAvailable = false
+        isMFIAvailable = false
+        #endif
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -96,6 +110,18 @@ class HardwareKeyPicker: UITableViewController, Refreshable {
         return section.title
     }
     
+    override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+        guard let _section = Section(rawValue: section) else { assertionFailure(); return nil }
+
+        if _section == .noHardwareKey && !AppGroup.isMainApp {
+            // In AutoFill only, show a notification that hardware keys cannot be used.
+            return NSLocalizedString(
+                "[HardwareKey/AutoFill/NotAvailable] Hardware keys are not available in AutoFill.",
+                value: "Hardware keys are not available in AutoFill.",
+                comment: "A notification that hardware keys (e.g. YubiKey) cannot be used in AutoFill (the OS does not allow the AutoFill to use NFC/MFI).")
+        }
+        return super.tableView(tableView, titleForFooterInSection: section)
+    }
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let section = Section(rawValue: indexPath.section) else {
             fatalError()
@@ -107,10 +133,16 @@ class HardwareKeyPicker: UITableViewController, Refreshable {
         switch section {
         case .noHardwareKey:
             key = nil
+            cell.setEnabled(true)
+            cell.isUserInteractionEnabled = true
         case .yubiKeyNFC:
             key = nfcKeys[indexPath.row]
+            cell.setEnabled(isNFCAvailable)
+            cell.isUserInteractionEnabled = isNFCAvailable
         case .yubiKeyMFI:
             key = mfiKeys[indexPath.row]
+            cell.setEnabled(isMFIAvailable)
+            cell.isUserInteractionEnabled = isMFIAvailable
         }
         cell.textLabel?.text = getKeyDescription(key)
         cell.accessoryType = (key == self.key) ? .checkmark : .none
