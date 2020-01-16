@@ -59,7 +59,9 @@ class ChallengeResponseManager {
     // MARK: - Initialization
     
     private func initSessionObservers() {
-        supportsMFI = YubiKitDeviceCapabilities.supportsMFIAccessoryKey
+        // Disable MFI until it is registered with Apple
+        // supportsMFI = YubiKitDeviceCapabilities.supportsMFIAccessoryKey
+        supportsMFI = false
         if supportsMFI {
             initMFISessionObserver()
         }

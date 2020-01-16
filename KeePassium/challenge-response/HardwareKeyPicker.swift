@@ -31,7 +31,9 @@ class HardwareKeyPicker: UITableViewController, Refreshable {
         YubiKey(interface: .mfi, slot: .slot2)]
 
     private enum Section: Int {
-        static let allValues = [.noHardwareKey, yubiKeyNFC, yubiKeyMFI]
+        // Disable MFI until it is registered with Apple 
+        // static let allValues = [.noHardwareKey, yubiKeyNFC, yubiKeyMFI]
+        static let allValues = [.noHardwareKey, yubiKeyNFC]
         case noHardwareKey
         case yubiKeyNFC
         case yubiKeyMFI
