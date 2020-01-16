@@ -12,7 +12,8 @@ public enum PremiumFeature: Int {
         .canUseMultipleDatabases, // enforced
         .canUseBiometricAppLock, // enforced
         .canUseLongDatabaseTimeouts, // enforced
-        .canPreviewAttachments // enforced
+        .canPreviewAttachments, // enforced
+        .canUseHardwareKeys
     ]
     
     /// Can unlock any added database (otherwise only one, with olders modification date)
@@ -26,6 +27,9 @@ public enum PremiumFeature: Int {
     
     /// Can preview attached files by one tap (otherwise, opens a Share sheet)
     case canPreviewAttachments = 3
+    
+    /// Can open databases protected with hardware keys
+    case canUseHardwareKeys = 4
     
     /// Defines whether this premium feature may be used with given premium status.
     ///
@@ -41,6 +45,8 @@ public enum PremiumFeature: Int {
             return status == .subscribed || status == .lapsed
         case .canPreviewAttachments:
             return status != .freeHeavyUse
+        case .canUseHardwareKeys:
+            return status == .subscribed || status == .lapsed
         }
     }
 }
