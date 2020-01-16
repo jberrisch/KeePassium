@@ -155,7 +155,7 @@ class EditEntrySingleLineCell:
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var actionButton: UIButton!
     
-    var delegate: EditableFieldCellDelegate?
+    weak var delegate: EditableFieldCellDelegate?
     weak var field: EditableField? {
         didSet {
             titleLabel.text = field?.visibleName
@@ -216,7 +216,7 @@ class EditEntrySingleLineProtectedCell:
     @IBOutlet private weak var titleLabel: UILabel!
     @IBOutlet weak var randomizeButton: UIButton!
     
-    var delegate: EditableFieldCellDelegate?
+    weak var delegate: EditableFieldCellDelegate?
     weak var field: EditableField? {
         didSet {
             titleLabel.text = field?.visibleName
@@ -274,7 +274,7 @@ class EditEntryMultiLineCell: UITableViewCell, EditableFieldCell, ValidatingText
     @IBOutlet private weak var textView: ValidatingTextView!
     @IBOutlet weak var titleLabel: UILabel!
     
-    var delegate: EditableFieldCellDelegate?
+    weak var delegate: EditableFieldCellDelegate?
     weak var field: EditableField? {
         didSet {
             titleLabel.text = field?.visibleName
@@ -329,7 +329,7 @@ class EditEntryCustomFieldCell:
     @IBOutlet private weak var valueTextView: ValidatingTextView!
     @IBOutlet private weak var protectionSwitch: UISwitch!
 
-    var delegate: EditableFieldCellDelegate?
+    weak var delegate: EditableFieldCellDelegate?
     weak var field: EditableField? {
         didSet {
             nameTextField.text = field?.visibleName
