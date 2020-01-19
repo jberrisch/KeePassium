@@ -291,11 +291,14 @@ public class Database2: Database {
     /// .v3 - string is an ISO8601 representation
     /// .v4 - string is a base64-encoded number of seconds since 0001-01-01 00:00:00.000
     func xmlStringToDate(_ string: String?) -> Date? {
+        // Workaround for stray CRLF added by KeePassDX
+        // https://github.com/Kunzisoft/KeePassDX/issues/415
+        let trimmedString = string?.trimmingCharacters(in: .whitespacesAndNewlines)
         switch header.formatVersion {
         case .v3:
-            return Date(iso8601string: string)
+            return Date(iso8601string: trimmedString)
         case .v4:
-            return Date(base64Encoded: string)
+            return Date(base64Encoded: trimmedString)
         }
     }
     
