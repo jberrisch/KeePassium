@@ -105,7 +105,11 @@ class EntryFinderVC: UITableViewController {
         searchController.searchBar.returnKeyType = .search
         searchController.searchBar.barStyle = .default
         
-        searchController.dimsBackgroundDuringPresentation = false
+        if #available(iOS 12.0, *) {
+            // nothing to do
+        } else {
+            searchController.dimsBackgroundDuringPresentation = false
+        }
         searchController.obscuresBackgroundDuringPresentation = false
         searchController.searchResultsUpdater = self
         searchController.delegate = self
