@@ -21,6 +21,7 @@ public class Clipboard {
     }
     
     /// Puts given URL to the pasteboard, and removes it after `timeout` seconds.
+    /// Missing or non-positive `timeout` is considered infinite.
     public func insert(url: URL, timeout: Double?=nil) {
         Diag.debug("Inserted a URL to clipboard")
         insert(items: [[(kUTTypeURL as String) : url]], timeout: timeout)
@@ -28,6 +29,7 @@ public class Clipboard {
     }
     
     /// Puts given text to the pasteboard, and removes it after `timeout` seconds.
+    /// Missing or non-positive `timeout` is considered infinite.
     public func insert(text: String, timeout: Double?=nil) {
         Diag.debug("Inserted a string to clipboard")
         insert(items: [[(kUTTypeUTF8PlainText as String) : text]], timeout: timeout)
@@ -35,7 +37,7 @@ public class Clipboard {
     }
     
     private func insert(items: [[String: Any]], timeout: Double?) {
-        if let timeout = timeout {
+        if let timeout = timeout, timeout > 0.0 {
             UIPasteboard.general.setItems(
                 items,
                 options: [
