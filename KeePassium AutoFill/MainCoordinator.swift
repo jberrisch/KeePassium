@@ -405,7 +405,8 @@ extension MainCoordinator: DatabaseChooserDelegate {
     
     func databaseChooserShouldAddDatabase(_ sender: DatabaseChooserVC, popoverAnchor: PopoverAnchor) {
         watchdog.restart()
-        if sender.databaseRefs.count > 0 {
+        let nonBackupDatabaseRefs = sender.databaseRefs.filter { $0.location != .internalBackup }
+        if nonBackupDatabaseRefs.count > 0 {
             if PremiumManager.shared.isAvailable(feature: .canUseMultipleDatabases) {
                 addDatabase(popoverAnchor: popoverAnchor)
             } else {
