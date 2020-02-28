@@ -85,7 +85,7 @@ public class DatabaseSettings: Eraseable, Codable {
     /// Conditionally stores the master key for the target database,
     /// only if allowed by settings.
     public func maybeSetMasterKey(_ key: CompositeKey) {
-        guard isRememberKeyFile ?? Settings.current.isRememberDatabaseKey else { return }
+        guard isRememberMasterKey ?? Settings.current.isRememberDatabaseKey else { return }
         guard key.state >= .combinedComponents else { return }
         setMasterKey(key)
     }

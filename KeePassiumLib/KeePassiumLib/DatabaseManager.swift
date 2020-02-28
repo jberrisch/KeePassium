@@ -266,11 +266,14 @@ public class DatabaseManager {
                     comment: "Error message"))
                 return
             }
-            Diag.debug("New composite key created successfully")
+            let staticComponents = keyHelper.combineComponents(
+                passwordData: passwordData, // might be empty, but not nil
+                keyFileData: keyFileData    // might be empty, but not nil
+            )
             let compositeKey = CompositeKey(
-                passwordData: passwordData,
-                keyFileData: keyFileData,
+                staticComponents: staticComponents,
                 challengeHandler: challengeHandler)
+            Diag.debug("New composite key created successfully")
             successHandler(compositeKey)
         }
         
