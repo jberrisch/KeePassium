@@ -585,6 +585,8 @@ public class FileKeeper {
         )
     }
     
+    // MARK: - File import
+    
     /// Given a file (either external or in 'Documents/Inbox'), copes/moves it to 'Documents'.
     private func importFile(
         url sourceURL: URL,
@@ -638,6 +640,8 @@ public class FileKeeper {
             try? FileManager.default.removeItem(at: url) // ignoring any errors
         }
     }
+    
+    // MARK: - Database backup
     
     /// Saves `contents` in a timestamped file in local Documents/Backup folder.
     ///
