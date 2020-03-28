@@ -624,20 +624,16 @@ public class FileKeeper {
         })
     }
     
-    
     /// Removes all files from Documents/Inbox.
     /// Silently ignores any errors.
     private func clearInbox() {
-        guard let inboxFiles = try? FileManager.default.contentsOfDirectory(
+        let fileManager = FileManager()
+        let inboxFiles = try? fileManager.contentsOfDirectory(
             at: inboxDirURL,
             includingPropertiesForKeys: nil,
             options: [])
-        else {
-            // probably, there is no Inbox there
-            return
-        }
-        for url in inboxFiles {
-            try? FileManager.default.removeItem(at: url) // ignoring any errors
+        inboxFiles?.forEach {
+            try? fileManager.removeItem(at: $0) // ignoring any errors
         }
     }
     
