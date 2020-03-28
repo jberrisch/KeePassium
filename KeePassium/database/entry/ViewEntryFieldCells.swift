@@ -228,6 +228,7 @@ class ProtectedFieldCellDecorator: ViewableFieldCellDecorator {
                     // no attribution, just plain text
                     cell.valueText.attributedText = nil
                     cell.valueText.text = value
+                    cell.valueText.textColor = .primaryText
                 } else {
                     cell.valueText.attributedText = PasswordStringHelper.decorate(
                         value ?? "",
