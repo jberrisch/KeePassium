@@ -42,9 +42,36 @@ public enum FileKeeperError: LocalizedError {
     }
 }
 
+public protocol FileKeeperDelegate: class {
+    
+    /// Called on file import, when there is already a file with the same name.
+    /// - Parameters:
+    ///   - target: URL of the target/conflicting file
+    ///   - handler: will be called once the user confirms the resolution strategy.
+    ///              The only parameter is `FileKeeper.ConflictResolution`
+    func shouldResolveImportConflict(
+        target: URL,
+        handler: @escaping (FileKeeper.ConflictResolution) -> Void
+    )
+}
+
 public class FileKeeper {
     public static let shared = FileKeeper()
     
+    public weak var delegate: FileKeeperDelegate?
+    
+    /// Defines how to handle existing files when importing incoming files.
+    public enum ConflictResolution {
+        /// Ask the user what to do
+        case ask
+        /// Abort operation, remove the incoming file.
+        case abort
+        /// Rename the incoming file to a non-conflicting name.
+        case rename
+        /// Overwrite the existing file with the incoming one.
+        case overwrite
+    }
+
     private enum UserDefaultsKey {
         // Also, since extension cannot resolve URL bookmarks created
         // by the main app, the app and the extension have separate
@@ -88,11 +115,11 @@ public class FileKeeper {
     private var pendingOperationGroup = DispatchGroup()
     
     /// App sandbox Documents folder
-    private let docDirURL: URL
+    fileprivate let docDirURL: URL
     /// App group's shared Backup folder
-    private let backupDirURL: URL
+    fileprivate let backupDirURL: URL
     /// App sandbox Documents/Inbox folder
-    private let inboxDirURL: URL
+    fileprivate let inboxDirURL: URL
     
     // True when there are files to be opened/imported.
     public var hasPendingFileOperations: Bool {
@@ -605,23 +632,115 @@ public class FileKeeper {
         
         Diag.debug("Will import a file")
         let doc = FileDocument(fileURL: sourceURL)
-        doc.open(successHandler: {
-            do {
-                try doc.data.write(to: targetURL, options: [.withoutOverwriting])
-                Diag.info("External file copied successfully")
-                successHandler?(targetURL)
-            } catch {
-                Diag.error("Failed to save external file [message: \(error.localizedDescription)]")
+        doc.open(
+            successHandler: { // strong self
+                self.saveDataWithConflictResolution(
+                    doc.data,
+                    to: targetURL,
+                    conflictResolution: .ask,
+                    success: successHandler,
+                    error: errorHandler)
+            },
+            errorHandler: { error in // strong self
+                Diag.error("Failed to import external file [message: \(error.localizedDescription)]")
                 let importError = FileKeeperError.importError(reason: error.localizedDescription)
                 errorHandler?(importError)
+                self.clearInbox()
             }
-            self.clearInbox()
-        }, errorHandler: { error in
-            Diag.error("Failed to import external file [message: \(error.localizedDescription)]")
+        )
+    }
+    
+    /// Saves given data to a local file (in /Documents), handling potential file name conflicts.
+    /// - Parameters:
+    ///   - data: data to save
+    ///   - targetURL: where to save the data
+    ///   - conflictResolution: how to handle file name conflicts
+    ///   - successHandler: called after successful completion
+    ///   - errorHandler: called in case of error (unrelated to conflicts)
+    private func saveDataWithConflictResolution(
+        _ data: ByteArray,
+        to targetURL: URL,
+        conflictResolution: FileKeeper.ConflictResolution,
+        success successHandler: ((URL) -> Void)?,
+        error errorHandler: ((FileKeeperError)->Void)?)
+    {
+        let hasConflict = FileManager.default.fileExists(atPath: targetURL.path)
+        guard hasConflict else {
+            // No conflicts to handle, just save
+            writeToFile(data, to: targetURL, success: successHandler, error: errorHandler)
+            clearInbox()
+            return
+        }
+        
+        switch conflictResolution {
+        case .ask:
+            assert(delegate != nil)
+            delegate?.shouldResolveImportConflict(
+                target: targetURL,
+                handler: { (resolution) in // strong self
+                    Diag.info("Conflict resolution: \(resolution)")
+                    // call the save func with the user-chosed conflict resolution
+                    self.saveDataWithConflictResolution(
+                        data,
+                        to: targetURL,
+                        conflictResolution: resolution,
+                        success: successHandler,
+                        error: errorHandler)
+                }
+            )
+        case .abort:
+            clearInbox()
+            // nothing else to do, but the callback should be called
+            successHandler?(targetURL)
+        case .rename:
+            let newURL = makeUniqueFileName(targetURL)
+            writeToFile(data, to: newURL, success: successHandler, error: errorHandler)
+            clearInbox()
+            successHandler?(newURL)
+        case .overwrite:
+            writeToFile(data, to: targetURL, success: successHandler, error: errorHandler)
+            clearInbox()
+            successHandler?(targetURL)
+        }
+    }
+    
+    
+    /// Given a file URL, adds a numbered suffix to the file name
+    /// until the name is unique (no such file exists).
+    /// - Parameter url: original file URL (e.g. "file://folder/file.dat")
+    /// - Returns: a unique file URL (e.g. "file://folder/file (1).dat")
+    private func makeUniqueFileName(_ url: URL) -> URL {
+        let fileManager = FileManager.default
+
+        let path = url.deletingLastPathComponent()
+        let fileNameNoExt = url.deletingPathExtension().lastPathComponent
+        let fileExt = url.pathExtension
+        
+        var fileName = url.lastPathComponent
+        var index = 1
+        while fileManager.fileExists(atPath: path.appendingPathComponent(fileName).path) {
+            fileName = String(format: "%@ (%d).%@", fileNameNoExt, index, fileExt)
+            index += 1
+        }
+        return path.appendingPathComponent(fileName)
+    }
+    
+    private func writeToFile(
+        _ bytes: ByteArray,
+        to targetURL: URL,
+        success successHandler: ((URL) -> Void)?,
+        error errorHandler: ((FileKeeperError)->Void)?)
+    {
+        do {
+            try bytes.write(to: targetURL, options: [.atomicWrite])
+            Diag.debug("File imported successfully")
+            clearInbox()
+            successHandler?(targetURL)
+        } catch {
+            Diag.error("Failed to save external file [message: \(error.localizedDescription)]")
             let importError = FileKeeperError.importError(reason: error.localizedDescription)
             errorHandler?(importError)
-            self.clearInbox()
-        })
+        }
     }
     
     /// Removes all files from Documents/Inbox.

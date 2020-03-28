@@ -60,6 +60,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
     
+    func applicationDidBecomeActive(_ application: UIApplication) {
+        // Make sure that FileKeeper can ask user for confirmations
+        let rootVC = window?.rootViewController as? FileKeeperDelegate
+        assert(rootVC != nil, "FileKeeper needs a delegate")
+        FileKeeper.shared.delegate = rootVC
+    }
+    
     func applicationWillTerminate(_ application: UIApplication) {
         PremiumManager.shared.finishObservingTransactions()
     }
