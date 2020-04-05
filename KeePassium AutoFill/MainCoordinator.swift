@@ -710,6 +710,7 @@ extension MainCoordinator: LongPressAwareNavigationControllerDelegate {
 // MARK: - EntryFinderDelegate
 extension MainCoordinator: EntryFinderDelegate {
     func entryFinder(_ sender: EntryFinderVC, didSelectEntry entry: Entry) {
+        entry.touch(.accessed)
         returnCredentials(entry: entry)
     }
     

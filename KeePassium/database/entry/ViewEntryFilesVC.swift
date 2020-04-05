@@ -37,6 +37,8 @@ class ViewEntryFilesVC: UITableViewController, Refreshable {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        entry?.touch(.accessed)
+        
         editButton = UIBarButtonItem(
             title: LString.actionEdit,
             style: .plain,
@@ -126,6 +128,7 @@ class ViewEntryFilesVC: UITableViewController, Refreshable {
         
         tableView.deselectRow(at: indexPath, animated: true)
         
+        entry?.touch(.accessed)
         let row = indexPath.row
         if row < attachments.count {
             if tableView.isEditing {
@@ -340,7 +343,6 @@ class ViewEntryFilesVC: UITableViewController, Refreshable {
         guard let entry = entry else { return }
         // already confirmed by two taps in UI
         entry.backupState()
-        entry.modified()
         entry.attachments.remove(at: indexPath.row)
         Diag.info("Attachment deleted OK")
         
@@ -370,7 +372,7 @@ class ViewEntryFilesVC: UITableViewController, Refreshable {
     
     private func applyChangesAndSaveDatabase() {
         guard let entry = entry else { return }
-        entry.modified()
+        entry.touch(.modified, updateParents: false)
         DatabaseManager.shared.addObserver(self)
         DatabaseManager.shared.startSavingDatabase()
     }
@@ -462,8 +464,7 @@ extension ViewEntryFilesVC: UIDocumentPickerDelegate {
     private func addAttachment(name: String, data: ByteArray) {
         guard let entry = entry, let database = entry.database else { return }
         entry.backupState()
-        entry.modified()
-
+        
         let newAttachment = database.makeAttachment(name: name, data: data)
         if !entry.isSupportsMultipleAttachments {
             // already allowed by the user

@@ -9,6 +9,13 @@
 
 /// A common parent for groups and entries
 open class DatabaseItem {
+    public enum TouchMode {
+        /// The item has been merely accessed (viewed)
+        case accessed
+        /// The item has been accessed and modified
+        case modified
+    }
+    
     public weak var parent: Group?
     
     /// True iff this item is a parent (at any level) of the given `item`.
@@ -21,5 +28,12 @@ open class DatabaseItem {
             parent = parent?.parent
         }
         return false
+    }
+    
+    /// Update last access time (and optionally the modification time) of the entry.
+    /// - Parameter mode: defines which timestamps should be updated
+    /// - Parameter updateParents: also touch containing groups.
+    public func touch(_ mode: TouchMode, updateParents: Bool = true) {
+        fatalError("Pure abstract method")
     }
 }

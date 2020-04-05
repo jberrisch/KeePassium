@@ -1333,10 +1333,8 @@ public class Database2: Database {
         let moveOnly = !group.isDeleted && meta.isRecycleBinEnabled
         if moveOnly, let backupGroup = getBackupGroup(createIfMissing: meta.isRecycleBinEnabled) {
             Diag.debug("Moving group to RecycleBin")
-            parentGroup.remove(group: group)
-            backupGroup.add(group: group)
-            group.accessed()
-            group.locationChangedTime = Date.now
+            group.move(to: backupGroup) // also updates locationChangedTime
+            group.touch(.accessed, updateParents: false)
             
             // Flag the group and all its siblings deleted (siblings' timestamps remain unchanged).
             group.isDeleted = true
@@ -1375,8 +1373,8 @@ public class Database2: Database {
         if meta.isRecycleBinEnabled,
             let backupGroup = getBackupGroup(createIfMissing: meta.isRecycleBinEnabled)
         {
-            entry.accessed()
-            entry.move(to: backupGroup)
+            entry.move(to: backupGroup) // also updates locationChangedTime
+            entry.touch(.accessed)
         } else {
             // Backup is disabled, so we delete the entry permanently
             // and mention it in DeletedObjects to facilitate synchronization.

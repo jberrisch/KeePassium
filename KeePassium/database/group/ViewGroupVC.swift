@@ -73,6 +73,7 @@ open class ViewGroupVC: UITableViewController, Refreshable {
         let viewGroupVC = ViewGroupVC.instantiateFromStoryboard()
         viewGroupVC.group = group
         viewGroupVC.loadingWarnings = loadingWarnings
+        group?.touch(.accessed)
         return viewGroupVC
     }
     
@@ -759,9 +760,8 @@ open class ViewGroupVC: UITableViewController, Refreshable {
             {
                 [weak self] _ in
                 guard let database = targetGroup.database else { return }
-                targetGroup.accessed()
-                targetGroup.modified()
                 database.delete(group: targetGroup)
+                targetGroup.touch(.accessed)
                 self?.saveDatabase()
             }
             confirmationAlert.addAction(deleteAction)
@@ -776,9 +776,8 @@ open class ViewGroupVC: UITableViewController, Refreshable {
             {
                 [weak self] _ in
                 guard let database = targetEntry.database else { return }
-                targetEntry.accessed()
-                targetEntry.modified()
                 database.delete(entry: targetEntry)
+                targetEntry.touch(.accessed)
                 if isDeletingShownEntry && !(self?.splitViewController?.isCollapsed ?? true) {
                     self?.handleItemSelection(indexPath: nil) // hide deleted entry from viewer
                 }

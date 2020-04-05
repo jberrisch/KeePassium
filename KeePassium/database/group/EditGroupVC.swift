@@ -73,7 +73,7 @@ class EditGroupVC: UIViewController, Refreshable {
         case .edit:
             title = LString.titleEditGroup
         }
-        group?.accessed()
+        group?.touch(.accessed)
         refresh()
     }
     
@@ -161,7 +161,7 @@ class EditGroupVC: UIViewController, Refreshable {
             return
         }
         group.name = nameTextField.text ?? ""
-        group.modified()
+        group.touch(.modified, updateParents: false)
         DatabaseManager.shared.startSavingDatabase()
     }
     

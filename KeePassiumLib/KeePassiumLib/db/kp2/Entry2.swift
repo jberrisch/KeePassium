@@ -390,10 +390,17 @@ public class Entry2: Entry {
         maintainHistorySize()
     }
 
-    /// Updates last access timestamp to current time and increases usage counter.
-    override public func accessed() {
-        super.accessed()
+    /// Update last access time and usage counter (and optionally the modification time) of the entry.
+    /// - Parameter mode: defines which timestamps should be updated
+    /// - Parameter updateParents: also touch containing groups.
+    override public func touch(_ mode: DatabaseItem.TouchMode, updateParents: Bool = true) {
         usageCount += 1
+        super.touch(mode, updateParents: updateParents)
+    }
+    
+    override public func move(to newGroup: Group) {
+        super.move(to: newGroup)
+        locationChangedTime = Date.now
     }
     
     /// Loads the entry from XML.

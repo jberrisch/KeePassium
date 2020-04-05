@@ -44,6 +44,7 @@ class ViewEntryFieldsVC: UITableViewController, Refreshable {
         editButton.accessibilityIdentifier = "edit_entry_button" // for UI testing
 
         entryChangeNotifications = EntryChangeNotifications(observer: self)
+        entry?.touch(.accessed)
         refresh()
     }
 
@@ -121,6 +122,7 @@ class ViewEntryFieldsVC: UITableViewController, Refreshable {
         } else {
             Clipboard.general.insert(text: text, timeout: timeout)
         }
+        entry?.touch(.accessed)
         animateCopyToClipboard(indexPath: indexPath)
     }
     

@@ -31,6 +31,7 @@ class ViewEntryVC: UIViewController, Refreshable {
         viewEntryVC.entry = entry
         viewEntryVC.isHistoryMode = historyMode
         viewEntryVC.refresh()
+        entry.touch(.accessed)
         if !historyMode {
             // In normal mode, we need to wrap the VC in a navigation controller
             // to show eventual history-mode VCs nicely.

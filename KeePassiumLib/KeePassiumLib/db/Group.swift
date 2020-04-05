@@ -219,14 +219,17 @@ public class Group: DatabaseItem, Eraseable {
         fatalError("Pure virtual method")
     }
     
-    /// Updates last access timestamp to current time
-    public func accessed() {
+    /// Update last access time (and optionally the modification time) of the group.
+    /// - Parameter mode: defines which timestamps should be updated
+    /// - Parameter updateParents: also touch containing groups.
+    override public func touch(_ mode: DatabaseItem.TouchMode, updateParents: Bool = true) {
         lastAccessTime = Date.now
-    }
-    /// Updates modification timestamp to current time
-    public func modified() {
-        accessed()
-        lastModificationTime = Date.now
+        if mode == .modified {
+            lastModificationTime = Date.now
+        }
+        if updateParents {
+            parent?.touch(mode, updateParents: true)
+        }
     }
 
     /// Recursively iterates through all the children groups and entries of this group

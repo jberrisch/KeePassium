@@ -103,12 +103,20 @@ public class Group2: Group {
         return newGroup
     }
     
-    /// Updates lass access timestamp and changes usage counter.
-    override public func accessed() {
-        super.accessed()
+    /// Update last access time (and optionally the modification time) of the group.
+    /// - Parameter mode: defines which timestamps should be updated
+    /// - Parameter updateParents: also touch containing groups.
+    override public func touch(_ mode: DatabaseItem.TouchMode, updateParents: Bool = true) {
         usageCount += 1
+        super.touch(mode, updateParents: updateParents)
     }
 
+    /// Moves this group to another parent group.
+    override public func move(to newGroup: Group) {
+        super.move(to: newGroup)
+        self.locationChangedTime = Date.now
+    }
+    
     /// Loads group properties from the <Group> XML element
     /// - Throws: `Xml2.ParsingError`, `ProgressInterruption`
     func load(
