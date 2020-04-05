@@ -94,9 +94,9 @@ final class Meta2: Eraseable {
     private(set) var maintenanceHistoryDays: UInt32
     /// Database color coded as a CSS-format hex string (e.g. #123456), empty string means transparent
     private(set) var colorString: String
-    internal var masterKeyChangedTime: Date
-    private(set) var masterKeyChangeRec: Int64
-    private(set) var masterKeyChangeForce: Int64
+    internal var masterKeyChangedTime: Date // when the master key was last changed
+    private(set) var masterKeyChangeRec: Int64 // recommend changing master key after this many days
+    private(set) var masterKeyChangeForce: Int64 // force changing master key after this many days
     private(set) var memoryProtection: MemoryProtection
     private(set) var isRecycleBinEnabled: Bool
     private(set) var recycleBinGroupUUID: UUID
