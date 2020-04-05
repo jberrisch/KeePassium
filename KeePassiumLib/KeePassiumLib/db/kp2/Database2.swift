@@ -697,6 +697,7 @@ public class Database2: Database {
     /// - Parameter newKey: new composite key.
     override public func changeCompositeKey(to newKey: CompositeKey) {
         compositeKey = newKey.clone()
+        meta.masterKeyChangedTime = Date.now
     }
     
     override public func getBackupGroup(createIfMissing: Bool) -> Group? {
