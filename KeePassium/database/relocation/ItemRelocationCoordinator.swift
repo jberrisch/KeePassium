@@ -59,12 +59,7 @@ class ItemRelocationCoordinator: Coordinator {
             let currentGroup = self?.itemsToRelocate.first?.value?.parent
             self?.groupPicker.expandGroup(currentGroup)
         }
-        
-        // touch items as accessed
-        itemsToRelocate.forEach{ (weakItem) in
-            weakItem.value?.touch(.accessed)
-        }
-        
+                
         DatabaseManager.shared.addObserver(self)
     }
     
@@ -108,7 +103,6 @@ class ItemRelocationCoordinator: Coordinator {
     private func moveItems(to destinationGroup: Group) {
         for weakItem in itemsToRelocate {
             guard let strongItem = weakItem.value else { continue }
-            // strongItem.touch(.modified) // KP2 does not do that
             if let entry = strongItem as? Entry {
                 entry.move(to: destinationGroup)
             } else if let group = strongItem as? Group {
@@ -116,23 +110,24 @@ class ItemRelocationCoordinator: Coordinator {
             } else {
                 assertionFailure()
             }
+            strongItem.touch(.accessed, updateParents: true)
         }
     }
 
     /// Copies all the items to the given destination group.
     private func copyItems(to destinationGroup: Group) {
-        for item in itemsToRelocate {
-            if let entry = item.value as? Entry {
+        for weakItem in itemsToRelocate {
+            guard let strongItem = weakItem.value else { continue }
+            if let entry = strongItem as? Entry {
                 let cloneEntry = entry.clone(makeNewUUID: true)
                 cloneEntry.move(to: destinationGroup)
-//                cloneEntry.touch(.modified) //KP2 does not do that
-            } else if let group = item.value as? Group {
+            } else if let group = strongItem as? Group {
                 let cloneGroup = group.deepClone(makeNewUUIDs: true)
                 cloneGroup.move(to: destinationGroup)
-//                cloneGroup.touch(.modified) //KP2 does not do that
             } else {
                 assertionFailure()
             }
+            strongItem.touch(.accessed, updateParents: true)
         }
     }
     
