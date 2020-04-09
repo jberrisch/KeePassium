@@ -24,7 +24,7 @@ class ViewableFieldCellFactory {
         
         if field is TOTPViewableField {
             cell.decorator = TOTPFieldCellDecorator(cell: cell)
-        } else if field.isProtected {
+        } else if field.isProtected || (field.internalName == EntryField.password) {
             cell.decorator = ProtectedFieldCellDecorator(cell: cell)
         } else {
             cell.decorator = URLFieldCellDecorator(cell: cell)
