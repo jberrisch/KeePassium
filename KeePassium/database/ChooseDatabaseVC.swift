@@ -47,6 +47,9 @@ class ChooseDatabaseVC: UITableViewController, Refreshable {
     
     private let premiumUpgradeHelper = PremiumUpgradeHelper()
     
+    // Flag to auto-unlock DB on launch only
+    private var isJustLaunched = true
+    
     // MAKE: - VC lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -90,7 +93,10 @@ class ChooseDatabaseVC: UITableViewController, Refreshable {
             )
         }
         databaseUnlocker = nil
-        updateDetailView(onlyInTwoPaneMode: true)
+        if !isJustLaunched {
+            updateDetailView(onlyInTwoPaneMode: true)
+        }
+        isJustLaunched = false
         settingsNotifications.startObserving()
         fileKeeperNotifications.startObserving()
         processPendingFileOperations()
@@ -376,6 +382,7 @@ class ChooseDatabaseVC: UITableViewController, Refreshable {
             return
         }
         let unlockDatabaseVC = UnlockDatabaseVC.make(databaseRef: urlRef)
+        unlockDatabaseVC.isJustLaunched = isJustLaunched // is reset once this VC appears
         showDetailViewController(unlockDatabaseVC, sender: self)
         databaseUnlocker = unlockDatabaseVC
     }
