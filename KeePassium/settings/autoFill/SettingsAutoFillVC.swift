@@ -12,7 +12,8 @@ import KeePassiumLib
 class SettingsAutoFillVC: UITableViewController {
 
     @IBOutlet weak var copyTOTPSwitch: UISwitch!
-
+    @IBOutlet weak var perfectMatchSwitch: UISwitch!
+    
     private var settingsNotifications: SettingsNotifications!
 
     // MARK: - VC life cycle
@@ -34,13 +35,20 @@ class SettingsAutoFillVC: UITableViewController {
     }
     
     func refresh() {
-        copyTOTPSwitch.isOn = Settings.current.isCopyTOTPOnAutoFill
+        let settings = Settings.current
+        copyTOTPSwitch.isOn = settings.isCopyTOTPOnAutoFill
+        perfectMatchSwitch.isOn = settings.autoFillPerfectMatch
     }
     
     // MARK: - Actions
     
     @IBAction func didToggleCopyTOTP(_ sender: UISwitch) {
         Settings.current.isCopyTOTPOnAutoFill = copyTOTPSwitch.isOn
+        refresh()
+    }
+    
+    @IBAction func didTogglePerfectMatch(_ sender: UISwitch) {
+        Settings.current.autoFillPerfectMatch = perfectMatchSwitch.isOn
         refresh()
     }
 }

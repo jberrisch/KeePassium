@@ -130,7 +130,7 @@ class EntryFinderVC: UITableViewController {
             if automaticResults.hasPerfectMatch {
                 // There is a perfectly suitable automatic result,
                 // remember to auto-select it when the VC appears.
-                shouldAutoSelectFirstMatch = true
+                shouldAutoSelectFirstMatch = Settings.current.autoFillPerfectMatch
                 return
             }
             return

@@ -93,6 +93,7 @@ public class Settings {
         // AutoFill
         case autoFillFinishedOK
         case copyTOTPOnAutoFill
+        case autoFillPerfectMatch
         
         // Haptic feedback
         case hapticFeedbackEnabled
@@ -1182,7 +1183,23 @@ public class Settings {
                 key: .copyTOTPOnAutoFill)
         }
     }
-    
+
+    /// Whether  to choose (fill-in( the perfectly matching entries automatically
+    public var autoFillPerfectMatch: Bool {
+        get {
+            let stored = UserDefaults.appGroupShared
+                .object(forKey: Keys.autoFillPerfectMatch.rawValue)
+                as? Bool
+            return stored ?? true
+        }
+        set {
+            updateAndNotify(
+                oldValue: autoFillPerfectMatch,
+                newValue: newValue,
+                key: .autoFillPerfectMatch)
+        }
+    }
+
     /// Whether to play tactile/haptic feedback
     public var isHapticFeedbackEnabled: Bool {
         get {
