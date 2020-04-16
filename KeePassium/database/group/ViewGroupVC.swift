@@ -549,11 +549,13 @@ open class ViewGroupVC: UITableViewController, Refreshable {
         
         // items in RecycleBin can be deleted (permanently), but cannot be edited
         var allowedActions = [deleteAction]
-        if let entry = getEntry(at: indexPath) {
-            if !entry.isDeleted { allowedActions.append(editAction) }
-        } else if let group = getGroup(at: indexPath) {
-            if !group.isDeleted { allowedActions.append(editAction) }
+        if let entry = getEntry(at: indexPath), canEdit(entry) {
+            allowedActions.append(editAction)
         }
+        if let group = getGroup(at: indexPath), canEdit(group) {
+            allowedActions.append(editAction)
+        }
+        
         allowedActions.append(menuAction)
         return allowedActions
     }
@@ -598,6 +600,23 @@ open class ViewGroupVC: UITableViewController, Refreshable {
     private func canMove(_ entry: Entry) -> Bool {
         // any entry can be moved, even deleted ones
         return true
+    }
+
+    /// True iff the group can be edited.
+    private func canEdit(_ group: Group) -> Bool {
+        // KP1 recycle bin cannot be edited (it is recognized by the name)
+        // KP2 recycle bin can be edited (it is recognized by the UUID)
+        let isRecycleBin = (group === group.database?.getBackupGroup(createIfMissing: false))
+        if isRecycleBin {
+            let isEditable = group is Group2
+            return isEditable
+        }
+        return !group.isDeleted
+    }
+    
+    /// True iff the entry can be edited.
+    private func canEdit(_ entry: Entry) -> Bool {
+        return !entry.isDeleted
     }
 
     // MARK: - Action handlers
@@ -650,7 +669,7 @@ open class ViewGroupVC: UITableViewController, Refreshable {
         
         var actions = [UIAlertAction]()
         if let entry = getEntry(at: indexPath) {
-            if !entry.isDeleted {
+            if canEdit(entry) {
                 actions.append(editAction)
             }
             if canMove(entry) {
@@ -661,7 +680,7 @@ open class ViewGroupVC: UITableViewController, Refreshable {
             actions.append(cancelAction)
         }
         if let group = getGroup(at: indexPath) {
-            if !group.isDeleted {
+            if canEdit(group) {
                 actions.append(editAction)
             }
             if canMove(group) {
