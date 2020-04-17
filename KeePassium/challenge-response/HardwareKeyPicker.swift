@@ -65,6 +65,9 @@ class HardwareKeyPicker: UITableViewController, Refreshable {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        // automatic popover height
+        tableView.addObserver(self, forKeyPath: "contentSize", options: .new, context: nil)
+
         #if MAIN_APP
         isNFCAvailable = ChallengeResponseManager.instance.supportsNFC
         isMFIAvailable = ChallengeResponseManager.instance.supportsMFI
@@ -75,10 +78,26 @@ class HardwareKeyPicker: UITableViewController, Refreshable {
     }
     
     override func viewWillDisappear(_ animated: Bool) {
+        tableView.removeObserver(self, forKeyPath: "contentSize")
         super.viewWillDisappear(animated)
         if !isChoiceMade {
             delegate?.didDismiss(self)
         }
+    }
+    
+    override func observeValue(
+        forKeyPath keyPath: String?,
+        of object: Any?,
+        change: [NSKeyValueChangeKey : Any]?,
+        context: UnsafeMutableRawPointer?)
+    {
+        // adjust popover height to fit table content
+        var preferredSize = tableView.contentSize
+        if #available(iOS 13, *) {
+            // on iOS 13, the table becomes too wide, so we limit it.
+            preferredSize.width = 400
+        }
+        self.preferredContentSize = preferredSize
     }
     
     func refresh() {
