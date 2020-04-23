@@ -72,6 +72,12 @@ public enum LString {
         value: "Done",
         comment: "Action/button to finish (editing) and keep changes"
     )
+    public static let actionShowMore = NSLocalizedString(
+        "[Generic] Show more",
+        value: "Show more",
+        comment: "Checkbox/Button to show a text field in its full size"
+    )
+
     public static let actionShowDetails = NSLocalizedString(
         "[Generic] Show Details",
         value: "Show Details",

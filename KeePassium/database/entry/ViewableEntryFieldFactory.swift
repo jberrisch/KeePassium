@@ -35,6 +35,8 @@ protocol ViewableField: class {
     /// Valid only for protected fields: is the value currently hidden?
     var isValueHidden: Bool { get set }
 
+    /// Should the field height be limited when showing?
+    var isHeightConstrained: Bool { get set }
 }
 
 extension ViewableField {
@@ -66,7 +68,10 @@ class BasicViewableField: ViewableField {
 
     /// Valid only for protected fields: is the value currently hidden?
     var isValueHidden: Bool
-
+    
+    /// Should the field height be limited when showing?
+    var isHeightConstrained: Bool
+    
     /// Can this field be edited?
     var isEditable: Bool { return true }
     
@@ -79,6 +84,7 @@ class BasicViewableField: ViewableField {
     init(fieldOrNil field: EntryField?, isValueHidden: Bool) {
         self.field = field
         self.isValueHidden = isValueHidden
+        self.isHeightConstrained = true
     }
 }
 

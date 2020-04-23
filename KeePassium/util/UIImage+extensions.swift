@@ -40,6 +40,7 @@ enum ImageAsset: String {
     case premiumBenefitShiny = "premium-benefit-shiny"
     case expandRowCellAccessory = "expand-row-cellaccessory"
     case collapseRowCellAccessory = "collapse-row-cellaccessory"
+    case viewMoreAccessory = "view-more-accessory"
     case yubikeyOnAccessory = "yubikey-on-accessory"
     case yubikeyOffAccessory = "yubikey-off-accessory"
 }
