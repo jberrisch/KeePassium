@@ -37,17 +37,18 @@ public class Clipboard {
     }
     
     private func insert(items: [[String: Any]], timeout: Double?) {
+        let isLocalOnly = !Settings.current.isUniversalClipboardEnabled
         if let timeout = timeout, timeout > 0.0 {
             UIPasteboard.general.setItems(
                 items,
                 options: [
-                    .localOnly: true,
+                    .localOnly: isLocalOnly,
                     .expirationDate: Date(timeIntervalSinceNow: timeout)
                 ]
             )
         } else {
             // no timeout
-            UIPasteboard.general.setItems(items, options: [.localOnly: true])
+            UIPasteboard.general.setItems(items, options: [.localOnly: isLocalOnly])
         }
     }
     

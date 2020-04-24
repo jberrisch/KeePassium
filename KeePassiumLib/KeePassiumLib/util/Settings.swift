@@ -78,7 +78,10 @@ public class Settings {
         case recentUserActivityTimestamp
         case appLockTimeout
         case databaseLockTimeout
+        
+        // Clipboard
         case clipboardTimeout
+        case universalClipboardEnabled
 
         // Database content
         case startWithSearch
@@ -1010,6 +1013,8 @@ public class Settings {
         }
     }
     
+    // MARK: - Clipboard
+    
     /// Timeout for temporary clipboard content, in seconds.
     public var clipboardTimeout: ClipboardTimeout {
         get {
@@ -1027,6 +1032,22 @@ public class Settings {
             if newValue != oldValue {
                 postChangeNotification(changedKey: Keys.clipboardTimeout)
             }
+        }
+    }
+    
+    /// Allow copying to Universal Clipboard (or use the device-local one).
+    public var isUniversalClipboardEnabled: Bool {
+        get {
+            let stored = UserDefaults.appGroupShared
+                .object(forKey: Keys.universalClipboardEnabled.rawValue)
+                as? Bool
+            return stored ?? false
+        }
+        set {
+            updateAndNotify(
+                oldValue: isUniversalClipboardEnabled,
+                newValue: newValue,
+                key: .universalClipboardEnabled)
         }
     }
     

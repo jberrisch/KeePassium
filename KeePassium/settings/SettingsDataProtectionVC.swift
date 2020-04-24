@@ -20,6 +20,7 @@ class SettingsDataProtectionVC: UITableViewController, Refreshable {
     @IBOutlet weak var databaseTimeoutCell: UITableViewCell!
     
     @IBOutlet weak var clipboardTimeoutCell: UITableViewCell!
+    @IBOutlet weak var universalClipboardSwitch: UISwitch!
     
     private var settingsNotifications: SettingsNotifications!
     private var premiumUpgradeHelper = PremiumUpgradeHelper()
@@ -52,6 +53,7 @@ class SettingsDataProtectionVC: UITableViewController, Refreshable {
         let settings = Settings.current
         rememberMasterKeysSwitch.isOn = settings.isRememberDatabaseKey
         rememberUsedKeyFiles.isOn = settings.premiumIsKeepKeyFileAssociations
+        universalClipboardSwitch.isOn = settings.isUniversalClipboardEnabled
         databaseTimeoutCell.detailTextLabel?.text = settings.premiumDatabaseLockTimeout.shortTitle
         clipboardTimeoutCell.detailTextLabel?.text = settings.clipboardTimeout.shortTitle
     }
@@ -112,6 +114,10 @@ class SettingsDataProtectionVC: UITableViewController, Refreshable {
         show(clipboardTimeoutVC, sender: self)
     }
 
+    @IBAction func didToggleUniversalClipboardSwitch(_ sender: UISwitch) {
+        Settings.current.isUniversalClipboardEnabled = sender.isOn
+        refresh()
+    }
     
     // MARK: - UITableView delegate
     
