@@ -88,6 +88,7 @@ public class Settings {
         case groupSortOrder
         case entryListDetail
         case entryViewerPage
+        case hideProtectedFields
 
         // Backup
         case backupDatabaseOnSave
@@ -1121,6 +1122,21 @@ public class Settings {
                 oldValue: entryViewerPage,
                 newValue: newValue,
                 key: Keys.entryViewerPage)
+        }
+    }
+    
+    /// Whether to hide protected fields behind asterisks by default
+    public var isHideProtectedFields: Bool {
+        get {
+            let stored = UserDefaults.appGroupShared
+                .object(forKey: Keys.hideProtectedFields.rawValue) as? Bool
+            return stored ?? true
+        }
+        set {
+            updateAndNotify(
+                oldValue: isHideProtectedFields,
+                newValue: newValue,
+                key: Keys.hideProtectedFields)
         }
     }
     

@@ -160,7 +160,8 @@ class EditEntrySingleLineCell:
         didSet {
             titleLabel.text = field?.visibleName
             textField.text = field?.value
-            textField.isSecureTextEntry = field?.isProtected ?? false
+            textField.isSecureTextEntry =
+                (field?.isProtected ?? false) && Settings.current.isHideProtectedFields
             textField.accessibilityLabel = field?.visibleName
         }
     }
@@ -221,7 +222,8 @@ class EditEntrySingleLineProtectedCell:
         didSet {
             titleLabel.text = field?.visibleName
             textField.text = field?.value
-            textField.isSecureTextEntry = field?.isProtected ?? false
+            textField.isSecureTextEntry =
+                (field?.isProtected ?? false) && Settings.current.isHideProtectedFields
             textField.accessibilityLabel = field?.visibleName
             randomizeButton.isHidden = (field?.internalName != EntryField.password)
         }
@@ -279,7 +281,8 @@ class EditEntryMultiLineCell: UITableViewCell, EditableFieldCell, ValidatingText
         didSet {
             titleLabel.text = field?.visibleName
             textView.text = field?.value
-            textView.isSecureTextEntry = field?.isProtected ?? false
+            textView.isSecureTextEntry =
+                (field?.isProtected ?? false) && Settings.current.isHideProtectedFields
             textView.accessibilityLabel = field?.visibleName
         }
     }

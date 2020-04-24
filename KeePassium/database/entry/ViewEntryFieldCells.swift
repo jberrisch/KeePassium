@@ -24,10 +24,16 @@ class ViewableFieldCellFactory {
         
         if field is TOTPViewableField {
             cell.decorator = TOTPFieldCellDecorator(cell: cell)
-        } else if field.isProtected || (field.internalName == EntryField.password) {
-            cell.decorator = ProtectedFieldCellDecorator(cell: cell)
         } else {
-            cell.decorator = URLFieldCellDecorator(cell: cell)
+            let shouldHideField =
+                (field.isProtected || (field.internalName == EntryField.password))
+                && Settings.current.isHideProtectedFields
+            
+            if shouldHideField {
+                cell.decorator = ProtectedFieldCellDecorator(cell: cell)
+            } else {
+                cell.decorator = URLFieldCellDecorator(cell: cell)
+            }
         }
         cell.setupCell()
         return cell
