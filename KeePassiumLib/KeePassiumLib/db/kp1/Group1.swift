@@ -33,9 +33,9 @@ public class Group1: Group {
     private(set)  var id: Group1ID
     internal var level: Int16
     private(set)  var flags: Int32 // some internal KeePass field
-    //TODO: test if this (get/set) works correctly
+
     override public var canExpire: Bool {
-        get { return expiryTime == Date.kp1Never }
+        get { return expiryTime != Date.kp1Never }
         set {
             let never = Date.kp1Never
             if newValue {
