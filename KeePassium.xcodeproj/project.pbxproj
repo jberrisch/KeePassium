@@ -450,6 +450,10 @@
 		75ED429D2313A3EF003DE72E /* SettingsDatabaseTimeoutVC.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 75ED429F2313A3EF003DE72E /* SettingsDatabaseTimeoutVC.storyboard */; };
 		75ED42A42313C0BB003DE72E /* SettingsClipboardTimeoutVC.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 75ED42A62313C0BB003DE72E /* SettingsClipboardTimeoutVC.storyboard */; };
 		75ED42A92313C20A003DE72E /* SettingsItemListVC.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 75ED42AB2313C20A003DE72E /* SettingsItemListVC.storyboard */; };
+		75F28785245D646B00F03657 /* MFIKeyActionSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75F28781245D646B00F03657 /* MFIKeyActionSheetView.swift */; };
+		75F28786245D646B00F03657 /* MFIKeyActionSheetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75F28781245D646B00F03657 /* MFIKeyActionSheetView.swift */; };
+		75F28787245D646B00F03657 /* MFIKeyActionSheetView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 75F28782245D646B00F03657 /* MFIKeyActionSheetView.xib */; };
+		75F28788245D646B00F03657 /* MFIKeyActionSheetView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 75F28782245D646B00F03657 /* MFIKeyActionSheetView.xib */; };
 		75F4ACFC21776F4800B22D8B /* LString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75F4ACFB21776F4800B22D8B /* LString.swift */; };
 		75F5CACD20BD18320056C969 /* UIView+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75F5CACC20BD18320056C969 /* UIView+extension.swift */; };
 		75FEC2232175292C0034334B /* KeePassiumLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 75FEC2222175292C0034334B /* KeePassiumLib.framework */; };
@@ -1057,6 +1061,8 @@
 		75ED42B12315896C003DE72E /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/FirstSetupVC.strings; sourceTree = "<group>"; };
 		75F15C9F233E512F001FA223 /* KeePassiumLib-PRO.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = "KeePassiumLib-PRO.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
 		75F15CA2233E5399001FA223 /* KeePassiumLib-PRO.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = "KeePassiumLib-PRO.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		75F28781245D646B00F03657 /* MFIKeyActionSheetView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MFIKeyActionSheetView.swift; sourceTree = "<group>"; };
+		75F28782245D646B00F03657 /* MFIKeyActionSheetView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MFIKeyActionSheetView.xib; sourceTree = "<group>"; };
 		75F4ACBF2175F7A400B22D8B /* DiagLib.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = DiagLib.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		75F4ACFB21776F4800B22D8B /* LString.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LString.swift; sourceTree = "<group>"; };
 		75F5CACC20BD18320056C969 /* UIView+extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+extension.swift"; sourceTree = "<group>"; };
@@ -1460,6 +1466,7 @@
 		757ADC4323A1045C00D708D2 /* challenge-response */ = {
 			isa = PBXGroup;
 			children = (
+				75F2877F245D646B00F03657 /* MFIKeyActionSheet */,
 				7558D06123CE2F3E00547621 /* ChallengeResponseManager.swift */,
 				757ADC4423A1047600D708D2 /* HardwareKeyPicker.swift */,
 				757ADC4923A12DD100D708D2 /* HardwareKeyPicker.storyboard */,
@@ -1554,6 +1561,15 @@
 				751E0D3D2309B01A0088BB10 /* DiagnosticsViewerVC.storyboard */,
 			);
 			path = controllers;
+			sourceTree = "<group>";
+		};
+		75F2877F245D646B00F03657 /* MFIKeyActionSheet */ = {
+			isa = PBXGroup;
+			children = (
+				75F28781245D646B00F03657 /* MFIKeyActionSheetView.swift */,
+				75F28782245D646B00F03657 /* MFIKeyActionSheetView.xib */,
+			);
+			path = MFIKeyActionSheet;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1760,6 +1776,7 @@
 				751E0D132309AF540088BB10 /* ChooseDatabaseVC.storyboard in Resources */,
 				757ADC4A23A12DD100D708D2 /* HardwareKeyPicker.storyboard in Resources */,
 				755B862E23054FA200E9FC83 /* AboutVC.storyboard in Resources */,
+				75F28787245D646B00F03657 /* MFIKeyActionSheetView.xib in Resources */,
 				754BF08D2082A6BD00E3A292 /* LaunchScreen.storyboard in Resources */,
 				751E0CEF2309AE920088BB10 /* SettingsBackupVC.storyboard in Resources */,
 				755E7DA2232008300010E199 /* Localizable.strings in Resources */,
@@ -1810,6 +1827,7 @@
 				75B38C52233E5B7C006BDEFC /* ChooseDatabaseVC.storyboard in Resources */,
 				757ADC4C23A12DD100D708D2 /* HardwareKeyPicker.storyboard in Resources */,
 				75B38C53233E5B7C006BDEFC /* AboutVC.storyboard in Resources */,
+				75F28788245D646B00F03657 /* MFIKeyActionSheetView.xib in Resources */,
 				75B38C54233E5B7C006BDEFC /* LaunchScreen.storyboard in Resources */,
 				75B38C55233E5B7C006BDEFC /* SettingsBackupVC.storyboard in Resources */,
 				75B38C56233E5B7C006BDEFC /* Localizable.strings in Resources */,
@@ -2016,6 +2034,7 @@
 				7529EAEB211577EA0093B117 /* UITableViewCell+extension.swift in Sources */,
 				75CA919A20E90C3700B286F0 /* EntryChangeObserver+Notifier.swift in Sources */,
 				75C94C6120B4BAC4004FA29D /* ViewEntryHistoryVC.swift in Sources */,
+				75F28785245D646B00F03657 /* MFIKeyActionSheetView.swift in Sources */,
 				75802634222ED11D00F4525F /* ProgressVC.swift in Sources */,
 				75E7612122DE7A9800397D8C /* PremiumBenefitView.swift in Sources */,
 				7575B24722D846B900B84B3F /* SearchHelper.swift in Sources */,
@@ -2125,6 +2144,7 @@
 				75B38C10233E5B7C006BDEFC /* UITableViewCell+extension.swift in Sources */,
 				75B38C11233E5B7C006BDEFC /* EntryChangeObserver+Notifier.swift in Sources */,
 				75B38C12233E5B7C006BDEFC /* ViewEntryHistoryVC.swift in Sources */,
+				75F28786245D646B00F03657 /* MFIKeyActionSheetView.swift in Sources */,
 				75B38C13233E5B7C006BDEFC /* ProgressVC.swift in Sources */,
 				75B38C14233E5B7C006BDEFC /* PremiumBenefitView.swift in Sources */,
 				75B38C15233E5B7C006BDEFC /* SearchHelper.swift in Sources */,

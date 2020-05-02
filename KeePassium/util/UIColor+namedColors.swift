@@ -49,6 +49,21 @@ extension UIColor {
 //    static var navBarTint: UIColor {
 //        return UIColor(named: "NavBarTint") ?? UIColor.systemBlue
 //    }
+
+    // MARK: YubiKey colors
+    
+    /// Border color of the MFI action sheet when idle.
+    static let mfiKeyActionSheetIdleColor: UIColor = .white
+    
+    /// Border color of the MFI action sheet when touch is expected.
+    static let mfiKeyActionSheetTouchColor =
+        UIColor(red: 186/255, green: 233/255, blue: 80/255, alpha: 1)
+    
+    /// Border color of the MFI action sheet when busy processing.
+    static let mfiKeyActionSheetProcessingColor =
+        UIColor(red: 118/255, green: 214/255, blue: 255/255, alpha: 1)
+
+    // MARK: System colors
     
     static let systemRed = UIColor(red: 255/255, green: 59/255, blue: 48/255, alpha: 1)
     static let systemOrange = UIColor(red: 255/255, green: 149/255, blue: 0/255, alpha: 1)

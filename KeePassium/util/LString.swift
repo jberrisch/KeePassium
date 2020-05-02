@@ -343,4 +343,14 @@ public enum LString {
         "[YubiKey] Use YubiKey Slot %d",
         value: "Use YubiKey Slot %d",
         comment: "Selector choice: use YubiKey to encrypt/decrypt database. For example: `Use YubiKey Slot 1`. [slotID: Int]")
+
+    public static let insertMFIYubikey = NSLocalizedString(
+        "[YubiKey] Insert the key",
+        value: "Insert the key",
+        comment: "Call for action: insert YubiKey 5Ci to the Lightning port")
+
+    public static let touchMFIYubikey = NSLocalizedString(
+        "[YubiKey] Touch the key",
+        value: "Touch the key",
+        comment: "Call for action: touch the sides of YubiKey 5Ci to continue")
 }

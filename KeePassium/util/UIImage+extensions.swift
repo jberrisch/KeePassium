@@ -43,6 +43,9 @@ enum ImageAsset: String {
     case viewMoreAccessory = "view-more-accessory"
     case yubikeyOnAccessory = "yubikey-on-accessory"
     case yubikeyOffAccessory = "yubikey-off-accessory"
+    case yubikeyMFIPhoneNew = "yubikey-mfi-phone-new"
+    case yubikeyMFIPhone = "yubikey-mfi-phone"
+    case yubikeyMFIKey = "yubikey-mfi-key"
 }
 
 extension UIImage {
