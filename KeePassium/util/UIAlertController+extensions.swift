@@ -19,11 +19,24 @@ extension UIAlertController {
         ) -> UIAlertController
     {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        let cancelAction = UIAlertAction(
+        alert.addAction(
             title: cancelButtonTitle ?? LString.actionDismiss,
             style: .cancel,
-            handler: nil)
-        alert.addAction(cancelAction)
+            handler: nil
+        )
         return alert
+    }
+    
+    /// Shorcut for create action + add action. Calls can be chained.
+    @discardableResult
+    func addAction(
+        title: String?,
+        style: UIAlertAction.Style,
+        handler: ((UIAlertAction) -> Void)?
+        ) -> UIAlertController
+    {
+        let action = UIAlertAction(title: title, style: style, handler: handler)
+        self.addAction(action)
+        return self
     }
 }
