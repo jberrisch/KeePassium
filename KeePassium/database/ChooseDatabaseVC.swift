@@ -551,7 +551,11 @@ class ChooseDatabaseVC: UITableViewController, Refreshable {
         }
         let urlRef = databaseRefs[indexPath.row]
         let popoverAnchor = PopoverAnchor(tableView: tableView, at: indexPath)
-        let databaseInfoVC = FileInfoVC.make(urlRef: urlRef, at: popoverAnchor)
+        let databaseInfoVC = FileInfoVC.make(urlRef: urlRef, fileType: .database, at: popoverAnchor)
+        databaseInfoVC.canExport = true
+        databaseInfoVC.onDismiss = {
+            databaseInfoVC.dismiss(animated: true, completion: nil)
+        }
         present(databaseInfoVC, animated: true, completion: nil)
     }
     

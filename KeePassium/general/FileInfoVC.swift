@@ -34,16 +34,38 @@ class FileInfoCell: UITableViewCell {
 }
 
 class FileInfoVC: UITableViewController {
-    private var fields = [(String, String)]()
+    @IBOutlet weak var exportButton: UIButton!
+    @IBOutlet weak var deleteButton: UIButton!
     
+    /// Called when this VC is ready to be removed from the screen
+    public var onDismiss: (()->())?
+    
+    public var canExport: Bool = false {
+        didSet {
+            setupButtons()
+        }
+    }
+    
+    private var fields = [(String, String)]()
+    private var urlRef: URLReference!
+    private var fileType: FileType!
+
     private var dismissablePopoverDelegate = DismissablePopover()
     
     /// - Parameters:
     ///   - urlRef: reference to the file
-    ///   - popoverSource: optional, use `nil` for non-popover presentation
-    public static func make(urlRef: URLReference, at popoverAnchor: PopoverAnchor?) -> FileInfoVC {
+    ///   - fileType: type of the target file
+    ///   - popoverAnchor: optional, use `nil` for non-popover presentation
+    public static func make(
+        urlRef: URLReference,
+        fileType: FileType,
+        at popoverAnchor: PopoverAnchor?
+        ) -> FileInfoVC
+    {
         let vc = FileInfoVC.instantiateFromStoryboard()
         vc.setupFields(urlRef: urlRef)
+        vc.urlRef = urlRef
+        vc.fileType = fileType
         
         guard let popoverAnchor = popoverAnchor else {
             return vc
@@ -123,6 +145,8 @@ class FileInfoVC: UITableViewController {
         
         // automatic popover height
         tableView.addObserver(self, forKeyPath: "contentSize", options: .new, context: nil)
+        
+        setupButtons()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -145,6 +169,12 @@ class FileInfoVC: UITableViewController {
         self.preferredContentSize = preferredSize
     }
 
+    func setupButtons() {
+        exportButton?.isHidden = !canExport
+        let destructiveAction = DestructiveFileAction.get(for: urlRef.location)
+        deleteButton?.setTitle(destructiveAction.title, for: .normal)
+    }
+    
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -169,5 +199,31 @@ class FileInfoVC: UITableViewController {
         cell.name = fields[fieldIndex].0
         cell.value = fields[fieldIndex].1
         return cell
+    }
+
+    // MARK: - Actions
+    
+    @IBAction func didPressExport(_ sender: UIButton) {
+        let popoverAnchor = PopoverAnchor(sourceView: sender, sourceRect: sender.bounds)
+        FileExportHelper.showFileExportSheet(urlRef, at: popoverAnchor, parent: self)
+    }
+    
+    @IBAction func didPressDelete(_ sender: UIButton) {
+        let popoverAnchor = PopoverAnchor(sourceView: sender, sourceRect: sender.bounds)
+        FileDestructionHelper.destroyFile(
+            urlRef,
+            fileType: fileType,
+            withConfirmation: true,
+            at: popoverAnchor,
+            parent: self,
+            completion: { [weak self] (success) in
+                if success {
+                    self?.onDismiss?()
+                    //self.dismiss(animated: true, completion: nil)
+                } else {
+                    // We are showing an error message, so cannot dismiss.
+                }
+            }
+        )
     }
 }
