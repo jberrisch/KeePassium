@@ -146,13 +146,8 @@ class SettingsAppLockVC: UITableViewController, Refreshable {
         // First we must refresh to enforce the expired status,
         // but remember the original switch state to apply it in callback.
         let isSwitchOn = sender.isOn
+        Settings.current.isBiometricAppLockEnabled = isSwitchOn
         refresh()
-        premiumUpgradeHelper.performActionOrOfferUpgrade(.canUseBiometricAppLock, in: self) {
-            [weak self] in
-            guard let self = self else { return }
-            Settings.current.isBiometricAppLockEnabled = isSwitchOn
-            self.refresh()
-        }
     }
 }
 

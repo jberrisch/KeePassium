@@ -194,6 +194,7 @@ open class ViewGroupVC: UITableViewController, Refreshable {
             handler: { (action) in
                 SupportEmailComposer.show(
                     subject: .problem,
+                    parent: self,
                     completion: { (isSent) in
                         alert.dismiss(animated: false, completion: nil)
                     }

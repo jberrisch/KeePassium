@@ -10,7 +10,6 @@
 public enum PremiumFeature: Int {
     public static let all: [PremiumFeature] = [
         .canUseMultipleDatabases, // enforced
-        .canUseBiometricAppLock, // enforced
         .canUseLongDatabaseTimeouts, // enforced
         .canPreviewAttachments, // enforced
         .canUseHardwareKeys
@@ -19,9 +18,6 @@ public enum PremiumFeature: Int {
     /// Can unlock any added database (otherwise only one, with olders modification date)
     case canUseMultipleDatabases = 0
 
-    /// Can enable biometric AppLock in settings (otherwise passcode-only)
-    case canUseBiometricAppLock = 1
-    
     /// Can set Database Timeout to values over 2 hours (otherwise only short delays)
     case canUseLongDatabaseTimeouts = 2
     
@@ -39,8 +35,6 @@ public enum PremiumFeature: Int {
         switch self {
         case .canUseMultipleDatabases:
             return status == .subscribed || status == .lapsed
-        case .canUseBiometricAppLock:
-            return status != .freeHeavyUse
         case .canUseLongDatabaseTimeouts:
             return status == .subscribed || status == .lapsed
         case .canPreviewAttachments:
