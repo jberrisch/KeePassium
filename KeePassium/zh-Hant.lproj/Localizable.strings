@@ -350,7 +350,7 @@
 "[Premium/Upgrade/price] %@ once" = "%@ 一次性付費";
 
 /* Status message when downloading available in-app purchases */
-"[Premium/Upgrade/Progress] Contacting AppStore..." = "聯繫 AppStore...";
+"[Premium/Upgrade/Progress] Contacting AppStore..." = "獲取購買結果...";
 
 /* Status: in-app purchase started */
 "[Premium/Upgrade/Progress] Purchasing..." = "購買中…";
@@ -369,12 +369,6 @@
 
 /* Status: how long the app has been used during some time period. For example: `App being useful: 1hr/month, about 12hr/year`. [monthlyUsage: String, annualUsage: String — already include the time unit (hours, minutes)] */
 "[Premium/usage] App being useful: %@/month, that is around %@/year." = "程式已使用: %1$@/月, 大約%2$@/年";
-
-/* Description/advertisement for the `Biometric Unlock` premium feature */
-"[PremiumFeature/BiometricAppLock/description] Quickly access your passwords using Face ID/Touch ID in the premium version." = "升級高級版使用Face ID/Touch ID來快速存取您的密碼。";
-
-/* Title of a premium feature: ability to use Touch ID / Face ID in AppLock settings (In Title Case) */
-"[PremiumFeature/BiometricAppLock/title] Biometric Unlock" = "生物識別解鎖";
 
 /* Description/advertisement for the `Long Database Timeouts` premium feature */
 "[PremiumFeature/LongDBTimeouts/description] Save time entering your complex master passwords — keep your database open longer in the premium version." = "節省輸入複雜主密碼的時間 - 在高級版中保持資料庫打開更長時間。";

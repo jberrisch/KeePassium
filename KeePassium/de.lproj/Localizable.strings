@@ -62,7 +62,7 @@
 "[Database/Create/title] Create Database" = "Neue Datenbank erstellen";
 
 /* Message to confirm deletion of a database file. (This deletes the file itself) */
-"[Database/Delete/Confirm/text] Delete database file?\n Make sure you have a backup." = "Datenbank-Datei löschen?\n Stellen Sie sicher, dass Sie eine ihre Daten gesichert haben.";
+"[Database/Delete/Confirm/text] Delete database file?\n Make sure you have a backup." = "Datenbankdatei löschen?\n Stellen Sie sicher, dass Sie ein Backup haben.";
 
 /* Status message: loading a database */
 "[Database/Loading/Status] Loading..." = "Lade...";
@@ -293,13 +293,13 @@
 "[Premium/Benefits/AttachmentPreview/title]" = "Vorschau ohne Spuren zu hinterlassen";
 
 /* Explanation of the premium feature */
-"[Premium/Benefits/DatabaseTimeout/details]" = "Sind sie genervt immer das Materpasswort einzugeben? Halten sie Ihre Datenbank länger auf und entsperren Sie sie mit nur einem Klick.";
+"[Premium/Benefits/DatabaseTimeout/details]" = "Sind Sie es leid, immer wieder Ihr Master-Passwort einzugeben? Halten Sie Ihre Datenbank länger geöffnet und entsperren Sie sie mit nur einem Klick.";
 
 /* Title of a premium feature */
-"[Premium/Benefits/DatabaseTimeout/title]" = "Sparen Sie sich Zeit";
+"[Premium/Benefits/DatabaseTimeout/title]" = "Sparen Sie Zeit";
 
 /* Explanation of the premium feature */
-"[Premium/Benefits/Maintenance/details]" = "KeePassium verbessern, pflegen und ohne Werbung.";
+"[Premium/Benefits/Maintenance/details]" = "Helfen Sie KeePassium dabei, dass es sich weiterhin verbessert, es unterstützt und werbefrei bleibt.";
 
 /* Title of a premium feature */
 "[Premium/Benefits/Maintenance/title]" = "Mach weiter so";
@@ -369,12 +369,6 @@
 
 /* Status: how long the app has been used during some time period. For example: `App being useful: 1hr/month, about 12hr/year`. [monthlyUsage: String, annualUsage: String — already include the time unit (hours, minutes)] */
 "[Premium/usage] App being useful: %@/month, that is around %@/year." = "App ist nützlich: %1$@/Monat, das sind etwa %2$@/Jahr.";
-
-/* Description/advertisement for the `Biometric Unlock` premium feature */
-"[PremiumFeature/BiometricAppLock/description] Quickly access your passwords using Face ID/Touch ID in the premium version." = "Zugriff auf Ihre Passwörter mit Hilfe von Face ID/Touch ID in der Premium-Version.";
-
-/* Title of a premium feature: ability to use Touch ID / Face ID in AppLock settings (In Title Case) */
-"[PremiumFeature/BiometricAppLock/title] Biometric Unlock" = "Biometrische Entsperrung";
 
 /* Description/advertisement for the `Long Database Timeouts` premium feature */
 "[PremiumFeature/LongDBTimeouts/description] Save time entering your complex master passwords — keep your database open longer in the premium version." = "Sparen Sie Zeit, beim Eingeben komplexer Master-Passwörter — halten Sie Ihre Datenbank länger offen mit der Premium-Version.";

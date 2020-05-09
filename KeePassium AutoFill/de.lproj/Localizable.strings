@@ -38,7 +38,7 @@
 "[Database/Delete] Failed to delete database file" = "Löschen der Datenbank fehlgeschlagen";
 
 /* Message to confirm deletion of a database file. (This deletes the file itself) */
-"[Database/Delete/Confirm/text] Delete database file?\n Make sure you have a backup." = "Datenbank-Datei löschen?\n Stellen Sie sicher, dass Sie eine ihre Daten gesichert haben.";
+"[Database/Delete/Confirm/text] Delete database file?\n Make sure you have a backup." = "Datenbankdatei löschen?\n Stellen Sie sicher, dass Sie ein Backup haben.";
 
 /* Status message: loading a database */
 "[Database/Loading/Status] Loading..." = "Lade...";
@@ -164,10 +164,10 @@
 "[Generic] Show Details" = "Zeige Details";
 
 /* Message to confirm deletion of an item. */
-"[Generic/ConfirmDelete/title] Are you sure?" = "Bist du sicher?";
+"[Generic/ConfirmDelete/title] Are you sure?" = "Sind Sie sicher?";
 
 /* Notification text when the user tries to close a document with unsaved changes */
-"[Generic/Edit/Aborting/text] Discard unsaved changes?" = "Ungespeicherte Änderungen verwerfen?";
+"[Generic/Edit/Aborting/text] Discard unsaved changes?" = "Nicht gespeicherte Änderungen verwerfen?";
 
 /* Title of a notification when the user tries to close a document with unsaved changes */
 "[Generic/Edit/Aborting/title] There are unsaved changes" = "Es gibt nicht gespeicherte Änderungen";
@@ -206,7 +206,7 @@
 "[Group/New/defaultName] New Group" = "Neue Gruppe";
 
 /* Message to confirm deletion of a key file. */
-"[KeyFile/Delete/Confirm/text] Delete key file?\n Make sure you have a backup." = "Schlüssel-Datei löschen?\n Stellen Sie sicher, dass Sie ihre Daten gesichert haben.";
+"[KeyFile/Delete/Confirm/text] Delete key file?\n Make sure you have a backup." = "Schlüsseldatei löschen?\n Stellen Sie sicher, dass Sie ein Backup haben.";
 
 /* Title of an announcement about the Pro version */
 "[News/2019/10/ProVersionReleaseNews/title] KeePassium Pro" = "KeePassium Pro";
@@ -216,12 +216,6 @@
 
 /* Action/button to start choosing premium versions and possibly buying one */
 "[Premium/Upgrade/action] Upgrade to Premium" = "Auf Premium aktualisieren";
-
-/* Description/advertisement for the `Biometric Unlock` premium feature */
-"[PremiumFeature/BiometricAppLock/description] Quickly access your passwords using Face ID/Touch ID in the premium version." = "Zugriff auf Ihre Passwörter mit Hilfe von Face ID/Touch ID in der Premium-Version.";
-
-/* Title of a premium feature: ability to use Touch ID / Face ID in AppLock settings (In Title Case) */
-"[PremiumFeature/BiometricAppLock/title] Biometric Unlock" = "Biometrische Entsperrung";
 
 /* Description/advertisement for the `Long Database Timeouts` premium feature */
 "[PremiumFeature/LongDBTimeouts/description] Save time entering your complex master passwords — keep your database open longer in the premium version." = "Sparen Sie Zeit, beim Eingeben komplexer Master-Passwörter — halten Sie Ihre Datenbank länger offen mit der Premium-Version.";

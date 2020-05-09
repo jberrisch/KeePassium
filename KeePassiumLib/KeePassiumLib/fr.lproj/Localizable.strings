@@ -254,10 +254,10 @@
 "[GroupSortOrder/longTitle] By Creation Date (Old..New)" = "Par Date de Création (Ancien..Nouveau)";
 
 /* An option in Group Viewer settings. Example: 'Sort Order: By Modification Date (New..Old)' */
-"[GroupSortOrder/longTitle] By Modification Date (New..Old)" = "Par Date de Modification (Nouveau..Ancien)";
+"[GroupSortOrder/longTitle] By Modification Date (New..Old)" = "Par Date de modification (Nouveau..Ancien)";
 
 /* An option in Group Viewer settings. Example: 'Sort Order: By Modification Date (Old..New)' */
-"[GroupSortOrder/longTitle] By Modification Date (Old..New)" = "Par Date de Modification (Old..Nouveau)";
+"[GroupSortOrder/longTitle] By Modification Date (Old..New)" = "Par date de modification (Ancien..Nouveau)";
 
 /* An option in Group Viewer settings. Example: 'Sort Order: By Title (A..Z)' */
 "[GroupSortOrder/longTitle] By Title (A..Z)" = "Par titre (A..Z)";
