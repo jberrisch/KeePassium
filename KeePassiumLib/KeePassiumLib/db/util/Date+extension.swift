@@ -24,6 +24,16 @@ public extension Date {
         return formatter
     }()
     
+    /// Date formatter for problematic MiniKeePass-generated timestamps that have
+    /// abbreviated timezone format (e.g. "2020-03-04T2:38:16 PST")
+    private static let miniKeePassDateFormatter = { () -> DateFormatter in
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss z"
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+        return formatter
+    }()
+
     /// Number of seconds between 0001-01-01 00:00 and 2001-01-01 00:00,
     /// in .NET context (Swift thinks there are 2 days less)
     static internal let secondsBetweenSwiftAndDotNetReferenceDates = Int64(63113904000)
@@ -37,6 +47,9 @@ public extension Date {
         if let date = Date.iso8601DateFormatter.date(from: string) {
             self = date
         } else if let date = Date.iso8601DateFormatterWithFractionalSeconds.date(from: string) {
+            self = date
+        } else if let date = Date.miniKeePassDateFormatter.date(from: string) {
+            // Some MKP timestamps have abbreviated timezones, so accept them, too.
             self = date
         } else {
             return nil
