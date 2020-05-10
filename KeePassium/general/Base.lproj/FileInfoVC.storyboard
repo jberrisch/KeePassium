@@ -44,6 +44,9 @@
                                                     <state key="normal" title="{Delete/Remove}" image="delete-item-listitem">
                                                         <color key="titleColor" name="DestructiveTint"/>
                                                     </state>
+                                                    <attributedString key="userComments">
+                                                        <fragment content="#bc-ignore!"/>
+                                                    </attributedString>
                                                     <connections>
                                                         <action selector="didPressDelete:" destination="Cu8-bv-TEu" eventType="touchUpInside" id="z3i-r2-PLw"/>
                                                     </connections>
