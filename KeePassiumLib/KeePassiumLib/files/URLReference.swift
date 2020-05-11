@@ -127,10 +127,15 @@ public class URLReference: Equatable, Codable, CustomDebugStringConvertible {
     lazy private(set) var hash: ByteArray = getHash()
     /// Location type of the original URL
     public let location: Location
-    /// Cached original URL (nil if needs resolving)
-    private var url: URL?
+
     /// Cached result of the last refreshInfo() call
     private var cachedInfo: FileInfo?
+    
+    /// The URL extracted from bookmark data
+    private var bookmarkedURL: URL
+    /// The URL (if any) stored along with the bookmark data
+    private var cachedURL: URL?
+    private var fileProviderID: String?
     
     fileprivate static let fileCoordinator = NSFileCoordinator()
     
@@ -146,7 +151,7 @@ public class URLReference: Equatable, Codable, CustomDebugStringConvertible {
     private enum CodingKeys: String, CodingKey {
         case data = "data"
         case location = "location"
-        case url = "url"
+        case cachedURL = "url"
     }
     
     // MARK: -
@@ -158,7 +163,8 @@ public class URLReference: Equatable, Codable, CustomDebugStringConvertible {
                 url.stopAccessingSecurityScopedResource()
             }
         }
-        self.url = url
+        cachedURL = url
+        bookmarkedURL = url
         self.location = location
         if location.isInternal {
             data = Data() // for backward compatibility
@@ -170,21 +176,12 @@ public class URLReference: Equatable, Codable, CustomDebugStringConvertible {
                 relativeTo: nil) // throws an internal system error
             hash = ByteArray(data: data).sha256
         }
+        processReference()
     }
 
     public static func == (lhs: URLReference, rhs: URLReference) -> Bool {
         guard lhs.location == rhs.location else { return false }
-        if lhs.location.isInternal {
-            // For internal files, URL references are generated dynamically
-            // and same URL can have different refs. So we compare by URL.
-            guard let leftURL = try? lhs.resolveSync(),
-                let rightURL = try? rhs.resolveSync() else { return false }
-            return leftURL == rightURL
-        } else {
-            // For external files, URL references are stored, so same refs
-            // will have same hash.
-            return !lhs.hash.isEmpty && (lhs.hash == rhs.hash)
-        }
+        return lhs.bookmarkedURL == rhs.bookmarkedURL
     }
     
     public func serialize() -> Data {
@@ -198,12 +195,14 @@ public class URLReference: Equatable, Codable, CustomDebugStringConvertible {
             // legacy stored refs don't have stored hash, so we set it
             ref.hash = ref.getHash()
         }
+        ref.processReference()
         return ref
     }
     
     public var debugDescription: String {
         return " ‣ Location: \(location)\n" +
-            " ‣ URL: \(url?.relativeString ?? "nil")\n" +
+            " ‣ bookmarkedURL: \(bookmarkedURL.relativeString)\n" +
+            " ‣ fileProviderID: \(fileProviderID ?? "nil")\n" +
             " ‣ data: \(data.count) bytes"
     }
     
@@ -539,4 +538,83 @@ public class URLReference: Equatable, Codable, CustomDebugStringConvertible {
         }
         return nil
     }
+    
+    // MARK: - Bookmark data parsing
+    
+    /// Extracts additional info from bookmark data.
+    ///
+    /// Updates instance properties, using parsed bookmark data:
+    /// - `bookmarkedURL` (crashes if missing)
+    /// - `fileProviderID` (might be `nil` if missing)
+    fileprivate func processReference() {
+        guard !data.isEmpty else { return }
+        
+        func getRecordValue(data: ByteArray, fpOffset: Int) -> String? {
+            let contentBytes = data[fpOffset..<data.count]
+            let contentStream = contentBytes.asInputStream()
+            contentStream.open()
+            defer { contentStream.close() }
+            guard let recLength = contentStream.readUInt32(),
+                let _ = contentStream.readUInt32(),
+                let recBytes = contentStream.read(count: Int(recLength)),
+                let utf8String = recBytes.toString(using: .utf8)
+                else { return nil }
+            return utf8String
+        }
+        
+        func extractFileProviderID(_ fullString: String) -> String? {
+            // The string looks like ""fileprovider:#com.owncloud.ios-app.ownCloud-File-Provider/001F351B-02F7-4F70-B6E0-C8E5996F7F8C/A52BED37B76B4BA7A701F4654A6EE6B5""
+            // So we need to clean it up.
+            let regexp = try! NSRegularExpression(
+                pattern: #"fileprovider\:#?([a-zA-Z0-9\.\-\_]+)"#,
+                options: [])
+            let fullRange = NSRange(fullString.startIndex..<fullString.endIndex, in: fullString)
+            guard let match = regexp.firstMatch(in: fullString, options: [], range: fullRange),
+                let foundRange = Range(match.range(at: 1), in: fullString)
+                else { return nil }
+            return String(fullString[foundRange])
+        }
+        
+        func extractBookmarkedURL(_ sandboxInfoString: String) -> URL {
+            let infoTokens = sandboxInfoString.split(separator: ";")
+            let url = URL(fileURLWithPath: String(infoTokens.last!))
+            return url
+        }
+        
+        let data = ByteArray(data: self.data)
+        guard data.count > 0 else { return }
+        let stream = data.asInputStream()
+        stream.open()
+        defer { stream.close() }
+        
+        stream.skip(count: 12)
+        guard let contentOffset32 = stream.readUInt32() else { return }
+        let contentOffset = Int(contentOffset32)
+        stream.skip(count: contentOffset - 12 - 4)
+        print("Content offset: \(contentOffset)")
+        guard let firstTOC32 = stream.readUInt32() else { return }
+        stream.skip(count: Int(firstTOC32) - 4 + 4*4)
+        
+        guard let recordCount = stream.readUInt32() else { return }
+        for _ in 0..<recordCount {
+            guard let recordID = stream.readUInt32(),
+                let offset = stream.readUInt64()
+                else { return }
+            switch recordID {
+            case 8304:
+                guard let fullFileProviderString =
+                    getRecordValue(data: data, fpOffset: contentOffset + Int(offset))
+                    else { continue }
+                self.fileProviderID = extractFileProviderID(fullFileProviderString)
+            case 61568:
+                guard let sandboxInfoString =
+                    getRecordValue(data: data, fpOffset: contentOffset + Int(offset))
+                    else { continue }
+                self.bookmarkedURL = extractBookmarkedURL(sandboxInfoString)
+            default:
+                continue
+            }
+        }
+    }
+
 }
