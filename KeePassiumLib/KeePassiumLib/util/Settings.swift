@@ -84,11 +84,15 @@ public class Settings {
         case universalClipboardEnabled
 
         // Database content
-        case startWithSearch
         case groupSortOrder
         case entryListDetail
         case entryViewerPage
         case hideProtectedFields
+        
+        // Search
+        case startWithSearch
+        case searchFieldNames
+        case searchProtectedValues
 
         // Backup
         case backupDatabaseOnSave
@@ -1054,22 +1058,6 @@ public class Settings {
     
     // MARK: - Database view
     
-    /// Automatically show search bar after opening a database.
-    public var isStartWithSearch: Bool {
-        get {
-            let stored = UserDefaults.appGroupShared
-                .object(forKey: Keys.startWithSearch.rawValue)
-                as? Bool
-            return stored ?? false
-        }
-        set {
-            updateAndNotify(
-                oldValue: isStartWithSearch,
-                newValue: newValue,
-                key: .startWithSearch)
-        }
-    }
-    
     /// Which field to use for entry subtitles in ViewGroupVC
     public var groupSortOrder: GroupSortOrder {
         get {
@@ -1137,6 +1125,56 @@ public class Settings {
                 oldValue: isHideProtectedFields,
                 newValue: newValue,
                 key: Keys.hideProtectedFields)
+        }
+    }
+    
+    // MARK: - Search
+    
+    /// Automatically show search bar after opening a database.
+    public var isStartWithSearch: Bool {
+        get {
+            let stored = UserDefaults.appGroupShared
+                .object(forKey: Keys.startWithSearch.rawValue)
+                as? Bool
+            return stored ?? false
+        }
+        set {
+            updateAndNotify(
+                oldValue: isStartWithSearch,
+                newValue: newValue,
+                key: .startWithSearch)
+        }
+    }
+
+    /// Whether to search among field names
+    public var isSearchFieldNames: Bool {
+        get {
+            let stored = UserDefaults.appGroupShared
+                .object(forKey: Keys.searchFieldNames.rawValue)
+                as? Bool
+            return stored ?? true
+        }
+        set {
+            updateAndNotify(
+                oldValue: isSearchFieldNames,
+                newValue: newValue,
+                key: .searchFieldNames)
+        }
+    }
+    
+    /// Whether to search in values of protected fields
+    public var isSearchProtectedValues: Bool {
+        get {
+            let stored = UserDefaults.appGroupShared
+                .object(forKey: Keys.searchProtectedValues.rawValue)
+                as? Bool
+            return stored ?? true
+        }
+        set {
+            updateAndNotify(
+                oldValue: isSearchProtectedValues,
+                newValue: newValue,
+                key: .searchProtectedValues)
         }
     }
     
