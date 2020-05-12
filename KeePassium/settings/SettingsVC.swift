@@ -11,12 +11,13 @@ import KeePassiumLib
 import LocalAuthentication
 
 class SettingsVC: UITableViewController, Refreshable {
-    @IBOutlet weak var startWithSearchSwitch: UISwitch!
+
 
     @IBOutlet weak var appSafetyCell: UITableViewCell!
     @IBOutlet weak var dataSafetyCell: UITableViewCell!
     @IBOutlet weak var dataBackupCell: UITableViewCell!
     @IBOutlet weak var autoFillCell: UITableViewCell!
+    @IBOutlet weak var searchCell: UITableViewCell!
     
     @IBOutlet weak var diagnosticLogCell: UITableViewCell!
     @IBOutlet weak var contactSupportCell: UITableViewCell!
@@ -93,7 +94,6 @@ class SettingsVC: UITableViewController, Refreshable {
     
     func refresh() {
         let settings = Settings.current
-        startWithSearchSwitch.isOn = settings.isStartWithSearch
         
         let biometryType = LAContext.getBiometryType()
         if let biometryTypeName = biometryType.name {
@@ -187,6 +187,9 @@ class SettingsVC: UITableViewController, Refreshable {
         case dataSafetyCell:
             let dataProtectionSettingsVC = SettingsDataProtectionVC.instantiateFromStoryboard()
             show(dataProtectionSettingsVC, sender: self)
+        case searchCell:
+            let searchSettingsVC = SettingsSearchVC.instantiateFromStoryboard()
+            show(searchSettingsVC, sender: self)
         case dataBackupCell:
             let dataBackupSettingsVC = SettingsBackupVC.instantiateFromStoryboard()
             show(dataBackupSettingsVC, sender: self)
@@ -243,11 +246,6 @@ class SettingsVC: UITableViewController, Refreshable {
     // MARK: Actions
     @IBAction func doneButtonTapped(_ sender: Any) {
         dismissPopover(animated: true)
-    }
-    
-    @IBAction func didChangeStartWithSearch(_ sender: Any) {
-        Settings.current.isStartWithSearch = startWithSearchSwitch.isOn
-        refresh()
     }
     
     // MARK: - Premium-related actions
