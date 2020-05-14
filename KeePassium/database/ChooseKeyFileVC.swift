@@ -142,7 +142,7 @@ class ChooseKeyFileVC: UITableViewController, Refreshable {
             deleteKeyFile(urlRef: urlRef)
         } else {
             let confirmDeletionAlert = UIAlertController.make(
-                title: fileInfo.fileName,
+                title: urlRef.visibleFileName,
                 message: LString.confirmKeyFileDeletion,
                 cancelButtonTitle: LString.actionCancel)
             let deleteAction = UIAlertAction(title: LString.actionDelete, style: .destructive)

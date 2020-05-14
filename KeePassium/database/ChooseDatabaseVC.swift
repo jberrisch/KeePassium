@@ -407,7 +407,7 @@ class ChooseDatabaseVC: UITableViewController, Refreshable {
             }
         }
         let confirmationAlert = UIAlertController.make(
-            title: info.fileName,
+            title: urlRef.visibleFileName,
             message: message,
             cancelButtonTitle: LString.actionCancel)
         confirmationAlert.addAction(destructiveAction)

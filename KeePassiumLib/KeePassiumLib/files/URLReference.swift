@@ -109,6 +109,11 @@ public class URLReference: Equatable, Codable, CustomDebugStringConvertible {
         }
     }
     
+    /// Returns the most recent known target file name.
+    /// In case of error returns a predefined default string.
+    /// NOTE: Don't use for indexing (because of predefined default string).
+    public var visibleFileName: String { return url?.lastPathComponent ?? "?" }
+    
     /// Last encountered error
     public private(set) var error: Error?
     public var hasError: Bool { return error != nil}
@@ -137,10 +142,6 @@ public class URLReference: Equatable, Codable, CustomDebugStringConvertible {
     internal var cachedURL: URL?
     /// The URL received by resolving bookmark data
     internal var resolvedURL: URL?
-    
-    /// TODO: after refactoring, make `url` public instead.
-    /// The most up-to-date URL we know, if any
-    public var publicURL: URL? { return url }
     
     /// The most up-to-date URL we know, if any
     internal var url: URL? {

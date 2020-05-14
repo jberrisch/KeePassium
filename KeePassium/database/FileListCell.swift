@@ -18,7 +18,7 @@ class FileListCell: UITableViewCell {
     }
     
     private func setupCell() {
-        textLabel?.text = urlRef.publicURL?.lastPathComponent ?? "?"
+        textLabel?.text = urlRef.visibleFileName
         
         // Here we need file info ASAP, even if outdated. We'll refresh it separately.
         urlRef.getCachedInfo { [weak self] result in

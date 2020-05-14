@@ -185,8 +185,7 @@ class FileInfoVC: UITableViewController {
         if fields.isEmpty {
             fields.append(("", ""))
         }
-        let fileName = urlRef.publicURL?.lastPathComponent ?? "?"
-        fields[0] = ((FieldTitle.fileName, fileName))
+        fields[0] = ((FieldTitle.fileName, urlRef.visibleFileName))
     }
     
     private func addFields(from fileInfo: FileInfo) {
