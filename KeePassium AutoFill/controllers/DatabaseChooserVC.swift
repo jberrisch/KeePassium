@@ -122,7 +122,7 @@ class DatabaseChooserVC: UITableViewController, Refreshable {
         
         let cell = tableView
             .dequeueReusableCell(withIdentifier: CellID.fileItem, for: indexPath)
-            as! DatabaseFileListCell
+            as! DatabaseListCell
         cell.urlRef = databaseRefs[indexPath.row]
         return cell
     }

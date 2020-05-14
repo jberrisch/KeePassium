@@ -41,7 +41,7 @@
                                     </subviews>
                                 </tableViewCellContentView>
                             </tableViewCell>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="detailButton" indentationWidth="10" reuseIdentifier="FileItemCell" textLabel="WaS-AB-IgR" detailTextLabel="JX7-iv-1Ow" imageView="zFJ-7B-3yd" style="IBUITableViewCellStyleSubtitle" id="Q0w-X9-p1d" customClass="DatabaseFileListCell" customModule="KeePassium" customModuleProvider="target">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="detailButton" indentationWidth="10" reuseIdentifier="FileItemCell" textLabel="WaS-AB-IgR" detailTextLabel="JX7-iv-1Ow" imageView="zFJ-7B-3yd" style="IBUITableViewCellStyleSubtitle" id="Q0w-X9-p1d" customClass="DatabaseListCell" customModule="KeePassium" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="71.5" width="375" height="57.5"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Q0w-X9-p1d" id="8jx-mN-Boh">

@@ -517,7 +517,7 @@ class ChooseDatabaseVC: UITableViewController, Refreshable {
         case .fileItem:
             let cell = tableView
                 .dequeueReusableCell(withIdentifier: cellType.rawValue, for: indexPath)
-                as! DatabaseFileListCell
+                as! DatabaseListCell
             cell.urlRef = databaseRefs[indexPath.row]
             return cell
         case .appLockSetup:

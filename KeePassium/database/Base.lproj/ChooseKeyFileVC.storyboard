@@ -69,7 +69,7 @@
                                     </subviews>
                                 </tableViewCellContentView>
                             </tableViewCell>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="detailButton" indentationWidth="10" reuseIdentifier="FileCell" textLabel="Ktf-IB-C0F" detailTextLabel="uIl-XD-DTW" imageView="VHw-2P-c6f" style="IBUITableViewCellStyleSubtitle" id="3Xm-yi-5EM">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="detailButton" indentationWidth="10" reuseIdentifier="FileCell" textLabel="Ktf-IB-C0F" detailTextLabel="uIl-XD-DTW" imageView="VHw-2P-c6f" style="IBUITableViewCellStyleSubtitle" id="3Xm-yi-5EM" customClass="KeyFileListCell" customModule="KeePassium" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="86.5" width="375" height="58.5"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="3Xm-yi-5EM" id="kIX-Uw-2xo">

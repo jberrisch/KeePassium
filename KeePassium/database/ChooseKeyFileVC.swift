@@ -210,25 +210,12 @@ class ChooseKeyFileVC: UITableViewController, Refreshable {
                 for: indexPath)
         }
         
-        let fileInfo = urlRefs[indexPath.row - 1].getInfo()
-
-        let cell = tableView.dequeueReusableCell(withIdentifier: CellID.keyFile, for: indexPath)
-        cell.textLabel?.text = fileInfo.fileName
-        guard !fileInfo.hasError else {
-            cell.detailTextLabel?.text = fileInfo.errorMessage
-            cell.detailTextLabel?.textColor = UIColor.errorMessage
-            return cell
-        }
-        
-        if let lastModifiedDate = fileInfo.modificationDate  {
-            let dateString = DateFormatter.localizedString(
-                from: lastModifiedDate,
-                dateStyle: .long,
-                timeStyle: .medium)
-            cell.detailTextLabel?.text = dateString
-        } else {
-            cell.detailTextLabel?.text = nil
-        }
+        let cell = tableView.dequeueReusableCell(
+            withIdentifier: CellID.keyFile,
+            for: indexPath)
+            as! KeyFileListCell
+        let keyFileRef = urlRefs[indexPath.row - 1]
+        cell.urlRef = keyFileRef
         return cell
     }
     

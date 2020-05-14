@@ -81,25 +81,9 @@ class KeyFileChooserVC: UITableViewController, Refreshable {
         let cell = tableView.dequeueReusableCell(
             withIdentifier: CellID.keyFile,
             for: indexPath)
+            as! KeyFileListCell
         let fileIndex = indexPath.row - 1
-        let fileInfo = keyFileRefs[fileIndex].info
-        cell.textLabel?.text = fileInfo.fileName
-        guard !fileInfo.hasError else {
-            cell.detailTextLabel?.text = fileInfo.errorMessage
-            cell.detailTextLabel?.textColor = UIColor.errorMessage
-            return cell
-        }
-        
-        if let lastModifiedDate = fileInfo.modificationDate {
-            let timestampString = DateFormatter.localizedString(
-                from: lastModifiedDate,
-                dateStyle: .long,
-                timeStyle: .medium)
-            cell.detailTextLabel?.text = timestampString
-        } else {
-            cell.detailTextLabel?.text = nil
-        }
-        
+        cell.urlRef = keyFileRefs[fileIndex]
         return cell
     }
     
