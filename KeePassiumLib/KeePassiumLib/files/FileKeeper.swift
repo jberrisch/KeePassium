@@ -251,7 +251,9 @@ public class FileKeeper {
     private func findStoredExternalReferenceFor(url: URL, fileType: FileType) -> URLReference? {
         let storedRefs = getStoredReferences(fileType: fileType, forExternalFiles: true)
         for ref in storedRefs {
-            if let refUrl = try? ref.resolve(), refUrl == url {
+            // resolvedURL is too volatile for stable search, so use one of the saved ones
+            let storedURL = ref.cachedURL ?? ref.bookmarkedURL
+            if storedURL == url {
                 return ref
             }
         }
@@ -263,7 +265,7 @@ public class FileKeeper {
     public func deleteFile(_ urlRef: URLReference, fileType: FileType, ignoreErrors: Bool) throws {
         Diag.debug("Will trash local file [fileType: \(fileType)]")
         do {
-            let url = try urlRef.resolve()
+            let url = try urlRef.resolveSync() // hopefully quick for local files
             try FileManager.default.removeItem(at: url)
             Diag.info("Local file deleted")
             FileKeeperNotifier.notifyFileRemoved(urlRef: urlRef, fileType: fileType)
@@ -840,7 +842,9 @@ public class FileKeeper {
         var isEverythingProcessedOK = true
         let now = Date.now
         for fileRef in allBackupFileRefs {
-            guard let modificationDate = fileRef.getInfo().modificationDate else { continue }
+            guard let fileInfo = fileRef.getCachedInfoSync(), // hopefully quick for local files
+                let modificationDate = fileInfo.modificationDate
+                else { continue }
             if now.timeIntervalSince(modificationDate) < maxAge {
                 // not old enough
                 continue
