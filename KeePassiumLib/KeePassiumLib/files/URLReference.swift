@@ -110,7 +110,7 @@ public class URLReference: Equatable, Codable, CustomDebugStringConvertible {
     }
     
     /// Last encountered error
-    public var error: Error?
+    public private(set) var error: Error?
     public var hasError: Bool { return error != nil}
     
     /// True if the error is an access permission error associated with iOS 13 upgrade.
@@ -124,7 +124,7 @@ public class URLReference: Equatable, Codable, CustomDebugStringConvertible {
     /// Bookmark data
     private let data: Data
     /// sha256 hash describing this reference (URL or bookmark)
-    lazy private(set) var hash: ByteArray = getHash()
+    lazy private(set) var hash = ByteArray()
     /// Location type of the original URL
     public let location: Location
 
@@ -132,9 +132,21 @@ public class URLReference: Equatable, Codable, CustomDebugStringConvertible {
     private var cachedInfo: FileInfo?
     
     /// The URL extracted from bookmark data
-    private var bookmarkedURL: URL
+    internal var bookmarkedURL: URL?
     /// The URL (if any) stored along with the bookmark data
-    private var cachedURL: URL?
+    internal var cachedURL: URL?
+    /// The URL received by resolving bookmark data
+    internal var resolvedURL: URL?
+    
+    /// TODO: after refactoring, make `url` public instead.
+    /// The most up-to-date URL we know, if any
+    public var publicURL: URL? { return url }
+    
+    /// The most up-to-date URL we know, if any
+    internal var url: URL? {
+        return resolvedURL ?? cachedURL ?? bookmarkedURL
+    }
+    
     private var fileProviderID: String?
     
     fileprivate static let fileCoordinator = NSFileCoordinator()
@@ -168,32 +180,27 @@ public class URLReference: Equatable, Codable, CustomDebugStringConvertible {
         self.location = location
         if location.isInternal {
             data = Data() // for backward compatibility
-            hash = ByteArray(data: url.dataRepresentation).sha256
         } else {
             data = try url.bookmarkData(
                 options: [.minimalBookmark],
                 includingResourceValuesForKeys: nil,
                 relativeTo: nil) // throws an internal system error
-            hash = ByteArray(data: data).sha256
         }
         processReference()
     }
 
     public static func == (lhs: URLReference, rhs: URLReference) -> Bool {
         guard lhs.location == rhs.location else { return false }
-        return lhs.bookmarkedURL == rhs.bookmarkedURL
+        return lhs.url == rhs.url
     }
     
     public func serialize() -> Data {
         return try! JSONEncoder().encode(self)
     }
+    
     public static func deserialize(from data: Data) -> URLReference? {
         guard let ref = try? JSONDecoder().decode(URLReference.self, from: data) else {
             return nil
-        }
-        if ref.hash.isEmpty {
-            // legacy stored refs don't have stored hash, so we set it
-            ref.hash = ref.getHash()
         }
         ref.processReference()
         return ref
@@ -201,7 +208,9 @@ public class URLReference: Equatable, Codable, CustomDebugStringConvertible {
     
     public var debugDescription: String {
         return " ‣ Location: \(location)\n" +
-            " ‣ bookmarkedURL: \(bookmarkedURL.relativeString)\n" +
+            " ‣ bookmarkedURL: \(bookmarkedURL?.relativeString ?? "nil")\n" +
+            " ‣ cachedURL: \(cachedURL?.relativeString ?? "nil")\n" +
+            " ‣ resolvedURL: \(resolvedURL?.relativeString ?? "nil")\n" +
             " ‣ fileProviderID: \(fileProviderID ?? "nil")\n" +
             " ‣ data: \(data.count) bytes"
     }
@@ -296,7 +305,7 @@ public class URLReference: Equatable, Codable, CustomDebugStringConvertible {
     /// - Parameters:
     ///   - timeout: time to wait for resolving to finish
     ///   - callback: called when resolving either finishes or terminates by timeout. Is called on the main queue.
-    public func resolveAsync(timeout: TimeInterval = -1, callback: @escaping ResolveCallback) {
+    public func resolveAsync(timeout: TimeInterval = 5, callback: @escaping ResolveCallback) {
         URLReference.queue.async { // strong self
             self.resolveAsyncInternal(timeout: timeout, completion: callback)
         }
@@ -442,56 +451,38 @@ public class URLReference: Equatable, Codable, CustomDebugStringConvertible {
     
     // MARK: - Synchronous operations
     
-    /// Returns a sha256 hash of the URL (if internal) or bookmark (if external)
-    private func getHash() -> ByteArray {
-        guard location.isInternal else {
-            // external location: sha256(bookmark data)
-            return ByteArray(data: data).sha256
-        }
-
-        // internal location
-        // URL might be deserialized as nil, resolving might fail
-        do {
-            let _url = try resolveSync()
-            return ByteArray(data: _url.dataRepresentation).sha256
-        } catch {
-            Diag.warning("Failed to resolve the URL: \(error.localizedDescription)")
-            return ByteArray() // empty hash as a sign of error
-        }
-    }
-    
     public func resolveSync() throws -> URL {
-        if let url = url, location.isInternal {
-            return url
+        if location.isInternal, let cachedURL = self.cachedURL {
+            return cachedURL
         }
         
         var isStale = false
-        let resolvedUrl = try URL(
+        let _resolvedURL = try URL(
             resolvingBookmarkData: data,
             options: [URL.BookmarkResolutionOptions.withoutUI],
             relativeTo: nil,
             bookmarkDataIsStale: &isStale)
-        self.url = resolvedUrl
-        return resolvedUrl
+        self.resolvedURL = _resolvedURL
+        return _resolvedURL
     }
     
-//    /// Identifies this reference among others.
-//    /// Currently returns file name if available.
-//    /// If the reference is not resolvable, returns nil.
-//    public func getDescriptor() -> Descriptor? {
-//        guard !info.hasError else {
-//            //TODO: lookup file name by hash, in some persistent table
-//            return nil
-//        }
-//        return info.fileName
-//    }
+    /// Identifies this reference among others. Currently returns the file name (resolved, or cached, or at least the bookmarked one)
+    public func getDescriptor() -> Descriptor? {
+        if let resolvedFileName = resolvedURL?.lastPathComponent {
+            return resolvedFileName
+        }
+        if let cachedFileName = cachedURL?.lastPathComponent {
+            return cachedFileName
+        }
+        return bookmarkedURL?.lastPathComponent
+    }
     
     /// Returns information about resolved URL (also updates the `info` property).
     /// Might be slow, as it needs to resolve the URL.
-    /// In case of trouble, only `hasError` and `errorMessage` fields are valid.
-    public func getInfo() -> FileInfo {
+    /// In case of trouble, returns `nil` and sets the `error` property.
+    public func getInfoSync() -> FileInfo? {
         refreshInfoSync()
-        return cachedInfo!
+        return cachedInfo
     }
     
     /// Re-aquires information about resolved URL and updates the `info` field.
@@ -505,6 +496,10 @@ public class URLReference: Equatable, Codable, CustomDebugStringConvertible {
                     url.stopAccessingSecurityScopedResource()
                 }
             }
+            
+            //TODO: info might be outdated without a coordinated read
+            
+            error = nil
             cachedInfo = FileInfo(
                 fileName: url.lastPathComponent,
                 fileSize: url.fileSize,
@@ -544,7 +539,7 @@ public class URLReference: Equatable, Codable, CustomDebugStringConvertible {
     /// Extracts additional info from bookmark data.
     ///
     /// Updates instance properties, using parsed bookmark data:
-    /// - `bookmarkedURL` (crashes if missing)
+    /// - `bookmarkedURL` (might be `nil` if missing)
     /// - `fileProviderID` (might be `nil` if missing)
     fileprivate func processReference() {
         guard !data.isEmpty else { return }
@@ -591,7 +586,6 @@ public class URLReference: Equatable, Codable, CustomDebugStringConvertible {
         guard let contentOffset32 = stream.readUInt32() else { return }
         let contentOffset = Int(contentOffset32)
         stream.skip(count: contentOffset - 12 - 4)
-        print("Content offset: \(contentOffset)")
         guard let firstTOC32 = stream.readUInt32() else { return }
         stream.skip(count: Int(firstTOC32) - 4 + 4*4)
         
