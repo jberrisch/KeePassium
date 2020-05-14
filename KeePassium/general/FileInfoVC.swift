@@ -52,6 +52,33 @@ class FileInfoVC: UITableViewController {
 
     private var dismissablePopoverDelegate = DismissablePopover()
     
+    private enum FieldTitle {
+        static let fileName = NSLocalizedString(
+            "[FileInfo/Field/title] File Name",
+            value: "File Name",
+            comment: "Field title")
+        static let error = NSLocalizedString(
+            "[FileInfo/Field/valueError] Error",
+            value: "Error",
+            comment: "Title of a field with an error message")
+        static let fileLocation = NSLocalizedString(
+            "[FileInfo/Field/title] File Location",
+            value: "File Location",
+            comment: "Field title")
+        static let fileSize = NSLocalizedString(
+            "[FileInfo/Field/title] File Size",
+            value: "File Size",
+            comment: "Field title")
+        static let creationDate = NSLocalizedString(
+            "[FileInfo/Field/title] Creation Date",
+            value: "Creation Date",
+            comment: "Field title")
+        static let modificationDate = NSLocalizedString(
+            "[FileInfo/Field/title] Last Modification Date",
+            value: "Last Modification Date",
+            comment: "Field title")
+    }
+    
     /// - Parameters:
     ///   - urlRef: reference to the file
     ///   - fileType: type of the target file
@@ -63,7 +90,6 @@ class FileInfoVC: UITableViewController {
         ) -> FileInfoVC
     {
         let vc = FileInfoVC.instantiateFromStoryboard()
-        vc.setupFields(urlRef: urlRef)
         vc.urlRef = urlRef
         vc.fileType = fileType
         
@@ -80,64 +106,12 @@ class FileInfoVC: UITableViewController {
         return vc
     }
     
-    private func setupFields(urlRef: URLReference) {
-        let fileInfo = urlRef.info
-        if let errorMessage = fileInfo.errorMessage {
-            fields.append((
-                NSLocalizedString(
-                    "[FileInfo/Field/valueError] Error",
-                    value: "Error",
-                    comment: "Title of a field with an error message"),
-                errorMessage
-            ))
-        }
-        fields.append((
-            NSLocalizedString(
-                "[FileInfo/Field/title] File Name",
-                value: "File Name",
-                comment: "Field title"),
-            fileInfo.fileName
-        ))
-        fields.append((
-            NSLocalizedString(
-                "[FileInfo/Field/title] File Location",
-                value: "File Location",
-                comment: "Field title"),
-            urlRef.location.description
-        ))
-        if let fileSize = fileInfo.fileSize {
-            fields.append((
-                NSLocalizedString(
-                    "[FileInfo/Field/title] File Size",
-                    value: "File Size",
-                    comment: "Field title"),
-                ByteCountFormatter.string(fromByteCount: fileSize, countStyle: .file)
-            ))
-        }
-        if let creationDate = fileInfo.creationDate {
-            fields.append((
-                NSLocalizedString(
-                    "[FileInfo/Field/title] Creation Date",
-                    value: "Creation Date",
-                    comment: "Field title"),
-                DateFormatter.localizedString(
-                    from: creationDate,
-                    dateStyle: .medium,
-                    timeStyle: .medium)
-            ))
-        }
-        if let modificationDate = fileInfo.modificationDate {
-            fields.append((
-                NSLocalizedString(
-                    "[FileInfo/Field/title] Last Modification Date",
-                    value: "Last Modification Date",
-                    comment: "Field title"),
-                DateFormatter.localizedString(
-                    from: modificationDate,
-                    dateStyle: .medium,
-                    timeStyle: .medium)
-            ))
-        }
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        let refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(refresh), for: .valueChanged)
+        self.refreshControl = refreshControl
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -147,6 +121,7 @@ class FileInfoVC: UITableViewController {
         tableView.addObserver(self, forKeyPath: "contentSize", options: .new, context: nil)
         
         setupButtons()
+        refresh()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -173,6 +148,77 @@ class FileInfoVC: UITableViewController {
         exportButton?.isHidden = !canExport
         let destructiveAction = DestructiveFileAction.get(for: urlRef.location)
         deleteButton?.setTitle(destructiveAction.title, for: .normal)
+    }
+    
+    // MARK: - Info refresh
+    
+    @objc
+    func refresh() {
+        guard let refreshControl = refreshControl, !refreshControl.isRefreshing else {
+            return
+        }
+
+        refreshFileNameField()
+        tableView.reloadData()
+        
+        refreshControl.beginRefreshing()
+        urlRef.refreshInfo { [weak self] result in
+            guard let self = self else { return }
+            self.fields.removeAll(keepingCapacity: true)
+            self.refreshFileNameField()
+            switch result {
+            case .success(let fileInfo):
+                self.addFields(from: fileInfo)
+            case .failure(let accessError):
+                self.fields.append((
+                    FieldTitle.error,
+                    accessError.localizedDescription
+                ))
+            }
+            self.tableView.reloadData()
+            self.tableView.refreshControl?.endRefreshing()
+        }
+    }
+    
+    /// Updates the file name field, adding it if necessary.
+    private func refreshFileNameField() {
+        if fields.isEmpty {
+            fields.append(("", ""))
+        }
+        let fileName = urlRef.publicURL?.lastPathComponent ?? "?"
+        fields[0] = ((FieldTitle.fileName, fileName))
+    }
+    
+    private func addFields(from fileInfo: FileInfo) {
+        // skip file name - it is handled separately in refreshFileNameField()
+        fields.append((
+            FieldTitle.fileLocation,
+            urlRef.location.description
+        ))
+        if let fileSize = fileInfo.fileSize {
+            fields.append((
+                FieldTitle.fileSize,
+                ByteCountFormatter.string(fromByteCount: fileSize, countStyle: .file)
+            ))
+        }
+        if let creationDate = fileInfo.creationDate {
+            fields.append((
+                FieldTitle.creationDate,
+                DateFormatter.localizedString(
+                    from: creationDate,
+                    dateStyle: .medium,
+                    timeStyle: .medium)
+            ))
+        }
+        if let modificationDate = fileInfo.modificationDate {
+            fields.append((
+                FieldTitle.modificationDate,
+                DateFormatter.localizedString(
+                    from: modificationDate,
+                    dateStyle: .medium,
+                    timeStyle: .medium)
+            ))
+        }
     }
     
     // MARK: - Table view data source
