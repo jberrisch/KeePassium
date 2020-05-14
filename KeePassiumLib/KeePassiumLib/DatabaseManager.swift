@@ -273,9 +273,15 @@ public class DatabaseManager {
             successHandler(compositeKey)
         }
         
-        if let keyFileRef = keyFileRef {
-            do {
-                let keyFileURL = try keyFileRef.resolve()
+        guard let keyFileRef = keyFileRef else {
+            dataReadyHandler(ByteArray())
+            return
+        }
+        
+        // Got a key file, load it
+        keyFileRef.resolveAsync { result in // no self
+            switch result {
+            case .success(let keyFileURL):
                 let keyDoc = FileDocument(fileURL: keyFileURL)
                 keyDoc.open(successHandler: {
                     dataReadyHandler(keyDoc.data)
@@ -283,14 +289,10 @@ public class DatabaseManager {
                     Diag.error("Failed to open key file [error: \(error.localizedDescription)]")
                     errorHandler(LString.Error.failedToOpenKeyFile)
                 })
-            } catch {
-                Diag.error("Failed to open key file [error: \(error.localizedDescription)]")
+            case .failure(let accessError):
+                Diag.error("Failed to open key file [error: \(accessError.localizedDescription)]")
                 errorHandler(LString.Error.failedToOpenKeyFile)
-                return
             }
-            
-        } else {
-            dataReadyHandler(ByteArray())
         }
     }
     
@@ -680,24 +682,31 @@ fileprivate class DatabaseLoader: ProgressObserver {
         startObservingProgress()
         notifier.notifyDatabaseWillLoad(database: dbRef)
         progress.status = LString.Progress.contactingStorageProvider
-        let dbURL: URL
-        do {
-            dbURL = try dbRef.resolve()
-        } catch {
-            Diag.error("Failed to resolve database URL reference [error: \(error.localizedDescription)]")
-            stopObservingProgress()
-            notifier.notifyDatabaseLoadError(
-                database: dbRef,
-                isCancelled: progress.isCancelled,
-                message: LString.Error.cannotFindDatabaseFile,
-                reason: error.localizedDescription)
-            completion(dbRef, nil)
-            endBackgroundTask()
-            return
+        dbRef.resolveAsync { result in // strong self
+            switch result {
+            case .success(let dbURL):
+                self.onDatabaseURLResolved(url: dbURL)
+            case .failure(let accessError):
+                self.onDatabaseURLResolveError(accessError)
+            }
         }
-        
-        let dbDoc = DatabaseDocument(fileURL: dbURL)
-        progress.status = LString.Progress.loadingDatabaseFile
+    }
+
+    private func onDatabaseURLResolveError(_ error: URLReference.AccessError) {
+        Diag.error("Failed to resolve database URL reference [error: \(error.localizedDescription)]")
+        stopObservingProgress()
+        notifier.notifyDatabaseLoadError(
+            database: dbRef,
+            isCancelled: progress.isCancelled,
+            message: LString.Error.cannotFindDatabaseFile,
+            reason: error.localizedDescription)
+        completion(dbRef, nil)
+        endBackgroundTask()
+    }
+    
+    private func onDatabaseURLResolved(url: URL) {
+        let dbDoc = DatabaseDocument(fileURL: url)
+        progress.status = progress.status = LString.Progress.loadingDatabaseFile
         dbDoc.open(
             successHandler: {
                 self.onDatabaseDocumentOpened(dbDoc)
@@ -752,47 +761,55 @@ fileprivate class DatabaseLoader: ProgressObserver {
         }
         
         // OK, so the key is in rawComponents state, let's load the key file
-        if let keyFileRef = compositeKey.keyFileRef {
-            Diag.debug("Loading key file")
-            progress.localizedDescription = LString.Progress.loadingKeyFile
-            
-            let keyFileURL: URL
-            do {
-                keyFileURL = try keyFileRef.resolve()
-            } catch {
-                Diag.error("Failed to resolve key file URL reference [error: \(error.localizedDescription)]")
-                stopObservingProgress()
-                notifier.notifyDatabaseLoadError(
-                    database: dbRef,
-                    isCancelled: progress.isCancelled,
-                    message: LString.Error.cannotFindKeyFile,
-                    reason: error.localizedDescription)
-                completion(dbRef, nil)
-                endBackgroundTask()
-                return
-            }
-            
-            let keyDoc = FileDocument(fileURL: keyFileURL)
-            keyDoc.open(
-                successHandler: {
-                    self.onKeyFileDataReady(dbDoc: dbDoc, keyFileData: keyDoc.data)
-                },
-                errorHandler: {
-                    (error) in
-                    Diag.error("Failed to open key file [error: \(error.localizedDescription)]")
-                    self.stopObservingProgress()
-                    self.notifier.notifyDatabaseLoadError(
-                        database: self.dbRef,
-                        isCancelled: self.progress.isCancelled,
-                        message: LString.Error.cannotOpenKeyFile,
-                        reason: error.localizedDescription)
-                    self.completion(self.dbRef, nil)
-                    self.endBackgroundTask()
-                }
-            )
-        } else {
+        guard let keyFileRef = compositeKey.keyFileRef else {
+            // no key file, continue with empty data
             onKeyFileDataReady(dbDoc: dbDoc, keyFileData: ByteArray())
+            return
         }
+        
+        Diag.debug("Loading key file")
+        progress.localizedDescription = LString.Progress.loadingKeyFile
+        keyFileRef.resolveAsync { result in // strong self
+            switch result {
+            case .success(let keyFileURL):
+                self.onKeyFileURLResolved(url: keyFileURL, dbDoc: dbDoc)
+            case .failure(let accessError):
+                self.onKeyFileURLResolveError(accessError)
+            }
+        }
+    }
+    
+    private func onKeyFileURLResolveError(_ error: URLReference.AccessError) {
+        Diag.error("Failed to resolve key file URL reference [error: \(error.localizedDescription)]")
+        stopObservingProgress()
+        notifier.notifyDatabaseLoadError(
+            database: dbRef,
+            isCancelled: progress.isCancelled,
+            message: LString.Error.cannotFindKeyFile,
+            reason: error.localizedDescription)
+        completion(dbRef, nil)
+        endBackgroundTask()
+    }
+
+    private func onKeyFileURLResolved(url: URL, dbDoc: DatabaseDocument) {
+        let keyDoc = FileDocument(fileURL: url)
+        keyDoc.open(
+            successHandler: {
+                self.onKeyFileDataReady(dbDoc: dbDoc, keyFileData: keyDoc.data)
+            },
+            errorHandler: {
+                (error) in
+                Diag.error("Failed to open key file [error: \(error.localizedDescription)]")
+                self.stopObservingProgress()
+                self.notifier.notifyDatabaseLoadError(
+                    database: self.dbRef,
+                    isCancelled: self.progress.isCancelled,
+                    message: LString.Error.cannotOpenKeyFile,
+                    reason: error.localizedDescription)
+                self.completion(self.dbRef, nil)
+                self.endBackgroundTask()
+            }
+        )
     }
     
     private func onKeyFileDataReady(dbDoc: DatabaseDocument, keyFileData: ByteArray) {
@@ -975,9 +992,13 @@ fileprivate class DatabaseSaver: ProgressObserver {
         startObservingProgress()
         do {
             if Settings.current.isBackupDatabaseOnSave {
-                // dbDoc has already been opened, so we backup its old encrypted data
+                // dbDoc has already been opened, so we backup its old encrypted data.
+                
+                // The at this stage, the DB should have a resolved URL
+                assert(dbRef.url != nil)
+                let nameTemplate = dbRef.url?.lastPathComponent ?? "Backup"
                 FileKeeper.shared.makeBackup(
-                    nameTemplate: dbRef.info.fileName,
+                    nameTemplate: nameTemplate,
                     contents: dbDoc.encryptedData)
             }
 
