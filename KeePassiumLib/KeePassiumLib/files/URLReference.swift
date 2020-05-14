@@ -477,7 +477,16 @@ public class URLReference: Equatable, Codable, CustomDebugStringConvertible {
         return bookmarkedURL?.lastPathComponent
     }
     
-    /// Returns information about resolved URL (also updates the `info` property).
+    /// Returns most recent information about resolved URL.
+    /// If no info available, fetches it synchronously (this might be slow).
+    public func getCachedInfoSync() -> FileInfo? {
+        if cachedInfo == nil {
+            refreshInfoSync()
+        }
+        return cachedInfo
+    }
+    
+    /// Returns information about resolved URL.
     /// Might be slow, as it needs to resolve the URL.
     /// In case of trouble, returns `nil` and sets the `error` property.
     public func getInfoSync() -> FileInfo? {
