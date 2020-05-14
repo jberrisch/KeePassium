@@ -187,12 +187,10 @@ public class Keychain {
     
     /// - Throws: KeychainError
     internal func getDatabaseSettings(for databaseRef: URLReference) throws -> DatabaseSettings? {
-        guard !databaseRef.info.hasError else {
-            Diag.warning("Database with an error, cannot load DB-specific settings")
+        guard let account = databaseRef.getDescriptor() else {
+            Diag.warning("Cannot get database descriptor")
             return nil
         }
-
-        guard let account = databaseRef.getDescriptor() else { return nil }
         if let data = try get(service: .databaseSettings, account: account) { // throws KeychainError
             return DatabaseSettings.deserialize(from: data)
         }
@@ -201,10 +199,11 @@ public class Keychain {
     
     /// - Throws: KeychainError
     internal func setDatabaseSettings(_ dbSettings: DatabaseSettings, for databaseRef: URLReference) throws {
-        guard !databaseRef.info.hasError else { return }
-        
         let data = dbSettings.serialize()
-        guard let account = databaseRef.getDescriptor() else { return }
+        guard let account = databaseRef.getDescriptor() else {
+            Diag.warning("Cannot get database descriptor")
+            return
+        }
         try set(service: .databaseSettings, account: account, data: data)
             // throws KeychainError
     }
