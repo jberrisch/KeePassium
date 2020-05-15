@@ -84,7 +84,7 @@ extension UIImage {
     
     /// Icon for database with the given reference (depends on location and error state).
     static func databaseIcon(for urlRef: URLReference) -> UIImage {
-        guard !urlRef.info.hasError else {
+        guard !urlRef.hasError else {
             return UIImage(asset: .databaseErrorListitem)
         }
         switch urlRef.location {

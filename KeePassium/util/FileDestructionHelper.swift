@@ -66,8 +66,7 @@ class FileDestructionHelper {
         parent: UIViewController,
         completion: CompletionHandler?)
     {
-        let info = urlRef.getInfo()
-        if info.hasError {
+        if urlRef.hasError {
             // A dead reference won't have file name,
             // so we cannot show a meaningful confirmation dialog.
             // So just remove it without confirmation.
@@ -81,7 +80,7 @@ class FileDestructionHelper {
         
         let action = DestructiveFileAction.get(for: urlRef.location)
         let confirmationAlert = UIAlertController.make(
-            title: info.fileName,
+            title: urlRef.visibleFileName,
             message: action.getConfirmationText(for: fileType),
             cancelButtonTitle: LString.actionCancel)
             .addAction(title: action.title, style: .destructive) { alert in
@@ -111,7 +110,7 @@ class FileDestructionHelper {
             case .remove:
                 fileKeeper.removeExternalReference(urlRef, fileType: fileType)
             case .delete:
-                try fileKeeper.deleteFile(urlRef, fileType: fileType, ignoreErrors: urlRef.info.hasError)
+                try fileKeeper.deleteFile(urlRef, fileType: fileType, ignoreErrors: urlRef.hasError)
                 // throws `FileKeeperError`
             }
             completion?(true)

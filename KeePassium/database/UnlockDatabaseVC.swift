@@ -162,10 +162,10 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
         guard isViewLoaded else { return }
         
         databaseIconImage.image = UIImage.databaseIcon(for: databaseRef)
-        databaseNameLabel.text = databaseRef.info.fileName
-        if databaseRef.info.hasError {
-            let text = databaseRef.info.errorMessage
-            if databaseRef.info.hasPermissionError257 {
+        databaseNameLabel.text = databaseRef.visibleFileName
+        if databaseRef.hasError {
+            let text = databaseRef.error?.localizedDescription
+            if databaseRef.hasPermissionError257 {
                 showErrorMessage(text, suggestion: LString.tryToReAddFile)
             } else {
                 showErrorMessage(text)
