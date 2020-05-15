@@ -544,17 +544,17 @@ extension UnlockDatabaseVC: HardwareKeyPickerDelegate {
 extension UnlockDatabaseVC: KeyFileChooserDelegate {
     func setKeyFile(urlRef: URLReference?) {
         // can be nil, can have error, can be ok
-        keyFileRef = urlRef
+        self.keyFileRef = urlRef
         DatabaseSettingsManager.shared.updateSettings(for: databaseRef) { (dbSettings) in
             dbSettings.maybeSetAssociatedKeyFile(keyFileRef)
         }
 
-        guard let fileInfo = urlRef?.info else {
+        guard let keyFileRef = keyFileRef else {
             Diag.debug("No key file selected")
             keyFileField.text = ""
             return
         }
-        if let errorDetails = fileInfo.errorMessage {
+        if let errorDetails = keyFileRef.error?.localizedDescription {
             let errorMessage = String.localizedStringWithFormat(
                 NSLocalizedString(
                     "[Database/Unlock] Key file error: %@",
@@ -566,7 +566,7 @@ extension UnlockDatabaseVC: KeyFileChooserDelegate {
             keyFileField.text = ""
         } else {
             Diag.info("Key file set successfully")
-            keyFileField.text = fileInfo.fileName
+            keyFileField.text = keyFileRef.visibleFileName
         }
     }
     

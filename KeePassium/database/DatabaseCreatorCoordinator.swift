@@ -180,15 +180,18 @@ class DatabaseCreatorCoordinator: NSObject {
     
     /// Step 4: Show picker to move temporary database to its final location
     private func pickTargetLocation(for tmpDatabaseRef: URLReference) {
-        do{
-            let tmpUrl = try tmpDatabaseRef.resolve() // throws some UIKit error
-            let picker = UIDocumentPickerViewController(url: tmpUrl, in: .exportToService)
-            picker.modalPresentationStyle = navigationController.modalPresentationStyle
-            picker.delegate = self
-            databaseCreatorVC.present(picker, animated: true, completion: nil)
-        } catch {
-            Diag.error("Failed to resolve temporary DB reference [message: \(error.localizedDescription)]")
-            databaseCreatorVC.setError(message: error.localizedDescription, animated: true)
+        tmpDatabaseRef.resolveAsync { [weak self] (result) in
+            guard let self = self else { return }
+            switch result {
+            case .success(let tmpURL):
+                let picker = UIDocumentPickerViewController(url: tmpURL, in: .exportToService)
+                picker.modalPresentationStyle = self.navigationController.modalPresentationStyle
+                picker.delegate = self
+                self.databaseCreatorVC.present(picker, animated: true, completion: nil)
+            case .failure(let error):
+                Diag.error("Failed to resolve temporary DB reference [message: \(error.localizedDescription)]")
+                self.databaseCreatorVC.setError(message: error.localizedDescription, animated: true)
+            }
         }
     }
     
