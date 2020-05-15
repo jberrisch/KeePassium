@@ -344,31 +344,8 @@ class ChooseDatabaseVC: UITableViewController, Refreshable {
 
     func didPressExportDatabase(at indexPath: IndexPath) {
         let urlRef = databaseRefs[indexPath.row]
-        do {
-            let url = try urlRef.resolve()
-            let exportSheet = UIActivityViewController(
-                activityItems: [url],
-                applicationActivities: nil)
-            if let popover = exportSheet.popoverPresentationController {
-                guard let sourceView = tableView.cellForRow(at: indexPath) else {
-                    assertionFailure()
-                    return
-                }
-                popover.sourceView = sourceView
-                popover.sourceRect = CGRect(
-                    x: sourceView.bounds.width,
-                    y: sourceView.center.y,
-                    width: 0,
-                    height: 0)
-            }
-            present(exportSheet, animated: true, completion: nil)
-        } catch {
-            Diag.error("Failed to resolve URL reference [message: \(error.localizedDescription)]")
-            let alert = UIAlertController.make(
-                title: LString.titleFileExportError,
-                message: error.localizedDescription)
-            present(alert, animated: true, completion: nil)
-        }
+        let popoverAnchor = PopoverAnchor(tableView: tableView, at: indexPath)
+        FileExportHelper.showFileExportSheet(urlRef, at: popoverAnchor, parent: self)
     }
         
     func didPressDeleteDatabase(at indexPath: IndexPath) {
