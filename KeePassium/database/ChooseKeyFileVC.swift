@@ -136,8 +136,7 @@ class ChooseKeyFileVC: UITableViewController, Refreshable {
     
     func didPressDeleteKeyFile(at indexPath: IndexPath) {
         let urlRef = urlRefs[indexPath.row - 1]
-        let fileInfo = urlRef.getInfo()
-        if fileInfo.hasError {
+        if urlRef.hasError {
             // there is nothing useful in this reference, so delete without confirmation
             deleteKeyFile(urlRef: urlRef)
         } else {
@@ -281,7 +280,7 @@ class ChooseKeyFileVC: UITableViewController, Refreshable {
             try FileKeeper.shared.deleteFile(
                 urlRef,
                 fileType: .keyFile,
-                ignoreErrors: urlRef.info.hasError)
+                ignoreErrors: urlRef.hasError)
             DatabaseSettingsManager.shared.removeAllAssociations(of: urlRef)
             refresh()
         } catch {

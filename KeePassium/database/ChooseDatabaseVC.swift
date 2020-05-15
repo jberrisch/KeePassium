@@ -203,8 +203,7 @@ class ChooseDatabaseVC: UITableViewController, Refreshable {
     /// For deletion, the action name depends on where that file is.
     /// This function returns the appropriate title.
     private func getDeleteActionName(for urlRef: URLReference) -> String {
-        let fileInfo = urlRef.getInfo()
-        if urlRef.location == .external || fileInfo.hasError {
+        if urlRef.location == .external || urlRef.hasError {
             return LString.actionRemoveFile
         } else {
             return LString.actionDeleteFile
@@ -350,8 +349,7 @@ class ChooseDatabaseVC: UITableViewController, Refreshable {
         
     func didPressDeleteDatabase(at indexPath: IndexPath) {
         let urlRef = databaseRefs[indexPath.row]
-        let info = urlRef.getInfo()
-        if info.hasError {
+        if urlRef.hasError {
             // dead reference, just remove it without confirmation
             removeDatabaseFile(urlRef: urlRef)
             return
@@ -412,11 +410,10 @@ class ChooseDatabaseVC: UITableViewController, Refreshable {
 
         DatabaseSettingsManager.shared.removeSettings(for: urlRef)
         do {
-            let fileInfo = urlRef.getInfo()
             try FileKeeper.shared.deleteFile(
                 urlRef,
                 fileType: .database,
-                ignoreErrors: fileInfo.hasError)
+                ignoreErrors: urlRef.hasError)
                 // throws `FileKeeperError`
             refresh()
         } catch {

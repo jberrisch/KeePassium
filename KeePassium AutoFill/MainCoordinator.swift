@@ -325,7 +325,7 @@ class MainCoordinator: NSObject, Coordinator {
     }
     
     func showDatabaseContent(database: Database, databaseRef: URLReference) {
-        let fileName = databaseRef.info.fileName
+        let fileName = databaseRef.visibleFileName
         let databaseName = URL(string: fileName)?.deletingPathExtension().absoluteString ?? fileName
         
         let entriesVC = EntryFinderVC.instantiateFromStoryboard()
@@ -551,7 +551,7 @@ extension MainCoordinator: DatabaseManagerObserver {
         // Keep the entered password intact
         databaseUnlockerVC.hideProgressOverlay()
         
-        if urlRef.info.hasPermissionError257 {
+        if urlRef.hasPermissionError257 {
             databaseUnlockerVC.showErrorMessage(
                 message,
                 reason: reason,
