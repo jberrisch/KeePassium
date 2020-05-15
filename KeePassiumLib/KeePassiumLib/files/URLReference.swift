@@ -495,30 +495,17 @@ public class URLReference: Equatable, Codable, CustomDebugStringConvertible {
         return cachedInfo
     }
     
-    /// Re-aquires information about resolved URL and updates the `info` field.
-    public func refreshInfoSync() {
-        do {
-            let url = try resolveSync()
-            // without secruity scoping, won't get file attributes
-            let isAccessed = url.startAccessingSecurityScopedResource()
-            defer {
-                if isAccessed {
-                    url.stopAccessingSecurityScopedResource()
-                }
+    /// Re-aquires information about resolved URL synchronously.
+    private func refreshInfoSync() {
+        let semaphore = DispatchSemaphore(value: 0)
+        URLReference.queue.async { [self] in
+            self.refreshInfo { _ in
+                // `cachedInfo` and `error` are already updated,
+                // so we have nothing to do here.
+                semaphore.signal()
             }
-            
-            //TODO: info might be outdated without a coordinated read
-            
-            error = nil
-            cachedInfo = FileInfo(
-                fileName: url.lastPathComponent,
-                fileSize: url.fileSize,
-                creationDate: url.fileCreationDate,
-                modificationDate: url.fileModificationDate)
-        } catch {
-            self.error = error
-            cachedInfo = nil
         }
+        semaphore.wait()
     }
     
     /// Finds the same reference in the given list.
