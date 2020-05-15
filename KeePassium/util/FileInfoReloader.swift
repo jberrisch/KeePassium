@@ -11,24 +11,35 @@ import KeePassiumLib
 
 /// Helper class to manage reloading of `URLReference` attributes.
 class FileInfoReloader {
+    static let timeout: TimeInterval = 5 // wait time before giving up on a reference
     
     private let refreshQueue = DispatchQueue(
         label: "com.keepassium.FileInfoReloader",
         qos: .background,
         attributes: .concurrent)
     
-    /// Refreshes `info` field of each given URL reference,
-    /// by opening and immediately closing a corresponding UIDocument.
-    /// Expensive operation: requires network traffic, and potentially
-    /// downloads each changed file.
-    ///
-    /// - Parameters:
-    ///   - refs: references to refresh
-    ///   - completion: called (in main dispatch queue) after all references have been processed
-    public func reload(_ refs: [URLReference], completion: @escaping (() -> Void)) {
+    /// Called once info for the`ref` reference has been reloaded.
+    /// If successful, `fileInfo` contains the new info.
+    /// Otherwise, `fileInfo` will be `nil` and `ref.error` will contain the error information.
+    typealias UpdateHandler = (_ ref: URLReference, _ fileInfo: FileInfo?) -> ()
+    
+    /// The caller is responsible for avoiding excessive calls.
+    public func getInfo(
+        for refs: [URLReference],
+        update updateHandler: @escaping UpdateHandler,
+        completion: @escaping ()->())
+    {
         for urlRef in refs {
-            refreshQueue.async { [weak self] in
-                self?.refreshFileAttributes(urlRef: urlRef)
+            refreshQueue.async {
+                urlRef.refreshInfo(timeout: FileInfoReloader.timeout) { result in
+                    switch result {
+                    case .success(let fileInfo):
+                        updateHandler(urlRef, fileInfo)
+                    case .failure(let error):
+                        Diag.warning("Failed to get file info [reason: \(error.localizedDescription)]")
+                        updateHandler(urlRef, nil)
+                    }
+                }
             }
         }
         refreshQueue.asyncAfter(deadline: .now(), qos: .background, flags: .barrier) {
@@ -36,30 +47,5 @@ class FileInfoReloader {
                 completion()
             }
         }
-    }
-    
-    /// Refreshes `info` attributes of the given URLReference,
-    /// by quickly opening and closing the corresponding document.
-    ///
-    /// - Parameters:
-    ///   - urlRef: file to refresh
-    private func refreshFileAttributes(urlRef: URLReference)
-    {
-        guard let url = try? urlRef.resolve() else {
-            // Refresh to reflect there was a problem.
-            urlRef.refreshInfo()
-            return
-        }
-        
-        let document = FileDocument(fileURL: url)
-        document.open(
-            successHandler: {
-                urlRef.refreshInfo()
-                document.close(completionHandler: nil)
-            },
-            errorHandler: { (error) in
-                urlRef.refreshInfo()
-            }
-        )
     }
 }

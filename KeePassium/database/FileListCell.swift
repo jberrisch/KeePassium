@@ -21,7 +21,7 @@ class FileListCell: UITableViewCell {
         textLabel?.text = urlRef.visibleFileName
         
         // Here we need file info ASAP, even if outdated. We'll refresh it separately.
-        urlRef.getCachedInfo { [weak self] result in
+        urlRef.getCachedInfo(canFetch: false) { [weak self] result in
             guard let self = self else { return }
 
             switch result {
@@ -37,7 +37,15 @@ class FileListCell: UITableViewCell {
                     self.detailTextLabel?.text = nil
                 }
                 self.detailTextLabel?.textColor = UIColor.auxiliaryText
-            case .failure(let error):
+            case .failure:
+                // The provided error can be .noInfoAvaiable, which is not informative.
+                // So check the urlRef's error property instead.
+                guard let error = self.urlRef.error else {
+                    // no error, but failed -- probably info refresh is not finished yet
+                    self.detailTextLabel?.text = "..." //TODO: replace with waiting animation instead
+                    self.imageView?.image = self.getFileIcon(for: self.urlRef, hasError: false)
+                    return
+                }
                 self.detailTextLabel?.text = error.localizedDescription
                 self.detailTextLabel?.textColor = UIColor.errorMessage
                 self.imageView?.image = self.getFileIcon(for: self.urlRef, hasError: true)

@@ -29,6 +29,9 @@ public class URLReference: Equatable, Codable, CustomDebugStringConvertible {
         /// Operation timed out
         case timeout
         
+        /// There is no cached file info, and caller asked not to refresh it.
+        case noInfoAvailable
+        
         /// Raised when there is an internal inconsistency in the code.
         /// In particular, when both result and error params of a callback are nil.
         case internalError
@@ -44,6 +47,9 @@ public class URLReference: Equatable, Codable, CustomDebugStringConvertible {
                     bundle: Bundle.framework,
                     value: "Storage provider did not respond in a timely manner",
                     comment: "Error message shown when file access operation has been aborted on timeout.")
+            case .noInfoAvailable:
+                assertionFailure("Should not be shown to the user")
+                return nil
             case .internalError:
                 return NSLocalizedString(
                     "[URLReference/AccessError/internalError]",
@@ -364,19 +370,24 @@ public class URLReference: Equatable, Codable, CustomDebugStringConvertible {
     
     // MARK: - Async info
     
-    /// One of the parameters is guaranteed to be non-nil
     public typealias InfoCallback = (Result<FileInfo, AccessError>) -> ()
     
     /// Retruns the last known info about the target file.
     /// If no previous info available, fetches it.
-    /// - Parameter callback: called on the main queue once the operation is complete (with info or with an error)
-    public func getCachedInfo(completion callback: @escaping InfoCallback) {
+    /// - Parameters:
+    ///   - canFetch: try to fetch fresh info, or return nil?
+    ///   - callback: called on the main queue once the operation is complete (with info or with an error)
+    public func getCachedInfo(canFetch: Bool, completion callback: @escaping InfoCallback) {
         if let info = cachedInfo {
             DispatchQueue.main.async {
                 // don't change `error`, simply return cached info
                 callback(.success(info))
             }
         } else {
+            guard canFetch else {
+                callback(.failure(.noInfoAvailable))
+                return
+            }
             refreshInfo(completion: callback)
         }
     }

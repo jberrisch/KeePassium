@@ -95,15 +95,22 @@ class ChooseKeyFileVC: UITableViewController, Refreshable {
     // MARK: - Refreshing
     
     @objc func refresh() {
+        guard let refreshControl = refreshControl,
+            !refreshControl.isRefreshing
+            else { return }
+
         // Key files are non-modifiable, so no backups
         urlRefs = FileKeeper.shared.getAllReferences(fileType: .keyFile, includeBackup: false)
-        fileInfoReloader.reload(urlRefs) { [weak self] in
-            guard let self = self else { return }
-            self.sortFileList()
-            if self.refreshControl?.isRefreshing ?? false {
-                self.refreshControl?.endRefreshing()
+        fileInfoReloader.getInfo(
+            for: urlRefs,
+            update: { [weak self] (ref, fileInfo) in
+                self?.tableView.reloadData()
+            },
+            completion: { [weak self] in
+                self?.sortFileList()
+                self?.refreshControl?.endRefreshing()
             }
-        }
+        )
     }
     
     fileprivate func sortFileList() {

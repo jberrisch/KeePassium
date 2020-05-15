@@ -173,16 +173,23 @@ class ChooseDatabaseVC: UITableViewController, Refreshable {
     
     /// Reloads the list of available DB files
     @objc func refresh() {
+        guard let refreshControl = refreshControl,
+            !refreshControl.isRefreshing
+            else { return }
+        
         databaseRefs = FileKeeper.shared.getAllReferences(
             fileType: .database,
             includeBackup: Settings.current.isBackupFilesVisible)
-        fileInfoReloader.reload(databaseRefs) { [weak self] in
-            guard let self = self else { return }
-            self.sortFileList()
-            if self.refreshControl?.isRefreshing ?? false {
-                self.refreshControl?.endRefreshing()
+        fileInfoReloader.getInfo(
+            for: databaseRefs,
+            update: { [weak self] (ref, fileInfo) in
+                self?.tableView.reloadData()
+            },
+            completion: { [weak self] in
+                self?.sortFileList()
+                self?.refreshControl?.endRefreshing()
             }
-        }
+        )
     }
     
     fileprivate func sortFileList() {
