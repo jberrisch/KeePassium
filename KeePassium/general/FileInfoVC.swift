@@ -121,6 +121,7 @@ class FileInfoVC: UITableViewController {
         tableView.addObserver(self, forKeyPath: "contentSize", options: .new, context: nil)
         
         setupButtons()
+        refreshControl?.beginRefreshing()
         refresh()
     }
     
@@ -154,14 +155,9 @@ class FileInfoVC: UITableViewController {
     
     @objc
     func refresh() {
-        guard let refreshControl = refreshControl, !refreshControl.isRefreshing else {
-            return
-        }
-
         refreshFileNameField()
         tableView.reloadData()
         
-        refreshControl.beginRefreshing()
         urlRef.refreshInfo { [weak self] result in
             guard let self = self else { return }
             self.fields.removeAll(keepingCapacity: true)
@@ -175,8 +171,10 @@ class FileInfoVC: UITableViewController {
                     accessError.localizedDescription
                 ))
             }
-            self.tableView.reloadData()
-            self.tableView.refreshControl?.endRefreshing()
+            self.tableView.reloadSections([0], with: .automatic) // like reloadData, but animated
+            if let refreshControl = self.tableView.refreshControl, refreshControl.isRefreshing {
+                refreshControl.endRefreshing()
+            }
         }
     }
     
