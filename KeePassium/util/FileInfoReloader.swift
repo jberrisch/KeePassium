@@ -18,6 +18,12 @@ class FileInfoReloader {
         label: "com.keepassium.FileInfoReloader",
         qos: .background,
         attributes: .concurrent)
+    private var dispatchGroup: DispatchGroup?
+    
+    /// True while not all the references have been refreshed
+    public var isRefreshing: Bool {
+        return dispatchGroup != nil
+    }
     
     /// Called once info for the`ref` reference has been reloaded.
     /// If successful, `fileInfo` contains the new info.
@@ -30,9 +36,17 @@ class FileInfoReloader {
         update updateHandler: @escaping UpdateHandler,
         completion: @escaping ()->())
     {
+        guard dispatchGroup == nil else {
+            assertionFailure("A refresh is already ongoing")
+            completion()
+            return
+        }
+        let dispatchGroup = DispatchGroup()
+        self.dispatchGroup = dispatchGroup
         for urlRef in refs {
-            refreshQueue.async {
-                urlRef.refreshInfo(timeout: FileInfoReloader.timeout) { result in
+            let workItem = DispatchWorkItem {
+                let semaphore = DispatchSemaphore(value: 0)
+                urlRef.refreshInfo(timeout: FileInfoReloader.timeout) { (result) in
                     switch result {
                     case .success(let fileInfo):
                         updateHandler(urlRef, fileInfo)
@@ -40,10 +54,16 @@ class FileInfoReloader {
                         Diag.warning("Failed to get file info [reason: \(error.localizedDescription)]")
                         updateHandler(urlRef, nil)
                     }
+                    semaphore.signal()
                 }
+                // stay in the dispatch group until refreshInfo() completes
+                semaphore.wait()
             }
+            refreshQueue.async(group: dispatchGroup, execute: workItem)
         }
-        refreshQueue.asyncAfter(deadline: .now(), qos: .background, flags: .barrier) {
+        dispatchGroup.notify(queue: refreshQueue) { [self] in // strong self
+            // all the refs have been refreshed, so we can call the completion handler.
+            self.dispatchGroup = nil
             DispatchQueue.main.async {
                 completion()
             }
