@@ -25,6 +25,7 @@ enum ImageAsset: String {
     case databaseLocalListitem = "database-local-listitem"
     case databaseBackupListitem = "database-backup-listitem"
     case databaseErrorListitem = "database-error-listitem"
+    case keyFileListitem = "keyfile-listitem"
     case hideAccessory = "hide-accessory"
     case unhideAccessory = "unhide-accessory"
     case hideListitem = "hide-listitem"

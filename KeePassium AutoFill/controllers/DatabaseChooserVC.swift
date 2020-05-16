@@ -78,6 +78,9 @@ class DatabaseChooserVC: UITableViewController, Refreshable {
                 }
             }
         )
+        // animates each row until it updates
+        tableView.reloadData()
+
     }
     
     fileprivate func sortFileList() {
@@ -129,10 +132,14 @@ class DatabaseChooserVC: UITableViewController, Refreshable {
             return cell
         }
         
-        let cell = tableView
-            .dequeueReusableCell(withIdentifier: CellID.fileItem, for: indexPath)
-            as! DatabaseListCell
-        cell.urlRef = databaseRefs[indexPath.row]
+        let cell = FileListCellFactory.dequeueReusableCell(
+            from: tableView,
+            withIdentifier: CellID.fileItem,
+            for: indexPath,
+            for: .database)
+        let dbRef = databaseRefs[indexPath.row]
+        cell.showInfo(from: dbRef)
+        cell.isAnimating = !fileInfoReloader.isProcessed(dbRef)
         return cell
     }
 

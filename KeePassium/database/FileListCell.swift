@@ -8,71 +8,108 @@
 
 import KeePassiumLib
 
+class FileListCellFactory {
+    fileprivate static let databaseFileIconProvider = DatabaseListCellIconProvider()
+    fileprivate static let keyFileIconProvider = KeyFileListCellIconProvider()
+    
+    public static func dequeueReusableCell(
+        from tableView: UITableView,
+        withIdentifier identifier: String,
+        for indexPath: IndexPath,
+        for fileType: FileType
+    ) -> FileListCell {
+        let cell = tableView
+            .dequeueReusableCell(withIdentifier: identifier, for: indexPath)
+            as! FileListCell
+        
+        switch fileType {
+        case .database:
+            cell.iconProvider = FileListCellFactory.databaseFileIconProvider
+        case .keyFile:
+            cell.iconProvider = FileListCellFactory.keyFileIconProvider
+        }
+        return cell
+    }
+}
+
+fileprivate protocol FileListCellIconProvider: class {
+    func getFileIcon(for urlRef: URLReference, hasError: Bool) -> UIImage?
+}
+
 /// A cell in the a file list/table.
 class FileListCell: UITableViewCell {
-    /// Reference to the database file
-    var urlRef: URLReference! {
-        didSet {
-            setupCell()
-        }
-    }
+    @IBOutlet weak var fileIconView: UIImageView!
+    @IBOutlet weak var fileNameLabel: UILabel!
+    @IBOutlet weak var fileDetailLabel: UILabel!
+    @IBOutlet weak var spinner: UIActivityIndicatorView!
     
-    private func setupCell() {
-        textLabel?.text = urlRef.visibleFileName
+    fileprivate var iconProvider: FileListCellIconProvider?
+    
+    public func showInfo(from urlRef: URLReference) {
+        fileNameLabel?.text = urlRef.visibleFileName
         
-        // Here we need file info ASAP, even if outdated. We'll refresh it separately.
         urlRef.getCachedInfo(canFetch: false) { [weak self] result in
             guard let self = self else { return }
 
             switch result {
             case .success(let fileInfo):
-                self.imageView?.image = self.getFileIcon(for: self.urlRef, hasError: false)
+                self.fileIconView?.image = self.getFileIcon(for: urlRef, hasError: false)
                 if let modificationDate = fileInfo.modificationDate {
                     let dateString = DateFormatter.localizedString(
                         from: modificationDate,
                         dateStyle: .long,
                         timeStyle: .medium)
-                    self.detailTextLabel?.text = dateString
+                    self.fileDetailLabel?.text = dateString
                 } else {
-                    self.detailTextLabel?.text = nil
+                    self.fileDetailLabel?.text = nil
                 }
-                self.detailTextLabel?.textColor = UIColor.auxiliaryText
+                self.fileDetailLabel?.textColor = UIColor.auxiliaryText
             case .failure:
                 // The provided error can be .noInfoAvaiable, which is not informative.
                 // So check the urlRef's error property instead.
-                guard let error = self.urlRef.error else {
+                guard let error = urlRef.error else {
                     // no error, but failed -- probably info refresh is not finished yet
-                    self.detailTextLabel?.text = "..." //TODO: replace with waiting animation instead
-                    self.imageView?.image = self.getFileIcon(for: self.urlRef, hasError: false)
+                    self.fileDetailLabel?.text = "..."
+                    self.fileIconView?.image = self.getFileIcon(for: urlRef, hasError: false)
                     return
                 }
-                self.detailTextLabel?.text = error.localizedDescription
-                self.detailTextLabel?.textColor = UIColor.errorMessage
-                self.imageView?.image = self.getFileIcon(for: self.urlRef, hasError: true)
+                self.fileDetailLabel?.text = error.localizedDescription
+                self.fileDetailLabel?.textColor = UIColor.errorMessage
+                self.fileIconView?.image = self.getFileIcon(for: urlRef, hasError: true)
+            }
+        }
+    }
+    
+    var isAnimating: Bool {
+        get { spinner.isAnimating }
+        set {
+            if newValue {
+                spinner.isHidden = false
+                spinner.startAnimating()
+            } else {
+                spinner.stopAnimating()
+                spinner.isHidden = true
             }
         }
     }
     
     /// Returns an appropriate icon for the target file.
     func getFileIcon(for urlRef: URLReference, hasError: Bool) -> UIImage? {
-        assertionFailure("Override this")
-        return nil
+        return iconProvider?.getFileIcon(for: urlRef, hasError: hasError)
     }
 }
 
-/// A cell in a list of database files
-class DatabaseListCell: FileListCell {
-    override func getFileIcon(for urlRef: URLReference, hasError: Bool) -> UIImage? {
+fileprivate class DatabaseListCellIconProvider: FileListCellIconProvider {
+    func getFileIcon(for urlRef: URLReference, hasError: Bool) -> UIImage? {
         guard !hasError else {
             return UIImage(asset: .databaseErrorListitem)
         }
-        return UIImage.databaseIcon(for: self.urlRef)
+        return UIImage.databaseIcon(for: urlRef)
     }
 }
 
-/// A cell if a list of key files
-class KeyFileListCell: FileListCell {
-    override func getFileIcon(for urlRef: URLReference, hasError: Bool) -> UIImage? {
-        return nil
+fileprivate class KeyFileListCellIconProvider: FileListCellIconProvider {
+    func getFileIcon(for urlRef: URLReference, hasError: Bool) -> UIImage? {
+        return UIImage(asset: .keyFileListitem)
     }
 }

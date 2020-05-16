@@ -25,6 +25,13 @@ class FileInfoReloader {
         return dispatchGroup != nil
     }
     
+    private var processedRefs = [URLReference]()
+    
+    /// Returns true iff the given reference has already been processed.
+    public func isProcessed(_ urlRef: URLReference) -> Bool {
+        return processedRefs.contains(urlRef)
+    }
+    
     /// Called once info for the`ref` reference has been reloaded.
     /// If successful, `fileInfo` contains the new info.
     /// Otherwise, `fileInfo` will be `nil` and `ref.error` will contain the error information.
@@ -41,12 +48,14 @@ class FileInfoReloader {
             completion()
             return
         }
+        processedRefs.removeAll(keepingCapacity: true)
         let dispatchGroup = DispatchGroup()
         self.dispatchGroup = dispatchGroup
         for urlRef in refs {
             let workItem = DispatchWorkItem {
                 let semaphore = DispatchSemaphore(value: 0)
-                urlRef.refreshInfo(timeout: FileInfoReloader.timeout) { (result) in
+                urlRef.refreshInfo(timeout: FileInfoReloader.timeout) { [self] (result) in // strong self
+                    self.processedRefs.append(urlRef)
                     switch result {
                     case .success(let fileInfo):
                         updateHandler(urlRef, fileInfo)

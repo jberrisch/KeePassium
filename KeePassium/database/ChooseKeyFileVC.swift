@@ -113,6 +113,8 @@ class ChooseKeyFileVC: UITableViewController, Refreshable {
                 }
             }
         )
+        // animates each row until it updates
+        tableView.reloadData()
     }
     
     fileprivate func sortFileList() {
@@ -218,12 +220,14 @@ class ChooseKeyFileVC: UITableViewController, Refreshable {
                 for: indexPath)
         }
         
-        let cell = tableView.dequeueReusableCell(
-            withIdentifier: CellID.keyFile,
-            for: indexPath)
-            as! KeyFileListCell
         let keyFileRef = urlRefs[indexPath.row - 1]
-        cell.urlRef = keyFileRef
+        let cell = FileListCellFactory.dequeueReusableCell(
+            from: tableView,
+            withIdentifier: CellID.keyFile,
+            for: indexPath,
+            for: .keyFile)
+        cell.showInfo(from: keyFileRef)
+        cell.isAnimating = !fileInfoReloader.isProcessed(keyFileRef)
         return cell
     }
     
