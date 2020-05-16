@@ -59,13 +59,13 @@ class DatabaseChooserVC: UITableViewController, Refreshable {
     }
     
     @objc func refresh() {
-        guard let refreshControl = refreshControl,
-            !refreshControl.isRefreshing
-            else { return }
+        if fileInfoReloader.isRefreshing {
+            return
+        }
+
         databaseRefs = FileKeeper.shared.getAllReferences(
             fileType: .database,
             includeBackup: Settings.current.isBackupFilesVisible)
-        
         fileInfoReloader.getInfo(
             for: databaseRefs,
             update: { [weak self] (ref, fileInfo) in
@@ -73,7 +73,9 @@ class DatabaseChooserVC: UITableViewController, Refreshable {
             },
             completion: { [weak self] in
                 self?.sortFileList()
-                self?.refreshControl?.endRefreshing()
+                if let refreshControl = self?.refreshControl, refreshControl.isRefreshing {
+                    refreshControl.endRefreshing()
+                }
             }
         )
     }

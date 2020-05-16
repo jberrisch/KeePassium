@@ -173,9 +173,9 @@ class ChooseDatabaseVC: UITableViewController, Refreshable {
     
     /// Reloads the list of available DB files
     @objc func refresh() {
-        guard let refreshControl = refreshControl,
-            !refreshControl.isRefreshing
-            else { return }
+        guard !fileInfoReloader.isRefreshing else {
+            return
+        }
         
         databaseRefs = FileKeeper.shared.getAllReferences(
             fileType: .database,
@@ -187,7 +187,9 @@ class ChooseDatabaseVC: UITableViewController, Refreshable {
             },
             completion: { [weak self] in
                 self?.sortFileList()
-                self?.refreshControl?.endRefreshing()
+                if let refreshControl = self?.refreshControl, refreshControl.isRefreshing {
+                    refreshControl.endRefreshing()
+                }
             }
         )
     }

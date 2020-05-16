@@ -44,9 +44,9 @@ class KeyFileChooserVC: UITableViewController, Refreshable {
     }
 
     @objc func refresh() {
-        guard let refreshControl = refreshControl,
-            !refreshControl.isRefreshing
-            else { return }
+        if fileInfoReloader.isRefreshing {
+            return
+        }
         
         keyFileRefs = FileKeeper.shared.getAllReferences(fileType: .keyFile, includeBackup: false)
         fileInfoReloader.getInfo(
@@ -56,7 +56,9 @@ class KeyFileChooserVC: UITableViewController, Refreshable {
             },
             completion: { [weak self] in
                 self?.sortFileList()
-                self?.refreshControl?.endRefreshing()
+                if let refreshControl = self?.refreshControl, refreshControl.isRefreshing {
+                    refreshControl.endRefreshing()
+                }
             }
         )
     }
