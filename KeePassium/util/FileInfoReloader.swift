@@ -11,7 +11,8 @@ import KeePassiumLib
 
 /// Helper class to manage reloading of `URLReference` attributes.
 class FileInfoReloader {
-    static let timeout: TimeInterval = 5 // wait time before giving up on a reference
+    /// wait time before giving up on a reference
+    static let timeout = URLReference.defaultTimeout
     
     private let refreshQueue = DispatchQueue(
         label: "com.keepassium.FileInfoReloader",

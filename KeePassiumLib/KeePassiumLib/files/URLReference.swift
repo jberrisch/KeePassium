@@ -115,6 +115,9 @@ public class URLReference: Equatable, Codable, CustomDebugStringConvertible {
         }
     }
     
+    /// Default timeout for async operations. If exceeded, the operation will finish with `AccessError.timeout` error.
+    public static let defaultTimeout: TimeInterval = 5.0
+    
     /// Returns the most recent known target file name.
     /// In case of error returns a predefined default string.
     /// NOTE: Don't use for indexing (because of predefined default string).
@@ -312,7 +315,10 @@ public class URLReference: Equatable, Codable, CustomDebugStringConvertible {
     /// - Parameters:
     ///   - timeout: time to wait for resolving to finish
     ///   - callback: called when resolving either finishes or terminates by timeout. Is called on the main queue.
-    public func resolveAsync(timeout: TimeInterval = 5, callback: @escaping ResolveCallback) {
+    public func resolveAsync(
+        timeout: TimeInterval = URLReference.defaultTimeout,
+        callback: @escaping ResolveCallback)
+    {
         URLReference.queue.async { // strong self
             self.resolveAsyncInternal(timeout: timeout, completion: callback)
         }
@@ -397,7 +403,7 @@ public class URLReference: Equatable, Codable, CustomDebugStringConvertible {
     ///   - timeout: timeout to resolve the reference
     ///   - callback: called on the main queue once the operation completes (either with info or an error)
     public func refreshInfo(
-        timeout: TimeInterval = -1,
+        timeout: TimeInterval = URLReference.defaultTimeout,
         completion callback: @escaping InfoCallback)
     {
         resolveAsync(timeout: timeout) { // strong self
@@ -490,9 +496,10 @@ public class URLReference: Equatable, Codable, CustomDebugStringConvertible {
     }
     
     /// Returns most recent information about resolved URL.
-    /// If no info available, fetches it synchronously (this might be slow).
-    public func getCachedInfoSync() -> FileInfo? {
-        if cachedInfo == nil {
+    /// - Parameters:
+    ///   - canFetch: try to fetch fresh info, or return nil?
+    public func getCachedInfoSync(canFetch: Bool) -> FileInfo? {
+        if cachedInfo == nil && canFetch {
             refreshInfoSync()
         }
         return cachedInfo
