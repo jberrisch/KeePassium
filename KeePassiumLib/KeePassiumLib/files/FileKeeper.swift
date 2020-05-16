@@ -821,41 +821,42 @@ public class FileKeeper {
         return scanLocalDirectory(backupDirURL, fileType: .database)
     }
     
-    /// Deletes old backup files. older than `maxAge` from now.
-    ///
-    /// - Returns: `false` if there were any errors with any file, `true` if all good.
-    @discardableResult
-    public func deleteExpiredBackupFiles() -> Bool {
+    /// Asynchronously deletes old backup files.
+    public func deleteExpiredBackupFiles() {
         Diag.debug("Will perform backup maintenance")
-        let isAllOK = deleteBackupFiles(olderThan: Settings.current.backupKeepingDuration.seconds)
-        Diag.info("Backup maintenance completed [allOK: \(isAllOK)]")
-        return isAllOK
+        deleteBackupFiles(olderThan: Settings.current.backupKeepingDuration.seconds)
+        Diag.info("Backup maintenance completed")
     }
 
-    /// Delete backup files older than given time interval from now.
+    /// Asynchronously delete backup files older than given time interval from now.
     ///
     /// - Parameter olderThan: maximum age of remaining backups.
-    /// - Returns: `false` if there were any errors with any file, `true` if all good.
-    @discardableResult
-    public func deleteBackupFiles(olderThan maxAge: TimeInterval) -> Bool {
+    public func deleteBackupFiles(olderThan maxAge: TimeInterval) {
         let allBackupFileRefs = getBackupFiles()
-        var isEverythingProcessedOK = true
         let now = Date.now
         for fileRef in allBackupFileRefs {
-            guard let fileInfo = fileRef.getCachedInfoSync(), // hopefully quick for local files
-                let modificationDate = fileInfo.modificationDate
-                else { continue }
-            if now.timeIntervalSince(modificationDate) < maxAge {
-                // not old enough
-                continue
-            }
-            do {
-                try deleteFile(fileRef, fileType: .database, ignoreErrors: false)
-                FileKeeperNotifier.notifyFileRemoved(urlRef: fileRef, fileType: .database)
-            } catch {
-                isEverythingProcessedOK = false
+            fileRef.getCachedInfo(canFetch: true) { [weak self] result in
+                guard let self = self else { return }
+                switch result {
+                case .success(let fileInfo):
+                    guard let modificationDate = fileInfo.modificationDate else {
+                        Diag.warning("Failed to get backup file age.")
+                        return
+                    }
+                    guard now.timeIntervalSince(modificationDate) < maxAge else {
+                        // not old enough
+                        return
+                    }
+                    do {
+                        try self.deleteFile(fileRef, fileType: .database, ignoreErrors: false)
+                        FileKeeperNotifier.notifyFileRemoved(urlRef: fileRef, fileType: .database)
+                    } catch {
+                        Diag.warning("Failed to delete backup file [reason: \(error.localizedDescription)]")
+                    }
+                case .failure(let error):
+                    Diag.warning("Failed to check backup file age [reason: \(error.localizedDescription)]")
+                }
             }
         }
-        return isEverythingProcessedOK
     }
 }
