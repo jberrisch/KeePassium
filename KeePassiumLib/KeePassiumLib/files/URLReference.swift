@@ -428,6 +428,7 @@ public class URLReference: Equatable, Hashable, Codable, CustomDebugStringConver
     {
         resolveAsync(timeout: timeout) { // strong self
             (result) in
+            // we're already in main queue
             switch result {
             case .success(let url):
                 URLReference.queue.async { // strong self
@@ -435,10 +436,8 @@ public class URLReference: Equatable, Hashable, Codable, CustomDebugStringConver
                 }
             case .failure(let error):
                 // propagate the resolving error
-                DispatchQueue.main.async {
-                    self.error = error
-                    callback(.failure(error))
-                }
+                self.error = error
+                callback(.failure(error))
             }
         }
     }
