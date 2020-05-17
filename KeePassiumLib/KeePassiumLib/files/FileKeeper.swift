@@ -121,6 +121,8 @@ public class FileKeeper {
     /// App sandbox Documents/Inbox folder
     fileprivate let inboxDirURL: URL
     
+    fileprivate var referenceCache = ReferenceCache()
+    
     // True when there are files to be opened/imported.
     public var hasPendingFileOperations: Bool {
         return urlToOpen != nil
@@ -233,8 +235,10 @@ public class FileKeeper {
                 refs.append(ref)
             }
         }
-        return refs
+        let result = referenceCache.update(with: refs, fileType: fileType, isExternal: isExternal)
+        return result
     }
+    
     
     /// Stores given URL references in user defaults.
     private func storeReferences(
@@ -277,7 +281,6 @@ public class FileKeeper {
                 throw FileKeeperError.removalError(reason: error.localizedDescription)
             }
         }
-
     }
     
     /// Removes reference to an external file from user defaults (keeps the file).
@@ -315,7 +318,8 @@ public class FileKeeper {
         }
 
         if includeBackup {
-            result.append(contentsOf:scanLocalDirectory(backupDirURL, fileType: fileType))
+            let backupFileRefs = scanLocalDirectory(backupDirURL, fileType: fileType)
+            result.append(contentsOf: backupFileRefs)
         }
         return result
     }
@@ -339,7 +343,8 @@ public class FileKeeper {
         } catch {
             Diag.error(error.localizedDescription)
         }
-        return refs
+        let cachedRefs = referenceCache.update(with: refs, from: dirURL, fileType: fileType)
+        return cachedRefs
     }
     
     /// Adds given file to the file keeper.
@@ -858,5 +863,74 @@ public class FileKeeper {
                 }
             }
         }
+    }
+}
+
+// MARK: - References cache
+
+/// Keeps and maintains a cache of URLReference instances, so that `FileKeeper` returns the same instances.
+/// This way, references will preserve cached instance info instead of re-acquiring it every time.
+fileprivate class ReferenceCache {
+    private struct FileTypeExternalKey: Hashable {
+        var fileType: FileType
+        var isExternal: Bool
+    }
+    private struct DirectoryFileTypeKey: Hashable {
+        var directory: URL
+        var fileType: FileType
+    }
+    
+    private var cache = [FileTypeExternalKey: [URLReference]]()
+    private var cacheSet = [FileTypeExternalKey: Set<URLReference>]()
+    private var directoryCache = [DirectoryFileTypeKey: [URLReference]]()
+    private var directoryCacheSet = [DirectoryFileTypeKey: Set<URLReference>]()
+    
+    /// Updates the cache to match the given references (adds/removes cached instances as needed)
+    /// - Parameters:
+    ///   - newRefs: new expected state for the cache
+    ///   - fileType: type of references
+    ///   - isExternal: whether the references are for external files
+    /// - Returns: updated cached references for the given combination of fileType/isExternal
+    func update(with newRefs: [URLReference], fileType: FileType, isExternal: Bool) -> [URLReference] {
+        let key = FileTypeExternalKey(fileType: fileType, isExternal: isExternal)
+        guard var _cache = cache[key], let _cacheSet = cacheSet[key] else {
+            cache[key] = newRefs
+            cacheSet[key] = Set(newRefs)
+            return newRefs
+        }
+        let newRefsSet = Set(newRefs)
+        let addedRefs = newRefsSet.subtracting(_cacheSet)
+        let removedRefs = _cacheSet.subtracting(newRefsSet)
+        if !removedRefs.isEmpty {
+            _cache.removeAll { ref in removedRefs.contains(ref) }
+        }
+        _cache.append(contentsOf: addedRefs)
+        cache[key] = _cache
+        cacheSet[key] = _cacheSet.subtracting(removedRefs).union(addedRefs)
+        return _cache
+    }
+    
+    /// Updates the cache associated with the given `directory` (adds/removes cached instances as needed).
+    /// - Parameters:
+    ///   - newRefs: new expected state for the cache
+    ///   - directory: directory where these references come from
+    ///   - fileType: type of referenced files
+    func update(with newRefs: [URLReference], from directory: URL, fileType: FileType) -> [URLReference] {
+        let key = DirectoryFileTypeKey(directory: directory, fileType: fileType)
+        guard var _directoryCache = directoryCache[key],
+            let _directoryCacheSet = directoryCacheSet[key] else
+        {
+            directoryCache[key] = newRefs
+            directoryCacheSet[key] = Set(newRefs)
+            return newRefs
+        }
+        let newRefsSet = Set(newRefs)
+        let addedRefs = newRefsSet.subtracting(_directoryCacheSet)
+        let removedRefs = _directoryCacheSet.subtracting(newRefsSet)
+        _directoryCache.removeAll { ref in removedRefs.contains(ref) }
+        _directoryCache.append(contentsOf: addedRefs)
+        directoryCache[key] = _directoryCache
+        directoryCacheSet[key] = _directoryCacheSet.subtracting(removedRefs).union(addedRefs)
+        return _directoryCache
     }
 }
