@@ -121,6 +121,11 @@ class FileInfoVC: UITableViewController {
         tableView.addObserver(self, forKeyPath: "contentSize", options: .new, context: nil)
         
         setupButtons()
+        refresh()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         refreshControl?.beginRefreshing()
         refresh()
     }
