@@ -64,7 +64,7 @@
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
-                            <tableViewSection headerTitle="Advanced" footerTitle="" id="Io8-uP-3lF">
+                            <tableViewSection headerTitle="Search Scope" footerTitle="" id="Io8-uP-3lF">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" tag="10" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" id="Jti-wu-o0O" userLabel="Search in Field Names">
                                         <rect key="frame" x="0.0" y="191" width="320" height="44"/>
@@ -78,6 +78,9 @@
                                                     <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
                                                     <color key="textColor" name="PrimaryText"/>
                                                     <nil key="highlightedColor"/>
+                                                    <attributedString key="userComments">
+                                                        <fragment content="An switch in settings: whether to include entry field names in search procedure."/>
+                                                    </attributedString>
                                                 </label>
                                                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="P4x-6S-BGw">
                                                     <rect key="frame" x="255" y="8" width="51" height="28"/>
@@ -111,6 +114,9 @@
                                                     <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
                                                     <color key="textColor" name="PrimaryText"/>
                                                     <nil key="highlightedColor"/>
+                                                    <attributedString key="userComments">
+                                                        <fragment content="An switch in settings: whether to include protected field values in search procedure."/>
+                                                    </attributedString>
                                                 </label>
                                                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="yIo-qK-dL6">
                                                     <rect key="frame" x="255" y="8" width="51" height="28"/>
@@ -133,6 +139,9 @@
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                 </cells>
+                                <attributedString key="userComments">
+                                    <fragment content="Section title in settings: which fields to include in search."/>
+                                </attributedString>
                             </tableViewSection>
                         </sections>
                         <connections>
