@@ -124,7 +124,7 @@ public class URLReference: Equatable, Hashable, Codable, CustomDebugStringConver
     public var visibleFileName: String { return url?.lastPathComponent ?? "?" }
     
     /// Last encountered error
-    public private(set) var error: Error?
+    public private(set) var error: AccessError?
     public var hasError: Bool { return error != nil}
     
     /// True if the error is an access permission error associated with iOS 13 upgrade.
@@ -410,7 +410,8 @@ public class URLReference: Equatable, Hashable, Codable, CustomDebugStringConver
             }
         } else {
             guard canFetch else {
-                callback(.failure(.noInfoAvailable))
+                let error: AccessError = self.error ?? .noInfoAvailable
+                callback(.failure(error))
                 return
             }
             refreshInfo(completion: callback)
