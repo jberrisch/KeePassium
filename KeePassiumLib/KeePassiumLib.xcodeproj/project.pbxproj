@@ -14,7 +14,6 @@
 		75134CFC23C0F02C0065CD10 /* DatabaseItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75134CFB23C0F02C0065CD10 /* DatabaseItem.swift */; };
 		751E0CDF2309A3420088BB10 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 751E0CDD2309A3420088BB10 /* Localizable.strings */; };
 		751E0D68230D12660088BB10 /* Bundle+extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 751E0D67230D12660088BB10 /* Bundle+extensions.swift */; };
-		75205FA3239BDB6700C1DEAA /* DatabaseSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75205FA2239BDB6700C1DEAA /* DatabaseSettings.swift */; };
 		75205FA5239C01CF00C1DEAA /* DatabaseSettingsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75205FA4239C01CF00C1DEAA /* DatabaseSettingsManager.swift */; };
 		7538167E22B15FC7000FA4BD /* Settings+premium.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7538167D22B15FC7000FA4BD /* Settings+premium.swift */; };
 		75384B9922CCB76800157598 /* UsageMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75384B9822CCB76800157598 /* UsageMonitor.swift */; };
@@ -832,7 +831,6 @@
 				75D09C3B2174F77000F7DEF2 /* DataCipherFactory.swift in Sources */,
 				75D09C272174F77000F7DEF2 /* KeyHelper2.swift in Sources */,
 				75F4ACE32177469500B22D8B /* FileDocument.swift in Sources */,
-				75205FA3239BDB6700C1DEAA /* DatabaseSettings.swift in Sources */,
 				75D09C302174F77000F7DEF2 /* ByteArray.swift in Sources */,
 				75F4ACE22177469500B22D8B /* DatabaseDocument.swift in Sources */,
 				7558700722E5857C00E1DD89 /* TOTPGeneratorFactory.swift in Sources */,
