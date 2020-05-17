@@ -17,7 +17,7 @@ public struct FileInfo {
 }
 
 /// Represents a URL as a URL bookmark. Useful for handling external (cloud-based) files.
-public class URLReference: Equatable, Codable, CustomDebugStringConvertible {
+public class URLReference: Equatable, Hashable, Codable, CustomDebugStringConvertible {
     public typealias Descriptor = String
 
     public enum Result<ReturnType, ErrorType> {
@@ -137,8 +137,6 @@ public class URLReference: Equatable, Codable, CustomDebugStringConvertible {
     
     /// Bookmark data
     private let data: Data
-    /// sha256 hash describing this reference (URL or bookmark)
-    lazy private(set) var hash = ByteArray()
     /// Location type of the original URL
     public let location: Location
 
@@ -152,11 +150,17 @@ public class URLReference: Equatable, Codable, CustomDebugStringConvertible {
     /// The URL received by resolving bookmark data
     internal var resolvedURL: URL?
     
+    /// The original bookmarked URL, if known (cached or bookmarked, not resolved).
+    internal var originalURL: URL? {
+        return bookmarkedURL ?? cachedURL
+    }
+
     /// The most up-to-date URL we know, if any
     internal var url: URL? {
         return resolvedURL ?? cachedURL ?? bookmarkedURL
     }
     
+    /// A unique identifier of the serving file provider.
     private var fileProviderID: String?
     
     fileprivate static let fileCoordinator = NSFileCoordinator()
@@ -201,7 +205,19 @@ public class URLReference: Equatable, Codable, CustomDebugStringConvertible {
 
     public static func == (lhs: URLReference, rhs: URLReference) -> Bool {
         guard lhs.location == rhs.location else { return false }
-        return lhs.url == rhs.url
+        guard let lhsOriginalURL = lhs.originalURL, let rhsOriginalURL = rhs.originalURL else {
+            assertionFailure()
+            Diag.debug("Original URL of the file is nil.")
+            return false
+        }
+        // Two refs are equal if their original URLs are the same.
+        // We ignore resolved URLs, since they can change at any moment.
+        return lhsOriginalURL == rhsOriginalURL
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(location)
+        hasher.combine(originalURL!)
     }
     
     public func serialize() -> Data {
