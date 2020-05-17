@@ -12,13 +12,13 @@ import LocalAuthentication
 
 class SettingsVC: UITableViewController, Refreshable {
 
-
     @IBOutlet weak var appSafetyCell: UITableViewCell!
     @IBOutlet weak var dataSafetyCell: UITableViewCell!
     @IBOutlet weak var dataBackupCell: UITableViewCell!
     @IBOutlet weak var autoFillCell: UITableViewCell!
-    @IBOutlet weak var searchCell: UITableViewCell!
     
+    @IBOutlet weak var searchCell: UITableViewCell!
+    @IBOutlet weak var autoUnlockStartupDatabaseSwitch: UISwitch!
     @IBOutlet weak var diagnosticLogCell: UITableViewCell!
     @IBOutlet weak var contactSupportCell: UITableViewCell!
     @IBOutlet weak var rateTheAppCell: UITableViewCell!
@@ -95,6 +95,7 @@ class SettingsVC: UITableViewController, Refreshable {
     func refresh() {
         let settings = Settings.current
         
+        autoUnlockStartupDatabaseSwitch.isOn = settings.isAutoUnlockStartupDatabase
         let biometryType = LAContext.getBiometryType()
         if let biometryTypeName = biometryType.name {
             appSafetyCell.detailTextLabel?.text = String.localizedStringWithFormat(
@@ -243,9 +244,13 @@ class SettingsVC: UITableViewController, Refreshable {
         }
     }
     
-    // MARK: Actions
+    // MARK: - Actions
     @IBAction func doneButtonTapped(_ sender: Any) {
         dismissPopover(animated: true)
+    }
+    
+    @IBAction func didToggleAutoUnlockStartupDatabase(_ sender: UISwitch) {
+        Settings.current.isAutoUnlockStartupDatabase = sender.isOn
     }
     
     // MARK: - Premium-related actions

@@ -124,7 +124,10 @@ class ChooseDatabaseVC: UITableViewController, Refreshable {
     func updateDetailView(onlyInTwoPaneMode: Bool) {
         refresh()
 
-        if onlyInTwoPaneMode && (splitViewController?.isCollapsed ?? true) { return }
+        let isTwoPaneMode = !(splitViewController?.isCollapsed ?? true)
+        if onlyInTwoPaneMode && !isTwoPaneMode {
+            return
+        }
 
         if databaseRefs.isEmpty {
             databaseUnlocker = nil
@@ -151,8 +154,11 @@ class ChooseDatabaseVC: UITableViewController, Refreshable {
             }
         }
         
+        let canAutoSelectDatabase = isTwoPaneMode || Settings.current.isAutoUnlockStartupDatabase
+        
         guard let startDatabase = Settings.current.startupDatabase,
-            let selRow = databaseRefs.index(of: startDatabase) else
+            let selRow = databaseRefs.index(of: startDatabase),
+            canAutoSelectDatabase else
         {
             tableView.selectRow(at: nil, animated: true, scrollPosition: .none)
             return

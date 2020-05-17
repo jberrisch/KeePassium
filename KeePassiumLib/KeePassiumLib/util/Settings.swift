@@ -66,6 +66,7 @@ public class Settings {
 
         // Database unlock
         case startupDatabase
+        case autoUnlockStartupDatabase
         case rememberDatabaseKey
         case keepKeyFileAssociations
         case keepHardwareKeyAssociations
@@ -823,6 +824,22 @@ public class Settings {
             if newValue != oldValue {
                 postChangeNotification(changedKey: Keys.startupDatabase)
             }
+        }
+    }
+    
+    /// Whether to unlock the last used database automatically.
+    public var isAutoUnlockStartupDatabase: Bool {
+        get {
+            let stored = UserDefaults.appGroupShared
+                .object(forKey: Keys.autoUnlockStartupDatabase.rawValue)
+                as? Bool
+            return stored ?? true
+        }
+        set {
+            updateAndNotify(
+                oldValue: isAutoUnlockStartupDatabase,
+                newValue: newValue,
+                key: .autoUnlockStartupDatabase)
         }
     }
     
