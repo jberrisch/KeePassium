@@ -246,15 +246,13 @@ public class URLReference: Equatable, Codable, CustomDebugStringConvertible {
         completion callback: @escaping CreateCallback)
     {
         let isAccessed = url.startAccessingSecurityScopedResource()
-        defer {
-            if isAccessed {
-                url.stopAccessingSecurityScopedResource()
-            }
-        }
         
         // Stage 1: try to simply create
         if tryCreate(for: url, location: location, callbackOnError: false, callback: callback) {
             print("URL bookmarked on stage 1")
+            if isAccessed {
+                url.stopAccessingSecurityScopedResource()
+            }
             return
         }
         
@@ -271,6 +269,11 @@ public class URLReference: Equatable, Codable, CustomDebugStringConvertible {
             // Note: don't attempt to read the contents,
             // it won't work due to .immediatelyAvailableMetadataOnly above
             (error) in
+            defer {
+                if isAccessed {
+                    url.stopAccessingSecurityScopedResource()
+                }
+            }
             guard error == nil else {
                 callback(.failure(.accessError(error!)))
                 return
@@ -429,11 +432,6 @@ public class URLReference: Equatable, Codable, CustomDebugStringConvertible {
 
         // without secruity scoping, won't get file attributes
         let isAccessed = url.startAccessingSecurityScopedResource()
-        defer {
-            if isAccessed {
-                url.stopAccessingSecurityScopedResource()
-            }
-        }
         
         // Access the document to ensure we fetch the latest metadata
         let readingIntentOptions: NSFileCoordinator.ReadingOptions = [
@@ -446,6 +444,11 @@ public class URLReference: Equatable, Codable, CustomDebugStringConvertible {
             queue: URLReference.operationQueue)
         {
             (error) in // strong self
+            defer {
+                if isAccessed {
+                    url.stopAccessingSecurityScopedResource()
+                }
+            }
 
             guard error == nil else {
                 DispatchQueue.main.async { // strong self
