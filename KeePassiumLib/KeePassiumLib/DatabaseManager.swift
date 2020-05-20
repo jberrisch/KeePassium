@@ -568,15 +568,58 @@ public class DatabaseManager {
     }
 }
 
+// MARK: - Progress observer
+
+/// Helper class to keep track of Progress KVO notifications.
+fileprivate class ProgressObserver {
+    internal let progress: ProgressEx
+    private var progressFractionKVO: NSKeyValueObservation?
+    private var progressDescriptionKVO: NSKeyValueObservation?
+    
+    init(progress: ProgressEx) {
+        self.progress = progress
+    }
+    
+    func startObservingProgress() {
+        assert(progressFractionKVO == nil && progressDescriptionKVO == nil)
+        progressFractionKVO = progress.observe(
+            \.fractionCompleted,
+            options: [.new],
+            changeHandler: {
+                [weak self] (progress, _) in
+                self?.progressDidChange(progress: progress)
+            }
+        )
+        progressDescriptionKVO = progress.observe(
+            \.localizedDescription,
+            options: [.new],
+            changeHandler: {
+                [weak self] (progress, _) in
+                self?.progressDidChange(progress: progress)
+            }
+        )
+    }
+    
+    func stopObservingProgress() {
+        assert(progressFractionKVO != nil && progressDescriptionKVO != nil)
+        progressFractionKVO?.invalidate()
+        progressDescriptionKVO?.invalidate()
+        progressFractionKVO = nil
+        progressDescriptionKVO = nil
+    }
+    
+    func progressDidChange(progress: ProgressEx) {
+        assertionFailure("Override this")
+    }
+}
+
 // MARK: - DatabaseLoader
 
-fileprivate class DatabaseLoader {
+fileprivate class DatabaseLoader: ProgressObserver {
     typealias CompletionHandler = (URLReference, DatabaseDocument?) -> Void
     
     private let dbRef: URLReference
     private let compositeKey: CompositeKey
-    private let progress: ProgressEx
-    private var progressKVO: NSKeyValueObservation?
     private unowned var notifier: DatabaseManager
     /// Warning messages related to DB loading, that should be shown to the user.
     private let warnings: DatabaseLoadingWarnings
@@ -592,34 +635,12 @@ fileprivate class DatabaseLoader {
         assert(compositeKey.state != .empty)
         self.dbRef = dbRef
         self.compositeKey = compositeKey
-        self.progress = progress
         self.completion = completion
         self.warnings = DatabaseLoadingWarnings()
         self.notifier = DatabaseManager.shared
+        super.init(progress: progress)
     }
 
-    private func startObservingProgress() {
-        assert(progressKVO == nil)
-        progressKVO = progress.observe(
-            \.fractionCompleted,
-            options: [.new],
-            changeHandler: {
-                [weak self] (progress, _) in
-                guard let _self = self else { return }
-                _self.notifier.notifyProgressDidChange(
-                    database: _self.dbRef,
-                    progress: _self.progress
-                )
-            }
-        )
-    }
-    
-    private func stopObservingProgress() {
-        assert(progressKVO != nil)
-        progressKVO?.invalidate()
-        progressKVO = nil
-    }
-    
     private func initDatabase(signature data: ByteArray) -> Database? {
         if Database1.isSignatureMatches(data: data) {
             Diag.info("DB signature: KPv1")
@@ -656,6 +677,14 @@ fileprivate class DatabaseLoader {
         print("ending background task")
         backgroundTask = nil
         appShared.endBackgroundTask(bgTask)
+    }
+    
+    // MARK: - Progress tracking
+    
+    override func progressDidChange(progress: ProgressEx) {
+        notifier.notifyProgressDidChange(
+            database: dbRef,
+            progress: progress)
     }
     
     // MARK: - Loading and decryption
@@ -924,12 +953,11 @@ fileprivate class DatabaseLoader {
 
 // MARK: - DatabaseSaver
 
-fileprivate class DatabaseSaver {
+fileprivate class DatabaseSaver: ProgressObserver {
     typealias CompletionHandler = (URLReference, DatabaseDocument) -> Void
     
     private let dbDoc: DatabaseDocument
     private let dbRef: URLReference
-    private let progress: ProgressEx
     private var progressKVO: NSKeyValueObservation?
     private unowned var notifier: DatabaseManager
     private let completion: CompletionHandler
@@ -945,31 +973,9 @@ fileprivate class DatabaseSaver {
         assert(dbDoc.documentState.contains(.normal))
         self.dbDoc = dbDoc
         self.dbRef = dbRef
-        self.progress = progress
         notifier = DatabaseManager.shared
         self.completion = completion
-    }
-    
-    private func startObservingProgress() {
-        assert(progressKVO == nil)
-        progressKVO = progress.observe(
-            \.fractionCompleted,
-            options: [.new],
-            changeHandler: {
-                [weak self] (progress, _) in
-                guard let _self = self else { return }
-                _self.notifier.notifyProgressDidChange(
-                    database: _self.dbRef,
-                    progress: _self.progress
-                )
-            }
-        )
-    }
-    
-    private func stopObservingProgress() {
-        assert(progressKVO != nil)
-        progressKVO?.invalidate()
-        progressKVO = nil
+        super.init(progress: progress)
     }
     
     // MARK: - Running in background
@@ -993,6 +999,14 @@ fileprivate class DatabaseSaver {
         guard let bgTask = backgroundTask else { return }
         backgroundTask = nil
         appShared.endBackgroundTask(bgTask)
+    }
+    
+    // MARK: - Progress tracking
+    
+    override func progressDidChange(progress: ProgressEx) {
+        notifier.notifyProgressDidChange(
+            database: dbRef,
+            progress: progress)
     }
     
     // MARK: - Encryption and saving
