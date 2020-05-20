@@ -25,43 +25,6 @@ public class URLReference: Equatable, Hashable, Codable, CustomDebugStringConver
         case failure(_ error: ErrorType)
     }
     
-    public enum AccessError: LocalizedError {
-        /// Operation timed out
-        case timeout
-        
-        /// There is no cached file info, and caller asked not to refresh it.
-        case noInfoAvailable
-        
-        /// Raised when there is an internal inconsistency in the code.
-        /// In particular, when both result and error params of a callback are nil.
-        case internalError
-        
-        /// Wrapper for an underlying error
-        case accessError(_ originalError: Error?)
-        
-        public var errorDescription: String? {
-            switch self {
-            case .timeout:
-                return NSLocalizedString(
-                    "[URLReference/AccessError/timeout]",
-                    bundle: Bundle.framework,
-                    value: "Storage provider did not respond in a timely manner",
-                    comment: "Error message shown when file access operation has been aborted on timeout.")
-            case .noInfoAvailable:
-                assertionFailure("Should not be shown to the user")
-                return nil
-            case .internalError:
-                return NSLocalizedString(
-                    "[URLReference/AccessError/internalError]",
-                    bundle: Bundle.framework,
-                    value: "Internal KeePassium error, please tell us about it.",
-                    comment: "Error message shown when there's internal inconsistency in KeePassium.")
-            case .accessError(let originalError):
-                return originalError?.localizedDescription
-            }
-        }
-    }
-    
     /// Specifies possible storage locations of files.
     public enum Location: Int, Codable, CustomStringConvertible {
         public static let allValues: [Location] =
@@ -124,7 +87,7 @@ public class URLReference: Equatable, Hashable, Codable, CustomDebugStringConver
     public var visibleFileName: String { return url?.lastPathComponent ?? "?" }
     
     /// Last encountered error
-    public private(set) var error: AccessError?
+    public private(set) var error: FileAccessError?
     public var hasError: Bool { return error != nil}
     
     /// True if the error is an access permission error associated with iOS 13 upgrade.
@@ -244,7 +207,7 @@ public class URLReference: Equatable, Hashable, Codable, CustomDebugStringConver
     // MARK: - Async creation
     
     /// One of the parameters is guaranteed to be non-nil
-    public typealias CreateCallback = (Result<URLReference, AccessError>) -> ()
+    public typealias CreateCallback = (Result<URLReference, FileAccessError>) -> ()
         
     /// Creates a reference for the given URL, asynchronously.
     /// Takes several stages (attempts):
@@ -290,8 +253,8 @@ public class URLReference: Equatable, Hashable, Codable, CustomDebugStringConver
                     url.stopAccessingSecurityScopedResource()
                 }
             }
-            guard error == nil else {
-                callback(.failure(.accessError(error!)))
+            guard fileAccessError == nil else {
+                callback(.failure(fileAccessError!))
                 return
             }
             // calls the callback in any case
@@ -328,7 +291,7 @@ public class URLReference: Equatable, Hashable, Codable, CustomDebugStringConver
     // MARK: - Async resolving
     
     /// One of the parameters is guaranteed to be non-nil
-    public typealias ResolveCallback = (Result<URL, AccessError>) -> ()
+    public typealias ResolveCallback = (Result<URL, FileAccessError>) -> ()
     
     /// Resolves the reference asynchronously.
     /// - Parameters:
@@ -365,14 +328,14 @@ public class URLReference: Equatable, Hashable, Codable, CustomDebugStringConver
             DispatchQueue.main.async { // strong self
                 assert(_url != nil || _error != nil)
                 guard _error == nil else {
-                    self.error = AccessError.accessError(_error)
+                    self.error = FileAccessError.accessError(_error)
                     callback(.failure(.accessError(_error)))
                     return
                 }
                 guard let url = _url else { // should not happen
                     assertionFailure()
                     Diag.error("Internal error")
-                    self.error = AccessError.internalError
+                    self.error = FileAccessError.internalError
                     callback(.failure(.internalError))
                     return
                 }
@@ -386,8 +349,8 @@ public class URLReference: Equatable, Hashable, Codable, CustomDebugStringConver
         guard waitSemaphore.wait(timeout: waitUntil) != .timedOut else {
             hasTimedOut = true
             DispatchQueue.main.async {
-                self.error = AccessError.timeout
-                callback(.failure(AccessError.timeout))
+                self.error = FileAccessError.timeout
+                callback(.failure(FileAccessError.timeout))
             }
             return
         }
@@ -410,7 +373,7 @@ public class URLReference: Equatable, Hashable, Codable, CustomDebugStringConver
             }
         } else {
             guard canFetch else {
-                let error: AccessError = self.error ?? .noInfoAvailable
+                let error: FileAccessError = self.error ?? .noInfoAvailable
                 callback(.failure(error))
                 return
             }
@@ -468,8 +431,8 @@ public class URLReference: Equatable, Hashable, Codable, CustomDebugStringConver
 
             guard error == nil else {
                 DispatchQueue.main.async { // strong self
-                    self.error = AccessError.accessError(error!)
-                    callback(.failure(.accessError(error!)))
+                    self.error = fileAccessError
+                    callback(.failure(fileAccessError!))
                 }
                 return
             }

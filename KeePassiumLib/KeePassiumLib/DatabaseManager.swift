@@ -692,7 +692,7 @@ fileprivate class DatabaseLoader: ProgressObserver {
         }
     }
 
-    private func onDatabaseURLResolveError(_ error: URLReference.AccessError) {
+    private func onDatabaseURLResolveError(_ error: FileAccessError) {
         Diag.error("Failed to resolve database URL reference [error: \(error.localizedDescription)]")
         stopObservingProgress()
         notifier.notifyDatabaseLoadError(
@@ -779,7 +779,7 @@ fileprivate class DatabaseLoader: ProgressObserver {
         }
     }
     
-    private func onKeyFileURLResolveError(_ error: URLReference.AccessError) {
+    private func onKeyFileURLResolveError(_ error: FileAccessError) {
         Diag.error("Failed to resolve key file URL reference [error: \(error.localizedDescription)]")
         stopObservingProgress()
         notifier.notifyDatabaseLoadError(
