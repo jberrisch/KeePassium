@@ -145,7 +145,7 @@ class ProgressOverlay: UIView {
     }
     
     internal func update(with progress: ProgressEx) {
-//        statusLabel.text = progress.localizedDescription + "\n" + progress.localizedAdditionalDescription
+        statusLabel.text = progress.localizedDescription
         percentLabel.text = String(format: "%.0f%%", 100.0 * progress.fractionCompleted)
         progressView.setProgress(Float(progress.fractionCompleted), animated: true)
         // once cancellation is disabled (by default, or already cancelled), there is no going back
