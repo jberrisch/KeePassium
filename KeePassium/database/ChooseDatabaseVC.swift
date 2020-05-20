@@ -193,7 +193,9 @@ class ChooseDatabaseVC: UITableViewController, Refreshable {
     
     // MARK: -
     private func shouldShowAppLockSetup() -> Bool {
-        return !Settings.current.isAppLockEnabled
+        let settings = Settings.current
+        let isDataVulnerable = settings.isRememberDatabaseKey && !settings.isAppLockEnabled
+        return isDataVulnerable
     }
     
     // MARK: - Item actions
