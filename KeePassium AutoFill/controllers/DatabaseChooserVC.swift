@@ -68,7 +68,7 @@ class DatabaseChooserVC: UITableViewController, Refreshable {
             includeBackup: Settings.current.isBackupFilesVisible)
         fileInfoReloader.getInfo(
             for: databaseRefs,
-            update: { [weak self] (ref, fileInfo) in
+            update: { [weak self] (ref) in
                 self?.tableView.reloadData()
             },
             completion: { [weak self] in
@@ -139,7 +139,7 @@ class DatabaseChooserVC: UITableViewController, Refreshable {
             for: .database)
         let dbRef = databaseRefs[indexPath.row]
         cell.showInfo(from: dbRef)
-        cell.isAnimating = !fileInfoReloader.isProcessed(dbRef)
+        cell.isAnimating = dbRef.isRefreshingInfo
         return cell
     }
 

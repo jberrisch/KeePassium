@@ -51,7 +51,7 @@ class KeyFileChooserVC: UITableViewController, Refreshable {
         keyFileRefs = FileKeeper.shared.getAllReferences(fileType: .keyFile, includeBackup: false)
         fileInfoReloader.getInfo(
             for: keyFileRefs,
-            update: { [weak self] (ref, fileInfo) in
+            update: { [weak self] (ref) in
                 self?.tableView.reloadData()
             },
             completion: { [weak self] in
@@ -96,7 +96,7 @@ class KeyFileChooserVC: UITableViewController, Refreshable {
             for: .keyFile)
         let keyFileRef = keyFileRefs[indexPath.row - 1]
         cell.showInfo(from: keyFileRef)
-        cell.isAnimating = !fileInfoReloader.isProcessed(keyFileRef)
+        cell.isAnimating = keyFileRef.isRefreshingInfo
         return cell
     }
     

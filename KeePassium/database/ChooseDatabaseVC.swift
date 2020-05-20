@@ -170,19 +170,15 @@ class ChooseDatabaseVC: UITableViewController, Refreshable {
             self?.didSelectDatabase(urlRef: startDatabase)
         }
     }
-    
+
     /// Reloads the list of available DB files
     @objc func refresh() {
-        guard !fileInfoReloader.isRefreshing else {
-            return
-        }
-        
         databaseRefs = FileKeeper.shared.getAllReferences(
             fileType: .database,
             includeBackup: Settings.current.isBackupFilesVisible)
         fileInfoReloader.getInfo(
             for: databaseRefs,
-            update: { [weak self] (ref, fileInfo) in
+            update: { [weak self] (ref) in
                 self?.tableView.reloadData()
             },
             completion: { [weak self] in
@@ -507,7 +503,7 @@ class ChooseDatabaseVC: UITableViewController, Refreshable {
                 for: .database)
             let dbRef = databaseRefs[indexPath.row]
             cell.showInfo(from: dbRef)
-            cell.isAnimating = !fileInfoReloader.isProcessed(dbRef)
+            cell.isAnimating = dbRef.isRefreshingInfo
             return cell
         case .appLockSetup:
             let cell = tableView

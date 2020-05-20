@@ -17,7 +17,13 @@ public struct FileInfo {
 }
 
 /// Represents a URL as a URL bookmark. Useful for handling external (cloud-based) files.
-public class URLReference: Equatable, Hashable, Codable, CustomDebugStringConvertible {
+public class URLReference:
+    Equatable,
+    Hashable,
+    Codable,
+    CustomDebugStringConvertible,
+    Synchronizable
+{
     public typealias Descriptor = String
 
     public enum Result<ReturnType, ErrorType> {
@@ -102,9 +108,6 @@ public class URLReference: Equatable, Hashable, Codable, CustomDebugStringConver
     private let data: Data
     /// Location type of the original URL
     public let location: Location
-
-    /// Cached result of the last refreshInfo() call
-    private var cachedInfo: FileInfo?
     
     /// The URL extracted from bookmark data
     internal var bookmarkedURL: URL?
@@ -123,10 +126,27 @@ public class URLReference: Equatable, Hashable, Codable, CustomDebugStringConver
         return resolvedURL ?? cachedURL ?? bookmarkedURL
     }
     
+    
+    /// True if there is at least one ongoing refreshInfo() request
+    public var isRefreshingInfo: Bool {
+        let result = synchronized {
+            return (self.infoRefreshRequestCount > 0)
+        }
+        return result
+    }
+
+    /// Number of ongoing refreshInfo() requests
+    private var infoRefreshRequestCount = 0
+
+    /// Cached result of the last refreshInfo() call
+    private var cachedInfo: FileInfo?
+    
+    
     /// A unique identifier of the serving file provider.
     private var fileProviderID: String?
     
-    fileprivate static let fileCoordinator = NSFileCoordinator()
+    fileprivate static let fileCoordinator = FileCoordinator()
+    
     
     /// Dispatch queue for asynchronous URLReference operations
     fileprivate static let queue = DispatchQueue(
@@ -358,7 +378,23 @@ public class URLReference: Equatable, Hashable, Codable, CustomDebugStringConver
     
     // MARK: - Async info
     
-    public typealias InfoCallback = (Result<FileInfo, AccessError>) -> ()
+    public typealias InfoCallback = (Result<FileInfo, FileAccessError>) -> ()
+    
+    private enum InfoRefreshRequestState {
+        case added
+        case completed
+    }
+    
+    private func registerInfoRefreshRequest(_ state: InfoRefreshRequestState) {
+        synchronized { [self] in
+            switch state {
+            case .added:
+                self.infoRefreshRequestCount += 1
+            case .completed:
+                self.infoRefreshRequestCount -= 1
+            }
+        }
+    }
     
     /// Retruns the last known info about the target file.
     /// If no previous info available, fetches it.
@@ -381,6 +417,7 @@ public class URLReference: Equatable, Hashable, Codable, CustomDebugStringConver
         }
     }
     
+    
     /// Fetches information about target file, asynchronously.
     /// - Parameters:
     ///   - timeout: timeout to resolve the reference
@@ -389,15 +426,18 @@ public class URLReference: Equatable, Hashable, Codable, CustomDebugStringConver
         timeout: TimeInterval = URLReference.defaultTimeout,
         completion callback: @escaping InfoCallback)
     {
+        registerInfoRefreshRequest(.added)
         resolveAsync(timeout: timeout) { // strong self
             (result) in
             // we're already in main queue
             switch result {
             case .success(let url):
+                // don't update info request counter here
                 URLReference.queue.async { // strong self
                     self.refreshInfo(for: url, completion: callback)
                 }
             case .failure(let error):
+                self.registerInfoRefreshRequest(.completed)
                 // propagate the resolving error
                 self.error = error
                 callback(.failure(error))
@@ -430,6 +470,7 @@ public class URLReference: Equatable, Hashable, Codable, CustomDebugStringConver
             }
 
             guard error == nil else {
+            self.registerInfoRefreshRequest(.completed)
                 DispatchQueue.main.async { // strong self
                     self.error = fileAccessError
                     callback(.failure(fileAccessError!))
