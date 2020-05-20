@@ -605,8 +605,14 @@ class ChooseDatabaseVC: UITableViewController, Refreshable {
 
 extension ChooseDatabaseVC: SettingsObserver {
     func settingsDidChange(key: Settings.Keys) {
-        if key == .filesSortOrder || key == .backupFilesVisible {
+        switch key {
+        case .filesSortOrder, .backupFilesVisible:
             refresh()
+        case .appLockEnabled, .rememberDatabaseKey:
+            // hide/show AppLock setup prompt, animated
+            tableView.reloadSections([0], with: .automatic)
+        default:
+            break
         }
     }
 }
