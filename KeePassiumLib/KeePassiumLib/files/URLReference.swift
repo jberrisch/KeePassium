@@ -154,8 +154,7 @@ public class URLReference:
         qos: .background,
         attributes: [.concurrent])
     
-    /// Queue for coordinated reads
-    fileprivate static let operationQueue = OperationQueue()
+    
     
     private enum CodingKeys: String, CodingKey {
         case data = "data"
@@ -261,13 +260,14 @@ public class URLReference:
             .resolvesSymbolicLink, // if sym link, resolve the real target URL first
             .immediatelyAvailableMetadataOnly] // don't download, use as-is immediately
                                                // N.B.: Shouldn't actually read the contents
-        fileCoordinator.coordinate(
-            with: [.readingIntent(with: url, options: readingIntentOptions)],
-            queue: operationQueue)
+        fileCoordinator.coordinateReading(
+            at: url,
+            options: readingIntentOptions,
+            timeout: URLReference.defaultTimeout)
         {
             // Note: don't attempt to read the contents,
             // it won't work due to .immediatelyAvailableMetadataOnly above
-            (error) in
+            (fileAccessError) in
             defer {
                 if isAccessed {
                     url.stopAccessingSecurityScopedResource()
@@ -458,19 +458,20 @@ public class URLReference:
             // OK to download the latest metadata --> so, no .immediatelyAvailableMetadataOnly
             .resolvesSymbolicLink // if sym link, resolve the real target URL first
         ]
-        URLReference.fileCoordinator.coordinate(
-            with: [.readingIntent(with: url, options: readingIntentOptions)],
-            queue: URLReference.operationQueue)
+        URLReference.fileCoordinator.coordinateReading(
+            at: url,
+            options: readingIntentOptions,
+            timeout: URLReference.defaultTimeout)
         {
-            (error) in // strong self
+            (fileAccessError) in // strong self
             defer {
                 if isAccessed {
                     url.stopAccessingSecurityScopedResource()
                 }
             }
 
-            guard error == nil else {
             self.registerInfoRefreshRequest(.completed)
+            guard fileAccessError == nil else {
                 DispatchQueue.main.async { // strong self
                     self.error = fileAccessError
                     callback(.failure(fileAccessError!))

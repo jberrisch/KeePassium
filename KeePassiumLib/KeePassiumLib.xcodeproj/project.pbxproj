@@ -26,6 +26,7 @@
 		75A2677B229045A60097C693 /* PremiumFeature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75A2677A229045A60097C693 /* PremiumFeature.swift */; };
 		75B8608C2475E2F800C5E6C0 /* LString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75B8608B2475E2F800C5E6C0 /* LString.swift */; };
 		75C01EFF2474AC290099698C /* Synchronizable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75C01EFE2474AC290099698C /* Synchronizable.swift */; };
+		75C01F01247553540099698C /* FileCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75C01F00247553540099698C /* FileCoordinator.swift */; };
 		75C01F03247554EA0099698C /* FileAccessError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75C01F02247554EA0099698C /* FileAccessError.swift */; };
 		75D09B8E2174F02F00F7DEF2 /* Salsa20.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75D09B6B2174F02F00F7DEF2 /* Salsa20.swift */; };
 		75D09BA32174F02F00F7DEF2 /* salsa20.h in Headers */ = {isa = PBXBuildFile; fileRef = 75D09B852174F02F00F7DEF2 /* salsa20.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -161,6 +162,7 @@
 		75AC53A2232766EB000AA4FB /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		75B8608B2475E2F800C5E6C0 /* LString.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LString.swift; sourceTree = "<group>"; };
 		75C01EFE2474AC290099698C /* Synchronizable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Synchronizable.swift; sourceTree = "<group>"; };
+		75C01F00247553540099698C /* FileCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileCoordinator.swift; sourceTree = "<group>"; };
 		75C01F02247554EA0099698C /* FileAccessError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileAccessError.swift; sourceTree = "<group>"; };
 		75D09B6B2174F02F00F7DEF2 /* Salsa20.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Salsa20.swift; sourceTree = "<group>"; };
 		75D09B852174F02F00F7DEF2 /* salsa20.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = salsa20.h; path = KeePassiumLib/crypto/salsa20/salsa20.h; sourceTree = SOURCE_ROOT; };
@@ -592,6 +594,7 @@
 				75F4ACDC2177469500B22D8B /* FileDocument.swift */,
 				75F4ACD82177469500B22D8B /* TemporaryFileURL.swift */,
 				75F4ACDE2177469500B22D8B /* URLReference.swift */,
+				75C01F00247553540099698C /* FileCoordinator.swift */,
 				75C01F02247554EA0099698C /* FileAccessError.swift */,
 			);
 			path = files;
@@ -789,6 +792,7 @@
 				75393ABA238D3AC400C63C54 /* ChallengeResponse.swift in Sources */,
 				75F4ACEC2177485D00B22D8B /* Weak.swift in Sources */,
 				75D09C1D2174F77000F7DEF2 /* KDFParams.swift in Sources */,
+				75C01F01247553540099698C /* FileCoordinator.swift in Sources */,
 				75D09BE42174F76500F7DEF2 /* encoding.c in Sources */,
 				75D09BE62174F76500F7DEF2 /* Argon2.swift in Sources */,
 				75F4ACE52177469500B22D8B /* URLReference.swift in Sources */,
