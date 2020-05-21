@@ -259,11 +259,7 @@ public class DatabaseManager {
             let passwordData = keyHelper.getPasswordData(password: password)
             if passwordData.isEmpty && keyFileData.isEmpty {
                 Diag.error("Password and key file are both empty")
-                errorHandler(NSLocalizedString(
-                    "[Database/Unlock/Error] Password and key file are both empty.",
-                    bundle: Bundle.framework,
-                    value: "Password and key file are both empty.",
-                    comment: "Error message"))
+                errorHandler(LString.Error.passwordAndKeyFileAreBothEmpty)
                 return
             }
             let staticComponents = keyHelper.combineComponents(
@@ -285,21 +281,11 @@ public class DatabaseManager {
                     dataReadyHandler(keyDoc.data)
                 }, errorHandler: { error in
                     Diag.error("Failed to open key file [error: \(error.localizedDescription)]")
-                    errorHandler(NSLocalizedString(
-                        "[Database/Unlock/Error] Failed to open key file",
-                        bundle: Bundle.framework,
-                        value: "Failed to open key file",
-                        comment: "Error message")
-                    )
+                    errorHandler(LString.Error.failedToOpenKeyFile)
                 })
             } catch {
                 Diag.error("Failed to open key file [error: \(error.localizedDescription)]")
-                errorHandler(NSLocalizedString(
-                    "[Database/Unlock/Error] Failed to open key file",
-                    bundle: Bundle.framework,
-                    value: "Failed to open key file",
-                    comment: "Error message")
-                )
+                errorHandler(LString.Error.failedToOpenKeyFile)
                 return
             }
             
@@ -693,6 +679,7 @@ fileprivate class DatabaseLoader: ProgressObserver {
         startBackgroundTask()
         startObservingProgress()
         notifier.notifyDatabaseWillLoad(database: dbRef)
+        progress.status = LString.Progress.contactingStorageProvider
         let dbURL: URL
         do {
             dbURL = try dbRef.resolve()
@@ -702,11 +689,7 @@ fileprivate class DatabaseLoader: ProgressObserver {
             notifier.notifyDatabaseLoadError(
                 database: dbRef,
                 isCancelled: progress.isCancelled,
-                message: NSLocalizedString(
-                    "[Database/Load/Error] Cannot find database file",
-                    bundle: Bundle.framework,
-                    value: "Cannot find database file",
-                    comment: "Error message"),
+                message: LString.Error.cannotFindDatabaseFile,
                 reason: error.localizedDescription)
             completion(dbRef, nil)
             endBackgroundTask()
@@ -714,27 +697,19 @@ fileprivate class DatabaseLoader: ProgressObserver {
         }
         
         let dbDoc = DatabaseDocument(fileURL: dbURL)
-        progress.status = NSLocalizedString(
-            "[Database/Progress] Loading database file...",
-            bundle: Bundle.framework,
-            value: "Loading database file...",
-            comment: "Progress bar status")
+        progress.status = LString.Progress.loadingDatabaseFile
         dbDoc.open(
             successHandler: {
                 self.onDatabaseDocumentOpened(dbDoc)
             },
             errorHandler: {
                 (errorMessage) in
-                Diag.error("Failed to open database document [error: \(String(describing: errorMessage))]")
+                Diag.error("Failed to open database document [error: \(errorMessage ?? "nil")]")
                 self.stopObservingProgress()
                 self.notifier.notifyDatabaseLoadError(
                     database: self.dbRef,
                     isCancelled: self.progress.isCancelled,
-                    message: NSLocalizedString(
-                        "[Database/Load/Error] Cannot open database file",
-                        bundle: Bundle.framework,
-                        value: "Cannot open database file",
-                        comment: "Error message"),
+                    message: LString.Error.cannotOpenDatabaseFile,
                     reason: errorMessage)
                 self.completion(self.dbRef, nil)
                 self.endBackgroundTask()
@@ -752,11 +727,7 @@ fileprivate class DatabaseLoader: ProgressObserver {
             notifier.notifyDatabaseLoadError(
                 database: dbRef,
                 isCancelled: progress.isCancelled,
-                message: NSLocalizedString(
-                    "[Database/Load/Error] Unrecognized database format",
-                    bundle: Bundle.framework,
-                    value: "Unrecognized database format",
-                    comment: "Error message"),
+                message: LString.Error.unrecognizedDatabaseFormat,
                 reason: nil)
             completion(dbRef, nil)
             endBackgroundTask()
@@ -777,11 +748,7 @@ fileprivate class DatabaseLoader: ProgressObserver {
         // OK, so the key is in rawComponents state, let's load the key file
         if let keyFileRef = compositeKey.keyFileRef {
             Diag.debug("Loading key file")
-            progress.localizedDescription = NSLocalizedString(
-                "[Database/Progress] Loading key file...",
-                bundle: Bundle.framework,
-                value: "Loading key file...",
-                comment: "Progress status")
+            progress.localizedDescription = LString.Progress.loadingKeyFile
             
             let keyFileURL: URL
             do {
@@ -792,11 +759,7 @@ fileprivate class DatabaseLoader: ProgressObserver {
                 notifier.notifyDatabaseLoadError(
                     database: dbRef,
                     isCancelled: progress.isCancelled,
-                    message: NSLocalizedString(
-                        "[Database/Load/Error] Cannot find key file",
-                        bundle: Bundle.framework,
-                        value: "Cannot find key file",
-                        comment: "Error message"),
+                    message: LString.Error.cannotFindKeyFile,
                     reason: error.localizedDescription)
                 completion(dbRef, nil)
                 endBackgroundTask()
@@ -815,11 +778,7 @@ fileprivate class DatabaseLoader: ProgressObserver {
                     self.notifier.notifyDatabaseLoadError(
                         database: self.dbRef,
                         isCancelled: self.progress.isCancelled,
-                        message: NSLocalizedString(
-                            "[Database/Load/Error] Cannot open key file",
-                            bundle: Bundle.framework,
-                            value: "Cannot open key file",
-                            comment: "Error message"),
+                        message: LString.Error.cannotOpenKeyFile,
                         reason: error.localizedDescription)
                     self.completion(self.dbRef, nil)
                     self.endBackgroundTask()
@@ -841,11 +800,7 @@ fileprivate class DatabaseLoader: ProgressObserver {
             stopObservingProgress()
             notifier.notifyDatabaseInvalidMasterKey(
                 database: dbRef,
-                message: NSLocalizedString(
-                    "[Database/Load/Error] Please provide at least a password or a key file",
-                    bundle: Bundle.framework,
-                    value: "Please provide at least a password or a key file",
-                    comment: "Error shown when both master password and key file are empty"))
+                message: LString.Error.needPasswordOrKeyFile)
             completion(dbRef, nil)
             endBackgroundTask()
             return
@@ -867,11 +822,7 @@ fileprivate class DatabaseLoader: ProgressObserver {
                 warnings: warnings)
                 // throws DatabaseError, ProgressInterruption
             Diag.info("Database loaded OK")
-            progress.localizedDescription = NSLocalizedString(
-                "[Database/Progress] Done",
-                bundle: Bundle.framework,
-                value: "Done",
-                comment: "Progress status: finished loading database")
+            progress.localizedDescription = LString.Progress.done
             completion(dbRef, dbDoc)
             stopObservingProgress()
             notifier.notifyDatabaseDidLoad(database: dbRef, warnings: warnings)
