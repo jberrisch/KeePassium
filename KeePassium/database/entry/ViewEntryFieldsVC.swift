@@ -10,8 +10,73 @@ import UIKit
 import MobileCoreServices
 import KeePassiumLib
 
+// MARK: - FieldCopied overlay view
+
+protocol FieldCopiedViewDelegate: class {
+    func didPressExport(in view: FieldCopiedView, field: ViewableField)
+}
+
+class FieldCopiedView: UIView {
+    weak var delegate: FieldCopiedViewDelegate?
+    weak var field: ViewableField?
+    
+    public func show(in tableView: UITableView, at indexPath: IndexPath) {
+        self.alpha = 0.0
+        self.isHidden = false
+        UIView.animate(
+            withDuration: 0.3,
+            delay: 0.0,
+            options: .curveEaseOut ,
+            animations: {
+                self.backgroundColor = UIColor.actionTint
+                self.alpha = 0.9
+            },
+            completion: {
+                [weak self] finished in
+                guard let self = self else { return }
+                tableView.deselectRow(at: indexPath, animated: false)
+                if finished {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        self.hide(animated: true)
+                    }
+                }
+            }
+        )
+    }
+    
+    public func hide(animated: Bool) {
+        guard animated else {
+            self.removeFromSuperview()
+            self.isHidden = true
+            return
+        }
+        UIView.animate(
+            withDuration: 0.2,
+            delay: 0.0,
+            options: .curveEaseIn,
+            animations: {
+                self.backgroundColor = UIColor.actionTint
+                self.alpha = 0.0
+            },
+            completion: {
+                [weak self] finished in
+                guard let self = self else { return }
+                self.removeFromSuperview()
+                self.isHidden = true
+            }
+        )
+    }
+    
+    @IBAction func didPressExport(_ sender: UIButton) {
+        guard let field = field else { return }
+        delegate?.didPressExport(in: self, field: field)
+    }
+}
+
+// MARK: - ViewEntryFieldsVC
+
 class ViewEntryFieldsVC: UITableViewController, Refreshable {
-    @IBOutlet weak var copiedCellView: UIView!
+    @IBOutlet weak var copiedCellView: FieldCopiedView!
     
     private let editButton = UIBarButtonItem()
 
@@ -33,6 +98,8 @@ class ViewEntryFieldsVC: UITableViewController, Refreshable {
         
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 44
+
+        copiedCellView.delegate = self
         
         editButton.image = UIImage(asset: .editItemToolbar)
         editButton.title = NSLocalizedString(
@@ -123,60 +190,22 @@ class ViewEntryFieldsVC: UITableViewController, Refreshable {
             Clipboard.general.insert(text: text, timeout: timeout)
         }
         entry?.touch(.accessed)
-        animateCopyToClipboard(indexPath: indexPath)
+        animateCopyToClipboard(indexPath: indexPath, field: field)
     }
     
     /// Animates appearing and disappearing of the "Field Copied" notification.
-    func animateCopyToClipboard(indexPath: IndexPath) {
-        tableView.allowsSelection = false
+    func animateCopyToClipboard(indexPath: IndexPath, field: ViewableField) {
+//        tableView.allowsSelection = false
         guard let cell = tableView.cellForRow(at: indexPath) else { assertionFailure(); return }
+        copiedCellView.field = field
         copiedCellView.frame = cell.bounds
         copiedCellView.layoutIfNeeded()
         cell.addSubview(copiedCellView)
 
         DispatchQueue.main.async { [weak self] in
-            guard let _self = self else { return }
-            _self.showCopyNotification(indexPath: indexPath, view: _self.copiedCellView)
+            guard let self = self else { return }
+            self.copiedCellView.show(in: self.tableView, at: indexPath)
         }
-    }
-    
-    /// Helper function: Phase 1 of `animateCopyToClipboard`
-    private func showCopyNotification(indexPath: IndexPath, view: UIView) {
-        view.alpha = 0.0
-        UIView.animate(
-            withDuration: 0.3,
-            delay: 0.0,
-            options: .curveEaseOut ,
-            animations: {
-                view.backgroundColor = UIColor.actionTint
-                view.alpha = 0.8
-            },
-            completion: {
-                [weak self] finished in
-                guard let _self = self else { return }
-                _self.tableView.deselectRow(at: indexPath, animated: false)
-                _self.hideCopyNotification(view: view)
-            }
-        )
-    }
-    
-    /// Helper function: Phase 2 of `animateCopyToClipboard`
-    private func hideCopyNotification(view: UIView) {
-        UIView.animate(
-            withDuration: 0.2,
-            delay: 0.5,
-            options: .curveEaseIn,
-            animations: {
-                view.backgroundColor = UIColor.actionTint
-                view.alpha = 0.0
-            },
-            completion: {
-                [weak self] finished in
-                guard let _self = self else { return }
-                view.removeFromSuperview()
-                _self.tableView.allowsSelection = true
-            }
-        )
     }
 }
 
@@ -217,5 +246,23 @@ extension ViewEntryFieldsVC: ViewableFieldCellDelegate {
             popover.sourceRect = accessoryView.bounds
         }
         present(activityVC, animated: true)
+    }
+}
+
+// MARK: - FieldCopiedViewDelegate
+
+extension ViewEntryFieldsVC: FieldCopiedViewDelegate {
+    func didPressExport(in view: FieldCopiedView, field: ViewableField) {
+        guard let value = field.value else {
+            assertionFailure()
+            return
+        }
+        view.hide(animated: true)
+        let activityController = UIActivityViewController(
+            activityItems: [value],
+            applicationActivities: nil)
+        let popoverAnchor = PopoverAnchor(sourceView: view, sourceRect: view.bounds)
+        popoverAnchor.apply(to: activityController.popoverPresentationController)
+        present(activityController, animated: true)
     }
 }
