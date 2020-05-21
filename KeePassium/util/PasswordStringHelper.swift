@@ -21,14 +21,7 @@ public class PasswordStringHelper {
     ///   - password: string to be decorated
     ///   - font: base font to be used. If `nil`, a default Body-style font will be used.
     public static func decorate(_ password: String, font: UIFont?) -> NSAttributedString {
-        let baseFont: UIFont
-        if let _font = font {
-            baseFont = _font
-        } else {
-            let _font = UIFont(name: "Menlo", size: 17) ?? UIFont.systemFont(ofSize: 17)
-            let bodyFontMetrics = UIFontMetrics(forTextStyle: .body)
-            baseFont = bodyFontMetrics.scaledFont(for: _font)
-        }
+        let baseFont = font ?? UIFont.monospaceFont(forTextStyle: .body)
         
         let result = NSMutableAttributedString()
         let letterAttributes: [NSAttributedString.Key: Any] = [
