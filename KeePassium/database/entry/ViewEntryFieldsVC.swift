@@ -20,49 +20,56 @@ class FieldCopiedView: UIView {
     weak var delegate: FieldCopiedViewDelegate?
     weak var field: ViewableField?
     
+    weak var hidingTimer: Timer?
+    
     public func show(in tableView: UITableView, at indexPath: IndexPath) {
+        hide(animated: false)
+        
+        guard let cell = tableView.cellForRow(at: indexPath) else { assertionFailure(); return }
+        self.frame = cell.bounds
+        self.layoutIfNeeded()
+        cell.addSubview(self)
+        
         self.alpha = 0.0
-        self.isHidden = false
         UIView.animate(
             withDuration: 0.3,
             delay: 0.0,
-            options: .curveEaseOut ,
-            animations: {
-                self.backgroundColor = UIColor.actionTint
-                self.alpha = 0.9
+            options: [.curveEaseOut, .allowUserInteraction] ,
+            animations: { [weak self] in
+                self?.backgroundColor = UIColor.actionTint
+                self?.alpha = 0.9
             },
-            completion: {
-                [weak self] finished in
+            completion: { [weak self] finished in
                 guard let self = self else { return }
                 tableView.deselectRow(at: indexPath, animated: false)
-                if finished {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                        self.hide(animated: true)
-                    }
+                self.hidingTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) {
+                    [weak self] _ in
+                    self?.hide(animated: true)
                 }
             }
         )
     }
     
     public func hide(animated: Bool) {
+        hidingTimer?.invalidate()
+        hidingTimer = nil
         guard animated else {
+            self.layer.removeAllAnimations()
             self.removeFromSuperview()
-            self.isHidden = true
             return
         }
         UIView.animate(
             withDuration: 0.2,
             delay: 0.0,
-            options: .curveEaseIn,
-            animations: {
-                self.backgroundColor = UIColor.actionTint
-                self.alpha = 0.0
+            options: [.curveEaseIn, .beginFromCurrentState],
+            animations: { [weak self] in
+                self?.backgroundColor = UIColor.actionTint
+                self?.alpha = 0.0
             },
-            completion: {
-                [weak self] finished in
-                guard let self = self else { return }
-                self.removeFromSuperview()
-                self.isHidden = true
+            completion: { [weak self] finished in
+                if finished {
+                    self?.removeFromSuperview()
+                }
             }
         )
     }
@@ -196,12 +203,7 @@ class ViewEntryFieldsVC: UITableViewController, Refreshable {
     /// Animates appearing and disappearing of the "Field Copied" notification.
     func animateCopyToClipboard(indexPath: IndexPath, field: ViewableField) {
 //        tableView.allowsSelection = false
-        guard let cell = tableView.cellForRow(at: indexPath) else { assertionFailure(); return }
         copiedCellView.field = field
-        copiedCellView.frame = cell.bounds
-        copiedCellView.layoutIfNeeded()
-        cell.addSubview(copiedCellView)
-
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             self.copiedCellView.show(in: self.tableView, at: indexPath)

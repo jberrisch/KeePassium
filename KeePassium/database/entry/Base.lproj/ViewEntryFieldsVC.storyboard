@@ -403,27 +403,29 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="e39-x1-5Es" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <view contentMode="scaleToFill" id="M5c-3i-Sj9" customClass="FieldCopiedView" customModule="KeePassium" customModuleProvider="target">
-                    <rect key="frame" x="0.0" y="0.0" width="262" height="52"/>
+                    <rect key="frame" x="0.0" y="0.0" width="314" height="52"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <subviews>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" text="Copied" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vLP-Zc-bUc">
-                            <rect key="frame" x="16" y="14" width="63" height="24"/>
-                            <fontDescription key="fontDescription" style="UICTFontTextStyleTitle2"/>
-                            <color key="textColor" name="ActionText"/>
-                            <nil key="highlightedColor"/>
-                            <attributedString key="userComments">
-                                <fragment content="Confirmation message: field value has been copied to clipboard."/>
-                            </attributedString>
-                        </label>
-                        <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="b0f-OE-Umo" userLabel="Actions">
-                            <rect key="frame" x="116.5" y="11.5" width="29" height="29"/>
+                        <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" spacing="32" translatesAutoresizingMaskIntoConstraints="NO" id="b0f-OE-Umo" userLabel="Wrapper">
+                            <rect key="frame" x="87" y="3.5" width="140" height="45"/>
                             <subviews>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="751" text="Copied" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vLP-Zc-bUc">
+                                    <rect key="frame" x="0.0" y="0.0" width="63" height="45"/>
+                                    <fontDescription key="fontDescription" style="UICTFontTextStyleTitle3"/>
+                                    <color key="textColor" name="ActionText"/>
+                                    <nil key="highlightedColor"/>
+                                    <attributedString key="userComments">
+                                        <fragment content="Confirmation message: field value has been copied to clipboard."/>
+                                    </attributedString>
+                                </label>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Bo1-SX-gPB" userLabel="Export">
-                                    <rect key="frame" x="0.0" y="0.0" width="29" height="29"/>
+                                    <rect key="frame" x="95" y="0.0" width="45" height="45"/>
                                     <accessibility key="accessibilityConfiguration">
                                         <bool key="isElement" value="NO"/>
                                     </accessibility>
+                                    <fontDescription key="fontDescription" style="UICTFontTextStyleCallout"/>
                                     <color key="tintColor" name="ActionText"/>
+                                    <inset key="contentEdgeInsets" minX="8" minY="8" maxX="8" maxY="8"/>
                                     <state key="normal" image="export-listitem"/>
                                     <connections>
                                         <action selector="didPressExport:" destination="M5c-3i-Sj9" eventType="touchUpInside" id="P4p-SN-76m"/>
@@ -434,14 +436,12 @@
                     </subviews>
                     <color key="backgroundColor" name="ActionTint"/>
                     <constraints>
-                        <constraint firstItem="vLP-Zc-bUc" firstAttribute="centerY" secondItem="M5c-3i-Sj9" secondAttribute="centerY" id="C9F-v3-BxD"/>
+                        <constraint firstItem="b0f-OE-Umo" firstAttribute="centerX" secondItem="M5c-3i-Sj9" secondAttribute="centerX" id="9WT-Nh-awJ"/>
                         <constraint firstItem="b0f-OE-Umo" firstAttribute="centerY" secondItem="M5c-3i-Sj9" secondAttribute="centerY" priority="250" id="P4G-vT-7td"/>
                         <constraint firstItem="b0f-OE-Umo" firstAttribute="top" relation="greaterThanOrEqual" secondItem="M5c-3i-Sj9" secondAttribute="top" id="Qte-pW-bGQ"/>
-                        <constraint firstItem="b0f-OE-Umo" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="vLP-Zc-bUc" secondAttribute="trailing" constant="8" id="U34-uN-r5F"/>
-                        <constraint firstItem="b0f-OE-Umo" firstAttribute="centerX" secondItem="M5c-3i-Sj9" secondAttribute="centerX" id="fxR-Zg-fyX"/>
+                        <constraint firstItem="b0f-OE-Umo" firstAttribute="centerY" secondItem="M5c-3i-Sj9" secondAttribute="centerY" id="iAq-v9-TCi"/>
                         <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="b0f-OE-Umo" secondAttribute="bottom" id="o5k-Cr-MP9"/>
-                        <constraint firstItem="vLP-Zc-bUc" firstAttribute="leading" secondItem="g0Q-sh-IKa" secondAttribute="leading" constant="16" id="sNc-Nw-MhN"/>
-                        <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="b0f-OE-Umo" secondAttribute="trailing" constant="8" id="v3f-aV-urX"/>
+                        <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="b0f-OE-Umo" secondAttribute="trailing" constant="60" id="v3f-aV-urX"/>
                     </constraints>
                     <viewLayoutGuide key="safeArea" id="g0Q-sh-IKa"/>
                 </view>
