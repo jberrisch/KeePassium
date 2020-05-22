@@ -252,8 +252,9 @@ class ChooseKeyFileVC: UITableViewController, Refreshable {
         let popoverAnchor = PopoverAnchor(tableView: tableView, at: indexPath)
         let keyFileInfoVC = FileInfoVC.make(urlRef: urlRef, fileType: .keyFile, at: popoverAnchor)
         keyFileInfoVC.canExport = false
-        keyFileInfoVC.onDismiss = {
-            keyFileInfoVC.dismiss(animated: true, completion: nil)
+        keyFileInfoVC.onDismiss = { [weak self, weak keyFileInfoVC] in
+            self?.refresh()
+            keyFileInfoVC?.dismiss(animated: true, completion: nil)
         }
         present(keyFileInfoVC, animated: true, completion: nil)
     }

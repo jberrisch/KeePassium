@@ -265,10 +265,11 @@ class MainCoordinator: NSObject, Coordinator {
         refreshFileList()
     }
 
-    func showDatabaseFileInfo(fileRef: URLReference) {
+    func showDatabaseFileInfo(in databaseChooser: DatabaseChooserVC, for fileRef: URLReference) {
         let databaseInfoVC = FileInfoVC.make(urlRef: fileRef, fileType: .database, at: nil)
         databaseInfoVC.canExport = true
-        databaseInfoVC.onDismiss = { [weak self] in
+        databaseInfoVC.onDismiss = { [weak self, weak databaseChooser] in
+            databaseChooser?.refresh()
             self?.navigationController.popViewController(animated: true)
         }
         navigationController.pushViewController(databaseInfoVC, animated: true)
@@ -438,7 +439,7 @@ extension MainCoordinator: DatabaseChooserDelegate {
     
     func databaseChooser(_ sender: DatabaseChooserVC, shouldShowInfoForDatabase urlRef: URLReference) {
         watchdog.restart()
-        showDatabaseFileInfo(fileRef: urlRef)
+        showDatabaseFileInfo(in: sender, for: urlRef)
     }
 }
 
