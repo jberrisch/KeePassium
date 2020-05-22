@@ -71,7 +71,6 @@ class FileListCell: UITableViewCell {
     private func setupCell() {
         let fileInfoButton = FileInfoAccessoryButton()
         accessoryView = fileInfoButton
-        accessoryType = .detailButton
         fileInfoButton.addTarget(
             self,
             action: #selector(didPressAccessoryButton(button:)),
