@@ -250,12 +250,12 @@ class ChooseKeyFileVC: UITableViewController, Refreshable {
     {
         let urlRef = urlRefs[indexPath.row - 1]
         let popoverAnchor = PopoverAnchor(tableView: tableView, at: indexPath)
-        let databaseInfoVC = FileInfoVC.make(urlRef: urlRef, fileType: .keyFile, at: popoverAnchor)
-        databaseInfoVC.canExport = true
-        databaseInfoVC.onDismiss = {
-            databaseInfoVC.dismiss(animated: true, completion: nil)
+        let keyFileInfoVC = FileInfoVC.make(urlRef: urlRef, fileType: .keyFile, at: popoverAnchor)
+        keyFileInfoVC.canExport = false
+        keyFileInfoVC.onDismiss = {
+            keyFileInfoVC.dismiss(animated: true, completion: nil)
         }
-        present(databaseInfoVC, animated: true, completion: nil)
+        present(keyFileInfoVC, animated: true, completion: nil)
     }
     
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
