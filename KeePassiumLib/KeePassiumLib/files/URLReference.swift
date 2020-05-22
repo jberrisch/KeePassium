@@ -25,11 +25,6 @@ public class URLReference:
     Synchronizable
 {
     public typealias Descriptor = String
-
-    public enum Result<ReturnType, ErrorType> {
-        case success(_ output: ReturnType)
-        case failure(_ error: ErrorType)
-    }
     
     /// Specifies possible storage locations of files.
     public enum Location: Int, Codable, CustomStringConvertible {
