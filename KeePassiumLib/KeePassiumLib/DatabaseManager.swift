@@ -706,7 +706,7 @@ fileprivate class DatabaseLoader: ProgressObserver {
     
     private func onDatabaseURLResolved(url: URL) {
         let dbDoc = DatabaseDocument(fileURL: url)
-        progress.status = progress.status = LString.Progress.loadingDatabaseFile
+        progress.status = LString.Progress.loadingDatabaseFile
         dbDoc.open(
             successHandler: {
                 self.onDatabaseDocumentOpened(dbDoc)
