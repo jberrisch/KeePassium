@@ -69,10 +69,10 @@ internal enum LString {
             value: "Loading key file...",
             comment: "Progress status")
         static let loadingDatabaseFile = NSLocalizedString(
-            "[Database/Progress] Loading database file...",
+            "[Database/Progress/downloading]",
             bundle: Bundle.framework,
-            value: "Loading database file...",
-            comment: "Progress bar status")
+            value: "Downloading database file...",
+            comment: "Database loading status: fetching the database file from disk/cloud")
         static let done = NSLocalizedString(
             "[Database/Progress] Done",
             bundle: Bundle.framework,
