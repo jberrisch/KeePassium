@@ -194,7 +194,11 @@ public class URLReference:
     
     public func hash(into hasher: inout Hasher) {
         hasher.combine(location)
-        hasher.combine(originalURL!)
+        guard let originalURL = originalURL else {
+            assertionFailure()
+            return
+        }
+        hasher.combine(originalURL)
     }
     
     public func serialize() -> Data {
@@ -604,9 +608,10 @@ public class URLReference:
             return String(fullString[foundRange])
         }
         
-        func extractBookmarkedURL(_ sandboxInfoString: String) -> URL {
+        func extractBookmarkedURL(_ sandboxInfoString: String) -> URL? {
             let infoTokens = sandboxInfoString.split(separator: ";")
-            let url = URL(fileURLWithPath: String(infoTokens.last!))
+            guard let lastToken = infoTokens.last else { return nil }
+            let url = URL(fileURLWithPath: String(lastToken))
             return url
         }
         
