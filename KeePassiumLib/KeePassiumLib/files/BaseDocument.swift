@@ -1,5 +1,5 @@
 //  KeePassium Password Manager
-//  Copyright © 2018–2019 Andrei Popleteev <info@keepassium.com>
+//  Copyright © 2020 Andrei Popleteev <info@keepassium.com>
 // 
 //  This program is free software: you can redistribute it and/or modify it
 //  under the terms of the GNU General Public License version 3 as published
@@ -9,38 +9,32 @@
 import UIKit
 
 /// Generic document to access external files.
-public class FileDocument: UIDocument {
-    public enum InternalError: LocalizedError {
-        case generic
-        public var errorDescription: String? {
-            return NSLocalizedString(
-                "[FileDocument] Unexpected file error, please contact us.",
-                bundle: Bundle.framework,
-                value: "Unexpected file error, please contact us.",
-                comment: "A very generic error message")
-        }
-    }
+public class BaseDocument: UIDocument {
+    public typealias OpenCallback = (Result<ByteArray, FileAccessError>) -> Void
     
-    public var data = ByteArray()
-    public private(set) var error: Error?
+    public internal(set) var data = ByteArray()
+    public private(set) var error: FileAccessError?
     public var hasError: Bool { return error != nil }
     
-    public func open(successHandler: @escaping(() -> Void), errorHandler: @escaping((Error)->Void)) {
-        super.open(completionHandler: { success in
+    public func open(_ callback: @escaping OpenCallback) {
+        // TODO: add a timeout to this
+        super.open {
+            [weak self] (success) in
+            guard let self = self else { return }
             if success {
                 self.error = nil
-                successHandler()
+                callback(.success(self.data))
             } else {
                 guard let error = self.error else {
                     // This should not happen, but might. So we'll gracefully throw
                     // a generic error instead of crashing on force-unwrap.
                     assertionFailure()
-                    errorHandler(FileDocument.InternalError.generic)
+                    callback(.failure(.internalError))
                     return
                 }
-                errorHandler(error)
+                callback(.failure(error))
             }
-        })
+        }
     }
     
     override public func contents(forType typeName: String) throws -> Any {
@@ -59,7 +53,7 @@ public class FileDocument: UIDocument {
     }
     
     override public func handleError(_ error: Error, userInteractionPermitted: Bool) {
-        self.error = error
+        self.error = .accessError(error)
         super.handleError(error, userInteractionPermitted: userInteractionPermitted)
     }
 }

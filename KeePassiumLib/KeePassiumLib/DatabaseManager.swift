@@ -282,13 +282,16 @@ public class DatabaseManager {
         keyFileRef.resolveAsync { result in // no self
             switch result {
             case .success(let keyFileURL):
-                let keyDoc = FileDocument(fileURL: keyFileURL)
-                keyDoc.open(successHandler: {
-                    dataReadyHandler(keyDoc.data)
-                }, errorHandler: { error in
-                    Diag.error("Failed to open key file [error: \(error.localizedDescription)]")
-                    errorHandler(LString.Error.failedToOpenKeyFile)
-                })
+                let keyDoc = BaseDocument(fileURL: keyFileURL)
+                keyDoc.open { result in
+                    switch result {
+                    case .success(let keyFileData):
+                        dataReadyHandler(keyFileData)
+                    case .failure(let fileAccessError):
+                        Diag.error("Failed to open key file [error: \(fileAccessError.localizedDescription)]")
+                        errorHandler(LString.Error.failedToOpenKeyFile)
+                    }
+                }
             case .failure(let accessError):
                 Diag.error("Failed to open key file [error: \(accessError.localizedDescription)]")
                 errorHandler(LString.Error.failedToOpenKeyFile)
@@ -792,24 +795,24 @@ fileprivate class DatabaseLoader: ProgressObserver {
     }
 
     private func onKeyFileURLResolved(url: URL, dbDoc: DatabaseDocument) {
-        let keyDoc = FileDocument(fileURL: url)
-        keyDoc.open(
-            successHandler: {
-                self.onKeyFileDataReady(dbDoc: dbDoc, keyFileData: keyDoc.data)
-            },
-            errorHandler: {
-                (error) in
-                Diag.error("Failed to open key file [error: \(error.localizedDescription)]")
+        let keyDoc = BaseDocument(fileURL: url)
+        keyDoc.open { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .success(let docData):
+                self.onKeyFileDataReady(dbDoc: dbDoc, keyFileData: docData)
+            case .failure(let fileAccessError):
+                Diag.error("Failed to open key file [error: \(fileAccessError.localizedDescription)]")
                 self.stopObservingProgress()
                 self.notifier.notifyDatabaseLoadError(
                     database: self.dbRef,
                     isCancelled: self.progress.isCancelled,
                     message: LString.Error.cannotOpenKeyFile,
-                    reason: error.localizedDescription)
+                    reason: fileAccessError.localizedDescription)
                 self.completion(self.dbRef, nil)
                 self.endBackgroundTask()
             }
-        )
+        }
     }
     
     private func onKeyFileDataReady(dbDoc: DatabaseDocument, keyFileData: ByteArray) {

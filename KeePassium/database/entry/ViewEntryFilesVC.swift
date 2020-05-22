@@ -443,22 +443,23 @@ extension ViewEntryFilesVC: UIDocumentPickerDelegate {
                 comment: "Status message: loading file to be attached to an entry"),
             allowCancelling: false)
         
-        let doc = FileDocument(fileURL: url)
-        doc.open(
-            successHandler: { [weak self] in
+        let doc = BaseDocument(fileURL: url)
+        doc.open { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .success(let docData):
                 // Keeping the progress view shown, will need it for DB saving
-                self?.addAttachment(name: url.lastPathComponent, data: doc.data)
-            },
-            errorHandler: { [weak self] (error) in
-                Diag.error("Failed to open source file [message: \(error.localizedDescription)]")
-                self?.progressViewHost?.hideProgressView() // won't need it anymore
+                self.addAttachment(name: url.lastPathComponent, data: docData)
+            case .failure(let fileAccessError):
+                Diag.error("Failed to open source file [message: \(fileAccessError.localizedDescription)]")
+                self.progressViewHost?.hideProgressView() // won't need it anymore
                 let alert = UIAlertController.make(
                     title: LString.titleError,
-                    message: error.localizedDescription,
+                    message: fileAccessError.localizedDescription,
                     cancelButtonTitle: LString.actionDismiss)
-                self?.present(alert, animated: true, completion: nil)
+                self.present(alert, animated: true, completion: nil)
             }
-        )
+        }
     }
 
     private func addAttachment(name: String, data: ByteArray) {

@@ -580,43 +580,26 @@ public class FileKeeper {
         error errorHandler: ((FileKeeperError) -> Void)?)
     {
         Diag.debug("Will add external file reference")
-        // To access an external URL, we need to init a UIDocument with that URL,
-        // and keep the instance around when using the URL.
-        // Note: If dummyDoc is replaced with `_`, the document is immediately
-        //       deallocated => transient "permission denied" issues.
-        let dummyDoc = FileDocument(fileURL: sourceURL)
         
-        // Creating a UIDocument is sufficient for some file providers.
-        // However, some other file providers (like OneDrive) throw a "File does not exist"
-        // unless we actually open the document.
-        dummyDoc.open(
-            successHandler: { [weak self] in
-                guard let _self = self else { return }
-                do {
-                    let newRef = try URLReference(from: sourceURL, location: .external)
-                        // throws an internal system error
-                    
-                    var storedRefs = _self.getStoredReferences(
-                        fileType: fileType,
-                        forExternalFiles: true)
-                    storedRefs.insert(newRef, at: 0)
-                    _self.storeReferences(storedRefs, fileType: fileType, forExternalFiles: true)
-                    
-                    Diag.info("External URL reference added OK")
-                    successHandler?(newRef)
-                } catch {
-                    Diag.error("Failed to create URL reference [error: '\(error.localizedDescription)', url: '\(sourceURL.redacted)']")
-                    let importError = FileKeeperError.openError(reason: error.localizedDescription)
-                    errorHandler?(importError)
-                }
-            },
-            errorHandler: { (error) in
-                Diag.error("Failed to open document [error: '\(error.localizedDescription)', url: '\(sourceURL.redacted)']")
-                let docError = FileKeeperError.openError(reason: error.localizedDescription)
-                errorHandler?(docError)
-
+        URLReference.create(for: sourceURL, location: .external) {
+            [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .success(let newRef):
+                var storedRefs = self.getStoredReferences(
+                    fileType: fileType,
+                    forExternalFiles: true)
+                storedRefs.insert(newRef, at: 0)
+                self.storeReferences(storedRefs, fileType: fileType, forExternalFiles: true)
+                
+                Diag.info("External URL reference added OK")
+                successHandler?(newRef)
+            case .failure(let fileAccessError):
+                Diag.error("Failed to create URL reference [error: '\(fileAccessError.localizedDescription)', url: '\(sourceURL.redacted)']")
+                let importError = FileKeeperError.openError(reason: fileAccessError.localizedDescription)
+                errorHandler?(importError)
             }
-        )
+        }
     }
     
     // MARK: - File import
@@ -638,23 +621,23 @@ public class FileKeeper {
         }
         
         Diag.debug("Will import a file")
-        let doc = FileDocument(fileURL: sourceURL)
-        doc.open(
-            successHandler: { // strong self
+        let doc = BaseDocument(fileURL: sourceURL)
+        doc.open { [self] result in // strong self
+            switch result {
+            case .success(let docData):
                 self.saveDataWithConflictResolution(
-                    doc.data,
+                    docData,
                     to: targetURL,
                     conflictResolution: .ask,
                     success: successHandler,
                     error: errorHandler)
-            },
-            errorHandler: { error in // strong self
-                Diag.error("Failed to import external file [message: \(error.localizedDescription)]")
-                let importError = FileKeeperError.importError(reason: error.localizedDescription)
+            case .failure(let fileAccessError):
+                Diag.error("Failed to import external file [message: \(fileAccessError.localizedDescription)]")
+                let importError = FileKeeperError.importError(reason: fileAccessError.localizedDescription)
                 errorHandler?(importError)
                 self.clearInbox()
             }
-        )
+        }
     }
     
     /// Saves given data to a local file (in /Documents), handling potential file name conflicts.
