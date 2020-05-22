@@ -596,7 +596,7 @@ public class URLReference:
         }
         
         func extractFileProviderID(_ fullString: String) -> String? {
-            // The string looks like ""fileprovider:#com.owncloud.ios-app.ownCloud-File-Provider/001F351B-02F7-4F70-B6E0-C8E5996F7F8C/A52BED37B76B4BA7A701F4654A6EE6B5""
+            // The string looks like "fileprovider:#com.owncloud.ios-app.ownCloud-File-Provider/001F351B-02F7-4F70-B6E0-C8E5996F7F8C/A52BED37B76B4BA7A701F4654A6EE6B5"
             // So we need to clean it up.
             let regexp = try! NSRegularExpression(
                 pattern: #"fileprovider\:#?([a-zA-Z0-9\.\-\_]+)"#,
@@ -608,11 +608,10 @@ public class URLReference:
             return String(fullString[foundRange])
         }
         
-        func extractBookmarkedURL(_ sandboxInfoString: String) -> URL? {
+        func extractBookmarkedURLString(_ sandboxInfoString: String) -> String? {
             let infoTokens = sandboxInfoString.split(separator: ";")
             guard let lastToken = infoTokens.last else { return nil }
-            let url = URL(fileURLWithPath: String(lastToken))
-            return url
+            return String(lastToken)
         }
         
         let data = ByteArray(data: self.data)
@@ -628,26 +627,50 @@ public class URLReference:
         guard let firstTOC32 = stream.readUInt32() else { return }
         stream.skip(count: Int(firstTOC32) - 4 + 4*4)
         
+        var _fileProviderID: String?
+        var _sandboxBookmarkedURLString: String?
+        var _hackyBookmarkedURLString: String?
+        var _volumePath: String?
         guard let recordCount = stream.readUInt32() else { return }
         for _ in 0..<recordCount {
             guard let recordID = stream.readUInt32(),
                 let offset = stream.readUInt64()
                 else { return }
             switch recordID {
-            case 8304:
+            case 0x2002:
+                _volumePath = getRecordValue(data: data, fpOffset: contentOffset + Int(offset))
+            case 0x2070: // File Provider record
                 guard let fullFileProviderString =
                     getRecordValue(data: data, fpOffset: contentOffset + Int(offset))
                     else { continue }
-                self.fileProviderID = extractFileProviderID(fullFileProviderString)
-            case 61568:
+                _fileProviderID = extractFileProviderID(fullFileProviderString)
+            case 0xF080: // Sandbox Info record
                 guard let sandboxInfoString =
                     getRecordValue(data: data, fpOffset: contentOffset + Int(offset))
                     else { continue }
-                self.bookmarkedURL = extractBookmarkedURL(sandboxInfoString)
+                _sandboxBookmarkedURLString = extractBookmarkedURLString(sandboxInfoString)
+            case 0x800003E8: // dedicated field for bookmarked URL (likely for simulator only)
+                _hackyBookmarkedURLString =
+                    getRecordValue(data: data, fpOffset: contentOffset + Int(offset))
             default:
                 continue
             }
         }
+        
+        // Sanity check of extracted info
+        if let volumePath = _volumePath,
+            let hackyURLString = _hackyBookmarkedURLString,
+            !hackyURLString.starts(with: volumePath)
+        {
+            // hacky string does not start with the volume path -> sanity check failed
+            _hackyBookmarkedURLString = nil
+        }
+        if let urlString = _sandboxBookmarkedURLString ?? _hackyBookmarkedURLString {
+            // In Xcode 11.3 debugger, bookmarkedURL appears `nil` even after assignment.
+            // This is a debugger bug: https://stackoverflow.com/questions/58155061/convert-string-to-url-why-is-resulting-variable-nil
+            self.bookmarkedURL = URL(fileURLWithPath: urlString)
+        }
+        self.fileProviderID = _fileProviderID
     }
 
 }
