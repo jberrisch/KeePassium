@@ -59,10 +59,6 @@ class DatabaseChooserVC: UITableViewController, Refreshable {
     }
     
     @objc func refresh() {
-        if fileInfoReloader.isRefreshing {
-            return
-        }
-
         databaseRefs = FileKeeper.shared.getAllReferences(
             fileType: .database,
             includeBackup: Settings.current.isBackupFilesVisible)
@@ -125,8 +121,11 @@ class DatabaseChooserVC: UITableViewController, Refreshable {
         }
     }
 
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-
+    override func tableView(
+        _ tableView: UITableView,
+        cellForRowAt indexPath: IndexPath)
+        -> UITableViewCell
+    {
         guard databaseRefs.count > 0 else {
             let cell = tableView.dequeueReusableCell(withIdentifier: CellID.noFiles, for: indexPath)
             return cell
@@ -140,7 +139,7 @@ class DatabaseChooserVC: UITableViewController, Refreshable {
         let dbRef = databaseRefs[indexPath.row]
         cell.showInfo(from: dbRef)
         cell.isAnimating = dbRef.isRefreshingInfo
-        cell.accessoryTapHandler = { [weak self] cell in
+        cell.accessoryTapHandler = { [weak self, indexPath] cell in
             guard let self = self else { return }
             self.tableView(self.tableView, accessoryButtonTappedForRowWith: indexPath)
         }

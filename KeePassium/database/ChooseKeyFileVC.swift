@@ -95,10 +95,6 @@ class ChooseKeyFileVC: UITableViewController, Refreshable {
     // MARK: - Refreshing
     
     @objc func refresh() {
-        if fileInfoReloader.isRefreshing {
-            return
-        }
-
         // Key files are non-modifiable, so no backups
         urlRefs = FileKeeper.shared.getAllReferences(fileType: .keyFile, includeBackup: false)
         fileInfoReloader.getInfo(
@@ -228,6 +224,10 @@ class ChooseKeyFileVC: UITableViewController, Refreshable {
             for: .keyFile)
         cell.showInfo(from: keyFileRef)
         cell.isAnimating = keyFileRef.isRefreshingInfo
+        cell.accessoryTapHandler = { [weak self, indexPath] cell in
+            guard let self = self else { return }
+            self.tableView(self.tableView, accessoryButtonTappedForRowWith: indexPath)
+        }
         return cell
     }
     

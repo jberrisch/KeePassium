@@ -44,10 +44,6 @@ class KeyFileChooserVC: UITableViewController, Refreshable {
     }
 
     @objc func refresh() {
-        if fileInfoReloader.isRefreshing {
-            return
-        }
-        
         keyFileRefs = FileKeeper.shared.getAllReferences(fileType: .keyFile, includeBackup: false)
         fileInfoReloader.getInfo(
             for: keyFileRefs,
