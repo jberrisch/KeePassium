@@ -504,6 +504,10 @@ class ChooseDatabaseVC: UITableViewController, Refreshable {
             let dbRef = databaseRefs[indexPath.row]
             cell.showInfo(from: dbRef)
             cell.isAnimating = dbRef.isRefreshingInfo
+            cell.accessoryTapHandler = { [weak self] cell in
+                guard let self = self else { return }
+                self.tableView(self.tableView, accessoryButtonTappedForRowWith: indexPath)
+            }
             return cell
         case .appLockSetup:
             let cell = tableView

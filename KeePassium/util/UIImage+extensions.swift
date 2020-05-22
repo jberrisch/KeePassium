@@ -19,6 +19,7 @@ enum ImageAsset: String {
     case editItemToolbar = "edit-item-toolbar"
     case lockDatabaseToolbar = "lock-database-toolbar"
     case openURLCellAccessory = "open-url-cellaccessory"
+    case fileInfoCellAccessory = "file-info-cellaccessory"
     case deleteItemListitem = "delete-item-listitem"
     case editItemListitem = "rename-item-listitem"
     case databaseCloudListitem = "database-cloud-listitem"

@@ -36,14 +36,52 @@ fileprivate protocol FileListCellIconProvider: class {
     func getFileIcon(for urlRef: URLReference, hasError: Bool) -> UIImage?
 }
 
+/// Accessory button for `FileListCell`
+class FileInfoAccessoryButton: UIButton {
+    required init() {
+        super.init(frame: CGRect(x: 0, y: 0, width: 25, height: 25))
+        setImage(UIImage(asset: .fileInfoCellAccessory), for: .normal)
+        contentMode = .scaleAspectFill
+    }
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("Not implemented")
+    }
+}
+
+
 /// A cell in the a file list/table.
 class FileListCell: UITableViewCell {
     @IBOutlet weak var fileIconView: UIImageView!
     @IBOutlet weak var fileNameLabel: UILabel!
     @IBOutlet weak var fileDetailLabel: UILabel!
     @IBOutlet weak var spinner: UIActivityIndicatorView!
+    var accessoryTapHandler: ((FileListCell)->())? // strong ref
     
     fileprivate var iconProvider: FileListCellIconProvider?
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setupCell()
+    }
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        setupCell()
+    }
+    
+    private func setupCell() {
+        let fileInfoButton = FileInfoAccessoryButton()
+        accessoryView = fileInfoButton
+        accessoryType = .detailButton
+        fileInfoButton.addTarget(
+            self,
+            action: #selector(didPressAccessoryButton(button:)),
+            for: .touchUpInside)
+    }
+    
+    @objc
+    private func didPressAccessoryButton(button: UIButton) {
+        accessoryTapHandler?(self)
+    }
     
     public func showInfo(from urlRef: URLReference) {
         fileNameLabel?.text = urlRef.visibleFileName
