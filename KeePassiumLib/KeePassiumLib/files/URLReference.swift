@@ -138,7 +138,7 @@ public class URLReference:
     
     
     /// A unique identifier of the serving file provider.
-    private var fileProviderID: String?
+    public private(set) var fileProviderID: String?
     
     fileprivate static let fileCoordinator = FileCoordinator()
     

@@ -160,13 +160,13 @@ class FileInfoVC: UITableViewController {
     
     @objc
     func refresh() {
-        refreshFileNameField()
+        refreshFixedFields()
         tableView.reloadData()
         
         urlRef.refreshInfo { [weak self] result in
             guard let self = self else { return }
             self.fields.removeAll(keepingCapacity: true)
-            self.refreshFileNameField()
+            self.refreshFixedFields()
             switch result {
             case .success(let fileInfo):
                 self.addFields(from: fileInfo)
@@ -183,20 +183,26 @@ class FileInfoVC: UITableViewController {
         }
     }
     
-    /// Updates the file name field, adding it if necessary.
-    private func refreshFileNameField() {
+    /// Updates the error-independent fields (file name, location), adding them if necessary.
+    private func refreshFixedFields() {
         if fields.isEmpty {
+            fields.append(("", ""))
             fields.append(("", ""))
         }
         fields[0] = ((FieldTitle.fileName, urlRef.visibleFileName))
+        fields[1] = ((FieldTitle.fileLocation, getFileLocationValue()))
+    }
+    
+    /// Human-readable file location
+    private func getFileLocationValue() -> String {
+        if let fileProviderID = urlRef.fileProviderID {
+            return fileProviderID
+        }
+        return urlRef.location.description
     }
     
     private func addFields(from fileInfo: FileInfo) {
         // skip file name - it is handled separately in refreshFileNameField()
-        fields.append((
-            FieldTitle.fileLocation,
-            urlRef.location.description
-        ))
         if let fileSize = fileInfo.fileSize {
             fields.append((
                 FieldTitle.fileSize,
