@@ -8,11 +8,14 @@
 
 import UIKit
 
-public class DatabaseDocument: UIDocument {
-    var encryptedData = ByteArray()
+public class DatabaseDocument: BaseDocument {
     var database: Database?
     var errorMessage: String?
-    var hasError: Bool { return errorMessage != nil }
+    
+    var encryptedData: ByteArray {
+        get { return data }
+        set { data = newValue }
+    }
     
     public func open(successHandler: @escaping(() -> Void), errorHandler: @escaping((String?)->Void)) {
         super.open(completionHandler: { success in
