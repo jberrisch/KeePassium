@@ -503,7 +503,19 @@ extension MainCoordinator: KeyFileChooserDelegate {
         }
     }
     
+    func didPressFileInfo(in keyFileChooser: KeyFileChooserVC, for urlRef: URLReference) {
+        watchdog.restart()
+        let keyFileInfoVC = FileInfoVC.make(urlRef: urlRef, fileType: .keyFile, at: nil)
+        keyFileInfoVC.canExport = false
+        keyFileInfoVC.onDismiss = { [weak self, weak keyFileChooser] in
+            keyFileChooser?.refresh()
+            self?.navigationController.popViewController(animated: true)
+        }
+        navigationController.pushViewController(keyFileInfoVC, animated: true)
+    }
+    
     func didPressAddKeyFile(in keyFileChooser: KeyFileChooserVC, popoverAnchor: PopoverAnchor) {
+        watchdog.restart()
         addKeyFile(popoverAnchor: popoverAnchor)
     }
 }

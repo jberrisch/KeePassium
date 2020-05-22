@@ -45,8 +45,7 @@ public enum DestructiveFileAction {
         case (.database, .delete):
             return LString.confirmDatabaseDeletion
         case (.keyFile, .remove):
-            assertionFailure("Why are you here?")
-            return LString.confirmKeyFileDeletion
+            return LString.confirmKeyFileRemoval
         case (.keyFile, .delete):
             return LString.confirmKeyFileDeletion
         }

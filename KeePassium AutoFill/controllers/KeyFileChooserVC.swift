@@ -11,6 +11,7 @@ import KeePassiumLib
 protocol KeyFileChooserDelegate: class {
     func didPressAddKeyFile(in keyFileChooser: KeyFileChooserVC, popoverAnchor: PopoverAnchor)
     func didSelectFile(in keyFileChooser: KeyFileChooserVC, urlRef: URLReference?)
+    func didPressFileInfo(in keyFileChooser: KeyFileChooserVC, for urlRef: URLReference)
 }
 
 class KeyFileChooserVC: UITableViewController, Refreshable {
@@ -77,7 +78,11 @@ class KeyFileChooserVC: UITableViewController, Refreshable {
         return keyFileRefs.count + 1
     }
 
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    override func tableView(
+        _ tableView: UITableView,
+        cellForRowAt indexPath: IndexPath)
+        -> UITableViewCell
+    {
         guard indexPath.row != 0 else {
             let cell = tableView.dequeueReusableCell(
                 withIdentifier: CellID.noKeyFile,
@@ -93,7 +98,19 @@ class KeyFileChooserVC: UITableViewController, Refreshable {
         let keyFileRef = keyFileRefs[indexPath.row - 1]
         cell.showInfo(from: keyFileRef)
         cell.isAnimating = keyFileRef.isRefreshingInfo
+        cell.accessoryTapHandler = { [weak self, indexPath] cell in
+            guard let self = self else { return }
+            self.tableView(self.tableView, accessoryButtonTappedForRowWith: indexPath)
+        }
         return cell
+    }
+    
+    override func tableView(
+        _ tableView: UITableView,
+        accessoryButtonTappedForRowWith indexPath: IndexPath)
+    {
+        let urlRef = keyFileRefs[indexPath.row - 1]
+        delegate?.didPressFileInfo(in: self, for: urlRef)
     }
     
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
