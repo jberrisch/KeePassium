@@ -10,7 +10,7 @@ import Foundation
 
 class FileCoordinator: NSFileCoordinator, Synchronizable {
     /// Dispatch queue for asynchronous URLReference operations
-    fileprivate static let queue = DispatchQueue(
+    fileprivate let backgroundQueue = DispatchQueue(
         label: "com.keepassium.FileCoordinator",
         qos: .default,
         attributes: [.concurrent])
@@ -28,7 +28,7 @@ class FileCoordinator: NSFileCoordinator, Synchronizable {
     {
         execute(
             withTimeout: timeout,
-            on: FileCoordinator.queue,
+            on: backgroundQueue,
             slowAsyncOperation: {
                 [weak self] (_ notifyAndCheckIfCanProceed: @escaping ()->Bool) -> () in
                 // `coordinate()` might take forever
