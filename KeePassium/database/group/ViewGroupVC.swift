@@ -137,11 +137,11 @@ open class ViewGroupVC: UITableViewController, Refreshable {
             if parent == nil && group.isRoot {
                 // poping root group VC from navigation => close database
                 DatabaseManager.shared.closeDatabase(clearStoredKey: false, ignoreErrors: false) {
-                    [weak self] (errorMessage) in
-                    if let errorMessage = errorMessage {
+                    [weak self] (error) in
+                    if let error = error {
                         let errorAlert = UIAlertController.make(
                             title: LString.titleError,
-                            message: errorMessage,
+                            message: error.localizedDescription,
                             cancelButtonTitle: LString.actionDismiss)
                         self?.navigationController?
                             .present(errorAlert, animated: true, completion: nil)
@@ -209,11 +209,11 @@ open class ViewGroupVC: UITableViewController, Refreshable {
             style: .cancel,
             handler: { (action) in
                 DatabaseManager.shared.closeDatabase(clearStoredKey: true, ignoreErrors: false) {
-                    [weak self] (errorMessage) in
-                    if let errorMessage = errorMessage {
+                    [weak self] (error) in
+                    if let error = error {
                         let errorAlert = UIAlertController.make(
                             title: LString.titleError,
-                            message: errorMessage,
+                            message: error.localizedDescription,
                             cancelButtonTitle: LString.actionDismiss)
                         self?.present(errorAlert, animated: true, completion: nil)
                     } else {
@@ -847,11 +847,11 @@ open class ViewGroupVC: UITableViewController, Refreshable {
         let lockDatabaseAction = UIAlertAction(title: LString.actionLockDatabase, style: .destructive) {
             (action) in
             DatabaseManager.shared.closeDatabase(clearStoredKey: true, ignoreErrors: false) {
-                [weak self] (errorMessage) in
-                if let errorMessage = errorMessage {
+                [weak self] (error) in
+                if let error = error {
                     let errorAlert = UIAlertController.make(
                         title: LString.titleError,
-                        message: errorMessage,
+                        message: error.localizedDescription,
                         cancelButtonTitle: LString.actionDismiss)
                     self?.present(errorAlert, animated: true, completion: nil)
                 } else {

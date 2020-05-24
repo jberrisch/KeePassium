@@ -60,11 +60,11 @@ public class DatabaseManager {
     /// - Parameters:
     ///   - clearStoredKey: whether to remove the database key stored in keychain (if any)
     ///   - ignoreErrors: force-close ignoring any errors
-    ///   - callback: called after closing the database. `errorMessage` parameter is nil in case of success.
+    ///   - callback: called after closing the database. `error` parameter is nil in case of success.
     public func closeDatabase(
         clearStoredKey: Bool,
         ignoreErrors: Bool,
-        completion callback: ((String?) -> Void)?)
+        completion callback: ((FileAccessError?) -> Void)?)
     {
         guard database != nil else { return }
         Diag.verbose("Will queue close database")
@@ -87,23 +87,24 @@ public class DatabaseManager {
             // So we switch to the main queue, while the serialDispatchQueue awaits
             // for the completion.
             DispatchQueue.main.async {
-                dbDoc.close(successHandler: { // strong self
-                    self.handleDatabaseClosing()
-                    callback?(nil)
-                    completionSemaphore.signal()
-                }, errorHandler: { errorMessage in // strong self
-                    Diag.error("Failed to save database document [message: \(String(describing: errorMessage))]")
-                    let adjustedErrorMessage: String?
-                    if ignoreErrors {
-                        Diag.warning("Ignoring errors and closing anyway")
+                dbDoc.close { [self] result in // strong self
+                    switch result {
+                    case .success:
                         self.handleDatabaseClosing()
-                        adjustedErrorMessage = nil
-                    } else {
-                        adjustedErrorMessage = errorMessage
+                        callback?(nil)
+                        completionSemaphore.signal()
+                    case .failure(let fileAccessError):
+                        Diag.error("Failed to close database document [message: \(fileAccessError.localizedDescription)]")
+                        if ignoreErrors {
+                            Diag.warning("Ignoring errors and closing anyway")
+                            self.handleDatabaseClosing()
+                            callback?(nil) // pretend there's no error
+                        } else {
+                            callback?(fileAccessError)
+                        }
+                        completionSemaphore.signal()
                     }
-                    callback?(adjustedErrorMessage)
-                    completionSemaphore.signal()
-                })
+                }
             }
             // Block the serial queue until the document is done closing.
             // Otherwise the user might try to re-open the DB before it is properly saved.
@@ -1012,28 +1013,27 @@ fileprivate class DatabaseSaver: ProgressObserver {
             let outData = try database.save() // DatabaseError, ProgressInterruption
             Diag.info("Writing database document")
             dbDoc.data = outData
-            dbDoc.save(
-                successHandler: {
+            dbDoc.save { [self] result in // strong self
+                switch result {
+                case .success:
                     self.progress.completedUnitCount += ProgressSteps.writeDatabase
                     Diag.info("Database saved OK")
                     self.stopObservingProgress()
                     self.notifier.notifyDatabaseDidSave(database: self.dbRef)
                     self.completion(self.dbRef, self.dbDoc)
                     self.endBackgroundTask()
-                },
-                errorHandler: {
-                    (errorMessage) in
-                    Diag.error("Database saving error. [message: \(String(describing: errorMessage))]")
+                case .failure(let fileAccessError):
+                    Diag.error("Database saving error. [message: \(fileAccessError.localizedDescription)]")
                     self.stopObservingProgress()
                     self.notifier.notifyDatabaseSaveError(
                         database: self.dbRef,
                         isCancelled: self.progress.isCancelled,
-                        message: errorMessage ?? "",
+                        message: fileAccessError.localizedDescription,
                         reason: nil)
                     self.completion(self.dbRef, self.dbDoc)
                     self.endBackgroundTask()
                 }
-            )
+            }
         } catch let error as DatabaseError {
             Diag.error("""
                 Database saving error. [

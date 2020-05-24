@@ -89,24 +89,38 @@ public class BaseDocument: UIDocument, Synchronizable {
         }
     }
     
-    public func save(successHandler: @escaping(() -> Void), errorHandler: @escaping((String?)->Void)) {
-        super.save(to: fileURL, for: .forOverwriting, completionHandler: { success in
+    public func save(_ completion: @escaping((Result<Void, FileAccessError>) -> Void)) {
+        super.save(to: fileURL, for: .forOverwriting, completionHandler: {
+            [weak self] (success) in // strong self
+            guard let self = self else { return }
             if success {
                 self.error = nil
-                successHandler()
+                completion(.success)
             } else {
-                errorHandler(self.errorMessage)
+                if let error = self.error {
+                    completion(.failure(error))
+                } else {
+                    Diag.error("Saving unsuccessful, but without error info.")
+                    completion(.failure(.internalError))
+                }
             }
         })
     }
     
-    public func close(successHandler: @escaping(() -> Void), errorHandler: @escaping((String?)->Void)) {
-        super.close(completionHandler: { success in
+    public func close(_ completion: @escaping ((Result<Void, FileAccessError>) -> Void)) {
+        super.close(completionHandler: {
+            [weak self] (success) in
+            guard let self = self else { return }
             if success {
                 self.error = nil
-                successHandler()
+                completion(.success)
             } else {
-                errorHandler(self.errorMessage)
+                if let error = self.error {
+                    completion(.failure(error))
+                } else {
+                    Diag.error("Closing unsuccessful, but without error info.")
+                    completion(.failure(.internalError))
+                }
             }
         })
     }

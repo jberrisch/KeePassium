@@ -11,3 +11,9 @@ public enum Result<ReturnType, ErrorType> {
     case success(_ output: ReturnType)
     case failure(_ error: ErrorType)
 }
+
+extension Result where ReturnType == Void {
+    static var success: Result {
+        return .success(())
+    }
+}
