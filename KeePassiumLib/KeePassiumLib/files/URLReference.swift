@@ -140,11 +140,14 @@ public class URLReference:
     /// A unique identifier of the serving file provider.
     public private(set) var fileProviderID: String?
     
-    fileprivate static let fileCoordinator = FileCoordinator()
+    /// Coordinator for static methods (like `create`)
+    fileprivate static let staticFileCoordinator = FileCoordinator()
     
+    /// Coordinator for instance methods
+    fileprivate let fileCoordinator = FileCoordinator()
     
     /// Dispatch queue for asynchronous URLReference operations
-    fileprivate static let queue = DispatchQueue(
+    fileprivate let backgroundQueue = DispatchQueue(
         label: "com.keepassium.URLReference",
         qos: .background,
         attributes: [.concurrent])
@@ -226,7 +229,7 @@ public class URLReference:
     
     /// One of the parameters is guaranteed to be non-nil
     public typealias CreateCallback = (Result<URLReference, FileAccessError>) -> ()
-        
+
     /// Creates a reference for the given URL, asynchronously.
     /// Takes several stages (attempts):
     ///  - startAccessingSecurityScopedResource / stopAccessingSecurityScopedResource
@@ -259,7 +262,7 @@ public class URLReference:
             .resolvesSymbolicLink, // if sym link, resolve the real target URL first
             .immediatelyAvailableMetadataOnly] // don't download, use as-is immediately
                                                // N.B.: Shouldn't actually read the contents
-        fileCoordinator.coordinateReading(
+        staticFileCoordinator.coordinateReading(
             at: url,
             options: readingIntentOptions,
             timeout: URLReference.defaultTimeout)
@@ -322,7 +325,7 @@ public class URLReference:
     {
         execute(
             withTimeout: URLReference.defaultTimeout,
-            on: URLReference.queue,
+            on: backgroundQueue,
             slowSyncOperation: { () -> Result<URL, Error> in
                 do {
                     let url = try self.resolveSync()
@@ -406,13 +409,13 @@ public class URLReference:
         completion callback: @escaping InfoCallback)
     {
         registerInfoRefreshRequest(.added)
-        resolveAsync(timeout: timeout) { // strong self
-            (result) in
+        resolveAsync(timeout: timeout) {
+            [self] (result) in // strong self
             // we're already in main queue
             switch result {
             case .success(let url):
                 // don't update info request counter here
-                URLReference.queue.async { // strong self
+                self.backgroundQueue.async { // strong self
                     self.refreshInfo(for: url, completion: callback)
                 }
             case .failure(let error):
@@ -437,7 +440,7 @@ public class URLReference:
             // OK to download the latest metadata --> so, no .immediatelyAvailableMetadataOnly
             .resolvesSymbolicLink // if sym link, resolve the real target URL first
         ]
-        URLReference.fileCoordinator.coordinateReading(
+        fileCoordinator.coordinateReading(
             at: url,
             options: readingIntentOptions,
             timeout: URLReference.defaultTimeout)
@@ -519,7 +522,7 @@ public class URLReference:
     /// Re-aquires information about resolved URL synchronously.
     private func refreshInfoSync() {
         let semaphore = DispatchSemaphore(value: 0)
-        URLReference.queue.async { [self] in
+        backgroundQueue.async { [self] in
             self.refreshInfo { _ in
                 // `cachedInfo` and `error` are already updated,
                 // so we have nothing to do here.
