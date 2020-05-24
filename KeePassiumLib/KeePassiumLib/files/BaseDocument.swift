@@ -9,32 +9,62 @@
 import UIKit
 
 /// Generic document to access external files.
-public class BaseDocument: UIDocument {
+public class BaseDocument: UIDocument, Synchronizable {
+    public static let timeout = URLReference.defaultTimeout
+    
     public typealias OpenCallback = (Result<ByteArray, FileAccessError>) -> Void
     
     public internal(set) var data = ByteArray()
-    public private(set) var error: FileAccessError?
+    public internal(set) var error: FileAccessError?
     public var hasError: Bool { return error != nil }
     
+    private let backgroundQueue = DispatchQueue(
+        label: "com.keepassium.Document",
+        qos: .default,
+        attributes: [.concurrent])
+    
     public func open(_ callback: @escaping OpenCallback) {
-        // TODO: add a timeout to this
-        super.open {
-            [weak self] (success) in
-            guard let self = self else { return }
-            if success {
-                self.error = nil
-                callback(.success(self.data))
-            } else {
-                guard let error = self.error else {
-                    // This should not happen, but might. So we'll gracefully throw
-                    // a generic error instead of crashing on force-unwrap.
-                    assertionFailure()
-                    callback(.failure(.internalError))
-                    return
+        self.open(withTimeout: BaseDocument.timeout, callback)
+    }
+    
+    public func open(withTimeout timeout: TimeInterval, _ callback: @escaping OpenCallback) {
+        execute(
+            withTimeout: BaseDocument.timeout,
+            on: backgroundQueue,
+            slowAsyncOperation: {
+                [weak self] (_ notifyAndCheckIfCanProceed: @escaping ()->Bool) -> () in
+                // `superOpen()` might take forever
+                self?.superOpen {
+                    [weak self] (success) in
+                    guard let self = self else { return }
+
+                    // Notify the timeout trigger that we've done with the slow part.
+                    // It returns `false` if timeout has already happened.
+                    guard notifyAndCheckIfCanProceed() else {
+                        // already timed out -> close the document, we won't need it
+                        self.close(completionHandler: nil)
+                        return
+                    }
+                    if let error = self.error {
+                        callback(.failure(error))
+                    } else {
+                        callback(.success(self.data))
+                    }
                 }
-                callback(.failure(error))
+                
+            }, onSuccess: {
+                // Yay, we've opened the document before the timeout!
+                // Nothing else to do, everything will be done in the callback above.
+            }, onTimeout: {
+                self.error = .timeout
+                callback(.failure(.timeout))
             }
-        }
+        )
+    }
+
+    // Workaround for `super.` being unavailable in a callback.
+    private func superOpen(_ callback: @escaping (_ success: Bool)->()) {
+        super.open(completionHandler: callback)
     }
     
     override public func contents(forType typeName: String) throws -> Any {
