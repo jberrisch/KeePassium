@@ -17,16 +17,12 @@ final class AESDataCipher: DataCipher {
     var initialVectorSize: Int { return kCCBlockSizeAES128 }
     var keySize: Int { return kCCKeySizeAES256 }
 
-    private var progress = ProgressEx()
+    internal var progress = ProgressEx()
 
     init() {
         // left empty
     }
     
-    func initProgress() -> ProgressEx {
-        progress = ProgressEx()
-        return progress
-    }
     /// Encrypts `plainText` using AES in CBC mode (automatically adding PKCS7 padding).
     /// - Parameter: data - plain text data
     /// - Parameter: key - encryption key (32 bytes)
