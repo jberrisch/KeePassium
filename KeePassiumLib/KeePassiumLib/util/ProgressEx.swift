@@ -71,6 +71,9 @@ public class ProgressEx: Progress {
             assertionFailure()
         }
         super.addChild(child, withPendingUnitCount: inUnitCount)
+        if child.localizedDescription != nil {
+            self.localizedDescription = child.localizedDescription
+        }
     }
     
     public func cancel(reason: CancellationReason) {
