@@ -47,6 +47,7 @@ public extension Synchronizable {
         onSuccess: @escaping (SlowResultType)->(),
         onTimeout: @escaping ()->())
     {
+        assert(timeout >= TimeInterval.zero)
         queue.async { [self] in // strong self
             let semaphore = DispatchSemaphore(value: 0)
             let slowBlockQueue = DispatchQueue.init(label: "", qos: queue.qos, attributes: []) // serial
@@ -108,6 +109,7 @@ public extension Synchronizable {
         onSuccess: @escaping ()->(),
         onTimeout: @escaping ()->())
     {
+        assert(timeout >= TimeInterval.zero)
         queue.async { [self] in // strong self
             assert(!Thread.isMainThread)
             
