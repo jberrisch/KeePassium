@@ -26,49 +26,36 @@ class FileCoordinator: NSFileCoordinator, Synchronizable {
         timeout: TimeInterval,
         callback: @escaping ReadingCallback)
     {
-        FileCoordinator.queue.async { [self] in
-            self.coordinateReadingInternal(
-                at: url,
-                options: options,
-                timeout: timeout,
-                callback: callback
-            )
-        }
-    }
-    
-    private func coordinateReadingInternal(
-        at url: URL,
-        options: NSFileCoordinator.ReadingOptions,
-        timeout: TimeInterval,
-        callback: @escaping ReadingCallback)
-    {
-        assert(!Thread.isMainThread)
-        
-        let waitSemaphore = DispatchSemaphore(value: 0)
-        var hasTimedOut = false
-        
-        // start the slow stuff in background
-        coordinate(
-            with: [.readingIntent(with: url, options: options)],
-            queue: FileCoordinator.operationQueue)
-        {
-            (error) in // strong self
-            waitSemaphore.signal()
-            guard !hasTimedOut else { return }
-            
-            if let error = error {
-                callback(.accessError(error)) // wrapped error
-            } else {
-                callback(nil) // all good
-            }
-        }
-        
-        guard waitSemaphore.wait(timeout: DispatchTime.now() + timeout) != .timedOut else {
-            hasTimedOut = true
-            DispatchQueue.main.async {
+        execute(
+            withTimeout: timeout,
+            on: FileCoordinator.queue,
+            slowAsyncOperation: {
+                [weak self] (_ notifyAndCheckIfCanProceed: @escaping ()->Bool) -> () in
+                // `coordinate()` might take forever
+                self?.coordinate(
+                    with: [.readingIntent(with: url, options: options)],
+                    queue: FileCoordinator.operationQueue)
+                {
+                    (error) in
+                    // Notify the timeout trigger that we've done with the slow part.
+                    // It returns `false` if timeout has already happened.
+                    guard notifyAndCheckIfCanProceed() else {
+                        // already timed out
+                        return
+                    }
+                    if let error = error {
+                        callback(.accessError(error))
+                    } else {
+                        callback(nil)
+                    }
+                }
+                
+            }, onSuccess: {
+                // Yay, we've got into the coordinated read before timeout!
+                // Nothing else to do, everything will be done in the callback above.
+            }, onTimeout: {
                 callback(.timeout)
             }
-            return
-        }
+        )
     }
 }
