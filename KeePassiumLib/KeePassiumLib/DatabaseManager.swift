@@ -710,35 +710,35 @@ fileprivate class DatabaseLoader: ProgressObserver {
     private func onDatabaseURLResolved(url: URL) {
         let dbDoc = DatabaseDocument(fileURL: url)
         progress.status = LString.Progress.loadingDatabaseFile
-        dbDoc.open(
-            successHandler: {
-                self.onDatabaseDocumentOpened(dbDoc)
-            },
-            errorHandler: {
-                (errorMessage) in
-                Diag.error("Failed to open database document [error: \(errorMessage ?? "nil")]")
+        dbDoc.open { [weak self] (result) in
+            guard let self = self else { return }
+            switch result {
+            case .success(let docData):
+                self.onDatabaseDocumentOpened(dbDoc: dbDoc, data: docData)
+            case .failure(let fileAccessError):
+                Diag.error("Failed to open database document [error: \(fileAccessError.localizedDescription)]")
                 self.stopObservingProgress()
                 self.notifier.notifyDatabaseLoadError(
                     database: self.dbRef,
                     isCancelled: self.progress.isCancelled,
                     message: LString.Error.cannotOpenDatabaseFile,
-                    reason: errorMessage)
+                    reason: fileAccessError.localizedDescription)
                 self.completion(self.dbRef, nil)
                 self.endBackgroundTask()
             }
-        )
+        }
     }
     
-    private func onDatabaseDocumentOpened(_ dbDoc: DatabaseDocument) {
+    private func onDatabaseDocumentOpened(dbDoc: DatabaseDocument, data: ByteArray) {
         progress.completedUnitCount += ProgressSteps.readDatabase
         
         // Create DB instance of appropriate version
-        guard let db = initDatabase(signature: dbDoc.encryptedData) else {
-            let hexPrefix = dbDoc.encryptedData.prefix(8).asHexString
+        guard let db = initDatabase(signature: data) else {
+            let hexPrefix = data.prefix(8).asHexString
             Diag.error("Unrecognized database format [firstBytes: \(hexPrefix)]")
             if hexPrefix == "7b226572726f7222" {
                 // additional diagnostics for DS file error
-                let fullResponse = String(data: dbDoc.encryptedData.asData, encoding: .utf8) ?? "nil"
+                let fullResponse = String(data: data.asData, encoding: .utf8) ?? "nil"
                 Diag.debug("Full error content for DS file: \(fullResponse)")
             }
             stopObservingProgress()
@@ -843,7 +843,7 @@ fileprivate class DatabaseLoader: ProgressObserver {
             Diag.info("Loading database")
             try db.load(
                 dbFileName: dbDoc.fileURL.lastPathComponent,
-                dbFileData: dbDoc.encryptedData,
+                dbFileData: dbDoc.data,
                 compositeKey: compositeKey,
                 warnings: warnings)
                 // throws DatabaseError, ProgressInterruption
@@ -1002,7 +1002,7 @@ fileprivate class DatabaseSaver: ProgressObserver {
                 let nameTemplate = dbRef.url?.lastPathComponent ?? "Backup"
                 FileKeeper.shared.makeBackup(
                     nameTemplate: nameTemplate,
-                    contents: dbDoc.encryptedData)
+                    contents: dbDoc.data)
             }
 
             progress.addChild(
@@ -1011,7 +1011,7 @@ fileprivate class DatabaseSaver: ProgressObserver {
             Diag.info("Encrypting database")
             let outData = try database.save() // DatabaseError, ProgressInterruption
             Diag.info("Writing database document")
-            dbDoc.encryptedData = outData
+            dbDoc.data = outData
             dbDoc.save(
                 successHandler: {
                     self.progress.completedUnitCount += ProgressSteps.writeDatabase

@@ -10,26 +10,4 @@ import UIKit
 
 public class DatabaseDocument: BaseDocument {
     var database: Database?
-
-    var encryptedData: ByteArray {
-        get { return data }
-        set { data = newValue }
-    }
-    
-    public func open(successHandler: @escaping(() -> Void), errorHandler: @escaping((String?)->Void)) {
-        super.open(completionHandler: { success in
-            if success {
-                self.errorMessage = nil
-                successHandler()
-            } else {
-                errorHandler(self.errorMessage)
-            }
-        })
-    }
-                successHandler()
-            } else {
-                errorHandler(self.errorMessage)
-            }
-        }
-    }
 }
