@@ -320,59 +320,39 @@ public class URLReference:
         timeout: TimeInterval = URLReference.defaultTimeout,
         callback: @escaping ResolveCallback)
     {
-        URLReference.queue.async { // strong self
-            self.resolveAsyncInternal(timeout: timeout, completion: callback)
-        }
-    }
-    
-    private func resolveAsyncInternal(
-        timeout: TimeInterval,
-        completion callback: @escaping ResolveCallback)
-    {
-        assert(!Thread.isMainThread)
-        
-        let waitSemaphore = DispatchSemaphore(value: 0)
-        var hasTimedOut = false
-        // do slow resolving as a concurrent task
-        URLReference.queue.async { // strong self
-            var _url: URL?
-            var _error: Error?
-            do {
-                _url = try self.resolveSync()
-            } catch {
-                _error = error
-            }
-            waitSemaphore.signal()
-            guard !hasTimedOut else { return }
-            DispatchQueue.main.async { // strong self
-                assert(_url != nil || _error != nil)
-                guard _error == nil else {
-                    self.error = FileAccessError.accessError(_error)
-                    callback(.failure(.accessError(_error)))
-                    return
+        execute(
+            withTimeout: URLReference.defaultTimeout,
+            on: URLReference.queue,
+            slowSyncOperation: { () -> Result<URL, Error> in
+                do {
+                    let url = try self.resolveSync()
+                    return .success(url)
+                } catch {
+                    return .failure(error)
                 }
-                guard let url = _url else { // should not happen
-                    assertionFailure()
-                    Diag.error("Internal error")
-                    self.error = FileAccessError.internalError
-                    callback(.failure(.internalError))
-                    return
+            },
+            onSuccess: { [weak self] result in
+                guard let self = self else { return }
+                switch result {
+                case .success(let url):
+                    self.error = nil
+                    self.dispatchMain {
+                        callback(.success(url))
+                    }
+                case .failure(let error):
+                    self.error = .accessError(error)
+                    self.dispatchMain {
+                        callback(.failure(.accessError(error)))
+                    }
                 }
-                self.error = nil
-                callback(.success(url))
-            }
-        }
-        
-        // wait for a while to finish resolving
-        let waitUntil = (timeout < 0) ? DispatchTime.distantFuture : DispatchTime.now() + timeout
-        guard waitSemaphore.wait(timeout: waitUntil) != .timedOut else {
-            hasTimedOut = true
-            DispatchQueue.main.async {
+            },
+            onTimeout: { [self] in
                 self.error = FileAccessError.timeout
-                callback(.failure(FileAccessError.timeout))
+                self.dispatchMain {
+                    callback(.failure(FileAccessError.timeout))
+                }
             }
-            return
-        }
+        )
     }
     
     // MARK: - Async info
