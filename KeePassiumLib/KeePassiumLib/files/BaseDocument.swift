@@ -16,6 +16,7 @@ public class BaseDocument: UIDocument, Synchronizable {
     
     public internal(set) var data = ByteArray()
     public internal(set) var error: FileAccessError?
+    public var errorMessage: String? { error?.localizedDescription }
     public var hasError: Bool { return error != nil }
     
     private let backgroundQueue = DispatchQueue(
@@ -23,10 +24,16 @@ public class BaseDocument: UIDocument, Synchronizable {
         qos: .default,
         attributes: [.concurrent])
     
+    /// Attempts to open the document with a default timeout (`BaseDocument.timeout`).
+    /// - Parameter callback: called with the result of opening (either document data or a `FileAccessError`)
     public func open(_ callback: @escaping OpenCallback) {
         self.open(withTimeout: BaseDocument.timeout, callback)
     }
     
+    /// Attempts to open the document within the specified timeout.
+    /// - Parameters:
+    ///   - timeout: timeout for the operation.
+    ///   - callback: called once the document opens or fails to open (due to an error or timeout)
     public func open(withTimeout timeout: TimeInterval, _ callback: @escaping OpenCallback) {
         execute(
             withTimeout: BaseDocument.timeout,
@@ -80,6 +87,28 @@ public class BaseDocument: UIDocument, Synchronizable {
         } else {
             data = ByteArray()
         }
+    }
+    
+    public func save(successHandler: @escaping(() -> Void), errorHandler: @escaping((String?)->Void)) {
+        super.save(to: fileURL, for: .forOverwriting, completionHandler: { success in
+            if success {
+                self.error = nil
+                successHandler()
+            } else {
+                errorHandler(self.errorMessage)
+            }
+        })
+    }
+    
+    public func close(successHandler: @escaping(() -> Void), errorHandler: @escaping((String?)->Void)) {
+        super.close(completionHandler: { success in
+            if success {
+                self.error = nil
+                successHandler()
+            } else {
+                errorHandler(self.errorMessage)
+            }
+        })
     }
     
     override public func handleError(_ error: Error, userInteractionPermitted: Bool) {
