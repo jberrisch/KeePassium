@@ -73,6 +73,11 @@ internal enum LString {
             bundle: Bundle.framework,
             value: "Downloading database file...",
             comment: "Database loading status: fetching the database file from disk/cloud")
+        static let makingDatabaseBackup = NSLocalizedString(
+            "[Database/Progress/makingDatabaseBackup]",
+            bundle: Bundle.framework,
+            value: "Making backup copy...",
+            comment: "Database saving status: making a local backup copy of the database")
         static let done = NSLocalizedString(
             "[Database/Progress] Done",
             bundle: Bundle.framework,

@@ -14,14 +14,18 @@ enum DatabaseLockReason {
 }
 
 fileprivate enum ProgressSteps {
-    static let all: Int64 = 100
+    static let start: Int64 = -1 // initial progress of evey operation (negative means indefinite)
+    static let all: Int64 = 100 // total number of step
     
-    static let readDatabase: Int64 = 5
-    static let readKeyFile: Int64 = 5
-    static let decryptDatabase: Int64 = 90
-    
-    static let encryptDatabase: Int64 = 90
-    static let writeDatabase: Int64 = 10
+    static let didReadDatabaseFile: Int64 = -1
+    static let didReadKeyFile: Int64 = -1
+    static let willDecryptDatabase: Int64 = 0
+    static let didDecryptDatabase: Int64 = 100
+
+    static let willMakeBackup: Int64 = -1
+    static let willEncryptDatabase: Int64 = 0
+    static let didEncryptDatabase: Int64 = 90
+    static let didWriteDatabase: Int64 = 100
 }
 
 
@@ -160,7 +164,7 @@ public class DatabaseManager {
         Diag.info("Will load database")
         progress = ProgressEx()
         progress.totalUnitCount = ProgressSteps.all
-        progress.completedUnitCount = 0
+        progress.completedUnitCount = ProgressSteps.start
         
         precondition(databaseLoader == nil)
         databaseLoader = DatabaseLoader(
@@ -221,7 +225,7 @@ public class DatabaseManager {
         
         progress = ProgressEx()
         progress.totalUnitCount = ProgressSteps.all
-        progress.completedUnitCount = 0
+        progress.completedUnitCount = ProgressSteps.start
         notifyDatabaseWillSave(database: dbRef)
         
         precondition(databaseSaver == nil)
@@ -731,7 +735,7 @@ fileprivate class DatabaseLoader: ProgressObserver {
     }
     
     private func onDatabaseDocumentOpened(dbDoc: DatabaseDocument, data: ByteArray) {
-        progress.completedUnitCount += ProgressSteps.readDatabase
+        progress.completedUnitCount = ProgressSteps.didReadDatabaseFile
         
         // Create DB instance of appropriate version
         guard let db = initDatabase(signature: data) else {
@@ -758,7 +762,7 @@ fileprivate class DatabaseLoader: ProgressObserver {
             // No need to load the key file, it's already been processed
             
             // Shortcut: we already have the composite key, so skip password/key file processing
-            progress.completedUnitCount += ProgressSteps.readKeyFile
+            progress.completedUnitCount = ProgressSteps.didReadKeyFile
             Diag.info("Using a ready composite key")
             onCompositeKeyComponentsProcessed(dbDoc: dbDoc, compositeKey: compositeKey)
             return
@@ -819,7 +823,7 @@ fileprivate class DatabaseLoader: ProgressObserver {
     private func onKeyFileDataReady(dbDoc: DatabaseDocument, keyFileData: ByteArray) {
         guard let database = dbDoc.database else { fatalError() }
         
-        progress.completedUnitCount += ProgressSteps.readKeyFile
+        progress.completedUnitCount = ProgressSteps.didReadKeyFile
         let keyHelper = database.keyHelper
         let passwordData = keyHelper.getPasswordData(password: compositeKey.password)
         if passwordData.isEmpty && keyFileData.isEmpty {
@@ -839,8 +843,11 @@ fileprivate class DatabaseLoader: ProgressObserver {
     func onCompositeKeyComponentsProcessed(dbDoc: DatabaseDocument, compositeKey: CompositeKey) {
         assert(compositeKey.state >= .processedComponents)
         guard let db = dbDoc.database else { fatalError() }
+        
+        progress.completedUnitCount = ProgressSteps.willDecryptDatabase
+        let remainingUnitCount = ProgressSteps.didDecryptDatabase - ProgressSteps.willDecryptDatabase
         do {
-            progress.addChild(db.initProgress(), withPendingUnitCount: ProgressSteps.decryptDatabase)
+            progress.addChild(db.initProgress(), withPendingUnitCount: remainingUnitCount)
             Diag.info("Loading database")
             try db.load(
                 dbFileName: dbDoc.fileURL.lastPathComponent,
@@ -849,6 +856,7 @@ fileprivate class DatabaseLoader: ProgressObserver {
                 warnings: warnings)
                 // throws DatabaseError, ProgressInterruption
             Diag.info("Database loaded OK")
+            progress.completedUnitCount = ProgressSteps.all
             progress.localizedDescription = LString.Progress.done
             completion(dbRef, dbDoc)
             stopObservingProgress()
@@ -991,12 +999,15 @@ fileprivate class DatabaseSaver: ProgressObserver {
     
     func save() {
         guard let database = dbDoc.database else { fatalError("Database is nil") }
-        
+
         startBackgroundTask()
         startObservingProgress()
         do {
             if Settings.current.isBackupDatabaseOnSave {
                 // dbDoc has already been opened, so we backup its old encrypted data.
+                
+                progress.completedUnitCount = ProgressSteps.willMakeBackup
+                progress.status = LString.Progress.makingDatabaseBackup
                 
                 // The at this stage, the DB should have a resolved URL
                 assert(dbRef.url != nil)
@@ -1006,17 +1017,21 @@ fileprivate class DatabaseSaver: ProgressObserver {
                     contents: dbDoc.data)
             }
 
+            Diag.info("Encrypting database")
+            progress.completedUnitCount = ProgressSteps.willEncryptDatabase
+            let encryptionUnitCount = ProgressSteps.didEncryptDatabase - ProgressSteps.willEncryptDatabase
             progress.addChild(
                 database.initProgress(),
-                withPendingUnitCount: ProgressSteps.encryptDatabase)
-            Diag.info("Encrypting database")
+                withPendingUnitCount: encryptionUnitCount)
             let outData = try database.save() // DatabaseError, ProgressInterruption
+            progress.completedUnitCount = ProgressSteps.didEncryptDatabase
+            
             Diag.info("Writing database document")
             dbDoc.data = outData
             dbDoc.save { [self] result in // strong self
                 switch result {
                 case .success:
-                    self.progress.completedUnitCount += ProgressSteps.writeDatabase
+                    self.progress.completedUnitCount += ProgressSteps.didWriteDatabase
                     Diag.info("Database saved OK")
                     self.stopObservingProgress()
                     self.notifier.notifyDatabaseDidSave(database: self.dbRef)
