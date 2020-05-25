@@ -8,7 +8,7 @@
 
 import Foundation
 
-extension Bool {
+public extension Bool {
     /// Correctly parses mixed-case "TRuE"/"FaLsE" strings, everything else means `nil`
     init?(optString value: String?) {
         guard let value = value else {

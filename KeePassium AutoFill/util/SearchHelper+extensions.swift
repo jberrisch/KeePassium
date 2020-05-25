@@ -44,12 +44,15 @@ extension SearchHelper {
                 relevantEntries.append(contentsOf: partialResults)
             }
         }
-        let exactMatches = relevantEntries.filter { $0.similarityScore >= 0.99 }
-        let partialMatches = relevantEntries.filter { $0.similarityScore < 0.99 }
-        let searchResults = FuzzySearchResults(
-            exactMatch: arrangeByGroups(scoredEntries: exactMatches),
-            partialMatch: arrangeByGroups(scoredEntries: partialMatches)
-        )
+        
+        let exactMatchEntries = relevantEntries.filter { $0.similarityScore >= 0.99 }
+        let partialMatchEntries = relevantEntries.filter { $0.similarityScore < 0.99 }
+        let exactMatch = arrangeByGroups(scoredEntries: exactMatchEntries)
+            .excludingNonAutoFillableEntries()
+        let partialMatch = arrangeByGroups(scoredEntries: partialMatchEntries)
+            .excludingNonAutoFillableEntries()
+        
+        let searchResults = FuzzySearchResults(exactMatch: exactMatch, partialMatch: partialMatch)
         return searchResults
     }
     
@@ -283,5 +286,30 @@ fileprivate extension URL {
                 return nil
         }
         return fakeSchemeURL
+    }
+}
+
+extension SearchResults {
+    /// Returns search results without entries marked as "hidden from browser extension" in KeePassXC.
+    /// https://github.com/keepassxreboot/keepassxc/pull/3444
+    func excludingNonAutoFillableEntries() -> SearchResults {
+        let excludeFromAutoFillCustomDataKey = "BrowserHideEntry"
+        
+        var result = SearchResults()
+        self.forEach{ groupedEntries in
+            let filteredEntries = groupedEntries.entries.filter {
+                guard let entry2 = $0.entry as? Entry2,
+                    let valueString = entry2.customData[excludeFromAutoFillCustomDataKey] else
+                {
+                    return true
+                }
+                let isHidden = Bool(string: valueString)
+                return !isHidden
+            }
+            if filteredEntries.count > 0 {
+                result.append(GroupedEntries(group: groupedEntries.group, entries: filteredEntries))
+            }
+        }
+        return result
     }
 }
