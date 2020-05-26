@@ -1381,6 +1381,7 @@ public class Database2: Database {
         
         if entry.isDeleted {
             // already in Backup, so delete permanently
+            Diag.debug("Already in Backup, removing permanently")
             addDeletedObject(uuid: entry.uuid)
             parentGroup.remove(entry: entry)
             return
