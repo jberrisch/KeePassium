@@ -1031,7 +1031,8 @@ fileprivate class DatabaseSaver: ProgressObserver {
             dbDoc.save { [self] result in // strong self
                 switch result {
                 case .success:
-                    self.progress.completedUnitCount += ProgressSteps.didWriteDatabase
+                    self.progress.status = LString.Progress.done
+                    self.progress.completedUnitCount = ProgressSteps.didWriteDatabase
                     Diag.info("Database saved OK")
                     self.stopObservingProgress()
                     self.notifier.notifyDatabaseDidSave(database: self.dbRef)
