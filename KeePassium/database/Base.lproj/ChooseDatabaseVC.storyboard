@@ -95,8 +95,6 @@
                                         <constraint firstItem="4cs-i4-8Si" firstAttribute="centerY" secondItem="XQp-IY-Ue4" secondAttribute="centerY" id="KkM-sP-gpw"/>
                                         <constraint firstItem="lBd-mX-l14" firstAttribute="top" relation="greaterThanOrEqual" secondItem="XQp-IY-Ue4" secondAttribute="topMargin" id="M5X-cJ-7qj"/>
                                         <constraint firstAttribute="trailingMargin" secondItem="lBd-mX-l14" secondAttribute="trailing" id="SAZ-Yx-zjA"/>
-                                        <constraint firstAttribute="bottomMargin" relation="greaterThanOrEqual" secondItem="4cs-i4-8Si" secondAttribute="bottom" id="jnd-yg-ZAY"/>
-                                        <constraint firstItem="4cs-i4-8Si" firstAttribute="top" relation="greaterThanOrEqual" secondItem="XQp-IY-Ue4" secondAttribute="topMargin" id="r1S-8r-kuZ"/>
                                         <constraint firstAttribute="bottomMargin" relation="greaterThanOrEqual" secondItem="lBd-mX-l14" secondAttribute="bottom" id="xSF-9k-9jd"/>
                                     </constraints>
                                 </tableViewCellContentView>
