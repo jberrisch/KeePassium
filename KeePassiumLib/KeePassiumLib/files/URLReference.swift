@@ -239,7 +239,7 @@ public class URLReference:
     /// - Parameters:
     ///   - url: target URL
     ///   - location: location of the target URL
-    ///   - completion: called once the process has finished (either successfully or with an error)
+    ///   - completion: called once the process has finished (either successfully or with an error); called on main queue
     public static func create(
         for url: URL,
         location: URLReference.Location,
@@ -276,7 +276,9 @@ public class URLReference:
                 }
             }
             guard fileAccessError == nil else {
-                callback(.failure(fileAccessError!))
+                DispatchQueue.main.async {
+                    callback(.failure(fileAccessError!))
+                }
                 return
             }
             // calls the callback in any case
@@ -289,7 +291,7 @@ public class URLReference:
     ///   - url: target URL
     ///   - location: target URL location
     ///   - callbackOnError: whether to return error via callback before returning `false`
-    ///   - callback: called once reference created (or failed, if callbackOnError is true)
+    ///   - callback: called once reference created (or failed, if callbackOnError is true); called on main queue
     /// - Returns: true if successful, false otherwise
     @discardableResult
     private static func tryCreate(
@@ -300,11 +302,15 @@ public class URLReference:
     ) -> Bool {
         do {
             let urlRef = try URLReference(from: url, location: location)
-            callback(.success(urlRef))
+            DispatchQueue.main.async {
+                callback(.success(urlRef))
+            }
             return true
         } catch {
             if callbackOnError {
-                callback(.failure(.accessError(error)))
+                DispatchQueue.main.async {
+                    callback(.failure(.accessError(error)))
+                }
             }
             return false
         }
