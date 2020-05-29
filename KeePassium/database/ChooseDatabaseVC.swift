@@ -17,7 +17,8 @@ class AppLockSetupCell: UITableViewCell {
     }
 }
 
-class ChooseDatabaseVC: UITableViewController, Refreshable {
+class ChooseDatabaseVC: UITableViewController, DynamicFileList, Refreshable {
+    
     private enum CellID: String {
         case fileItem = "FileItemCell"
         case noFiles = "NoFilesCell"
@@ -58,6 +59,9 @@ class ChooseDatabaseVC: UITableViewController, Refreshable {
     
     // Flag to auto-unlock DB on launch only
     private var isJustLaunched = true
+    
+    // Keeps track of animations while sorting files
+    internal var ongoingUpdateAnimations = 0
     
     // MAKE: - VC lifecycle
     override func viewDidLoad() {
@@ -170,32 +174,43 @@ class ChooseDatabaseVC: UITableViewController, Refreshable {
             self?.didSelectDatabase(urlRef: startDatabase)
         }
     }
+    
+    // MARK: - Refreshing and sorting
 
     /// Reloads the list of available DB files
     @objc func refresh() {
         databaseRefs = FileKeeper.shared.getAllReferences(
             fileType: .database,
             includeBackup: Settings.current.isBackupFilesVisible)
+        sortFileList()
+
         fileInfoReloader.getInfo(
             for: databaseRefs,
             update: { [weak self] (ref) in
-                self?.tableView.reloadData()
+                guard let self = self else { return }
+                self.refreshControl?.endRefreshing()
+                self.sortAndAnimateFileInfoUpdate(refs: &self.databaseRefs, in: self.tableView)
             },
             completion: { [weak self] in
-                self?.sortFileList()
-                if let refreshControl = self?.refreshControl, refreshControl.isRefreshing {
-                    refreshControl.endRefreshing()
+                guard let self = self else { return }
+                self.refreshControl?.endRefreshing()
+                // wait for any ongoing animation to finish, and reload the final data, just in case
+                DispatchQueue.main.asyncAfter(deadline: .now() + self.sortingAnimationDuration) {
+                    [weak self] in
+                    self?.sortFileList()
                 }
             }
         )
-        // animates each row until it updates
-        tableView.reloadData()
     }
     
     fileprivate func sortFileList() {
         let fileSortOrder = Settings.current.filesSortOrder
         databaseRefs.sort { return fileSortOrder.compare($0, $1) }
         tableView.reloadData()
+    }
+    
+    func getIndexPath(for fileIndex: Int) -> IndexPath {
+        return IndexPath(row: fileIndex, section: 0)
     }
     
     // MARK: -
