@@ -55,7 +55,7 @@ public class EntryField2: EntryField {
         // In this case, the caller can check `isEmpty` and remove such fields.
         
         var key: String?
-        var value: String?
+        var value: String? = ""
         var isProtected: Bool = false
         for tag in xml.children {
             switch tag.name {
@@ -70,6 +70,9 @@ public class EntryField2: EntryField {
                         let plainData = try streamCipher.decrypt(data: encData, progress: nil)
                             // throws ProgressInterruption
                         value = plainData.toString(using: .utf8) // nil if decrypt() failed
+                        if value == nil {
+                            Diag.warning("Failed to decrypt field value")
+                        }
                     }
                 } else {
                     // simple plain-text value
@@ -88,6 +91,7 @@ public class EntryField2: EntryField {
             throw Xml2.ParsingError.malformedValue(tag: "Entry/String/Key", value: nil)
         }
         guard let _value = value else {
+            // Decryption of a protected field has failed, we've got a problem.
             Diag.error("Missing Entry/String/Value")
             throw Xml2.ParsingError.malformedValue(tag: "Entry/String/Value", value: nil)
         }
