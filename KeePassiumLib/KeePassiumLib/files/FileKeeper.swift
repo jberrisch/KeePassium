@@ -831,7 +831,7 @@ public class FileKeeper {
                         Diag.warning("Failed to get backup file age.")
                         return
                     }
-                    guard now.timeIntervalSince(modificationDate) < maxAge else {
+                    guard now.timeIntervalSince(modificationDate) > maxAge else {
                         // not old enough
                         return
                     }
