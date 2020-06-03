@@ -34,7 +34,7 @@ class ChangeMasterKeyVC: UIViewController {
         super.viewDidLoad()
         
         databaseNameLabel.text = databaseRef.visibleFileName
-        databaseIcon.image = UIImage.databaseIcon(for: databaseRef)
+        databaseIcon.image = databaseRef.getIcon(fileType: .database)
         
         passwordField.invalidBackgroundColor = nil
         repeatPasswordField.invalidBackgroundColor = nil

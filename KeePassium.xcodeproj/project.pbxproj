@@ -210,6 +210,10 @@
 		7598963F2341590300DF39AA /* KeePassiumLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 75FEC2222175292C0034334B /* KeePassiumLib.framework */; };
 		759896402341590300DF39AA /* KeePassiumLib.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 75FEC2222175292C0034334B /* KeePassiumLib.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		7599637022E112E50004BC85 /* Attachment+extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7599636F22E112E50004BC85 /* Attachment+extensions.swift */; };
+		759BC62C2487FE5200E88111 /* URLReference+extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 759BC62B2487FE5200E88111 /* URLReference+extensions.swift */; };
+		759BC62D2487FE5200E88111 /* URLReference+extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 759BC62B2487FE5200E88111 /* URLReference+extensions.swift */; };
+		759BC62E2487FE5200E88111 /* URLReference+extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 759BC62B2487FE5200E88111 /* URLReference+extensions.swift */; };
+		759BC62F2487FE5200E88111 /* URLReference+extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 759BC62B2487FE5200E88111 /* URLReference+extensions.swift */; };
 		759BCEB02144E6E8002FC18B /* RootSplitVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 759BCEAF2144E6E7002FC18B /* RootSplitVC.swift */; };
 		75A26774228E7D200097C693 /* PremiumVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75A26773228E7D200097C693 /* PremiumVC.swift */; };
 		75A26776228F02C80097C693 /* PremiumCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75A26775228F02C70097C693 /* PremiumCoordinator.swift */; };
@@ -801,6 +805,7 @@
 		759894B624620AF6006B6709 /* FileExportHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileExportHelper.swift; sourceTree = "<group>"; };
 		759894BB24620D33006B6709 /* FileDestructionHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDestructionHelper.swift; sourceTree = "<group>"; };
 		7599636F22E112E50004BC85 /* Attachment+extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Attachment+extensions.swift"; sourceTree = "<group>"; };
+		759BC62B2487FE5200E88111 /* URLReference+extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URLReference+extensions.swift"; sourceTree = "<group>"; };
 		759BCEAF2144E6E7002FC18B /* RootSplitVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RootSplitVC.swift; sourceTree = "<group>"; };
 		75A26773228E7D200097C693 /* PremiumVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumVC.swift; sourceTree = "<group>"; };
 		75A26775228F02C70097C693 /* PremiumCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumCoordinator.swift; sourceTree = "<group>"; };
@@ -1413,6 +1418,7 @@
 				75B59A6723887A2C00239CFF /* SystemIssueDetector.swift */,
 				75A5312223C0D35500900ED1 /* NavigationRouter.swift */,
 				75BFB1452481D19B0017B980 /* FileProvider+extensions.swift */,
+				759BC62B2487FE5200E88111 /* URLReference+extensions.swift */,
 			);
 			path = util;
 			sourceTree = "<group>";
@@ -1994,6 +2000,7 @@
 				75A5312423C0D35500900ED1 /* NavigationRouter.swift in Sources */,
 				757FB3CF21F9C51C00F016FA /* UITextView+border.swift in Sources */,
 				75CBAB9F21C1671F00B8AFE2 /* MainCoordinator.swift in Sources */,
+				759BC62D2487FE5200E88111 /* URLReference+extensions.swift in Sources */,
 				7514CC9F22D5D14B00A0D7A4 /* LongPressAwareNavigationController.swift in Sources */,
 				757ADC4623A1047600D708D2 /* HardwareKeyPicker.swift in Sources */,
 				75679ACF22FD897000372301 /* NewsCenter.swift in Sources */,
@@ -2067,6 +2074,7 @@
 				757ADC5023A5180600D708D2 /* DismissablePopover.swift in Sources */,
 				75C3801B217A0B76006F74C2 /* UIViewController+storyboard.swift in Sources */,
 				7529310D21ADA46C00E4B0D2 /* FileInfoVC.swift in Sources */,
+				759BC62C2487FE5200E88111 /* URLReference+extensions.swift in Sources */,
 				757D336120EF382D000A47F0 /* SettingsDatabaseTimeoutVC.swift in Sources */,
 				7550D24C215FDEC500360E0C /* AppCoverVC.swift in Sources */,
 				75BFB1462481D19B0017B980 /* FileProvider+extensions.swift in Sources */,
@@ -2182,6 +2190,7 @@
 				757ADC5223A5180600D708D2 /* DismissablePopover.swift in Sources */,
 				75B38C00233E5B7C006BDEFC /* UIViewController+storyboard.swift in Sources */,
 				75B38C01233E5B7C006BDEFC /* FileInfoVC.swift in Sources */,
+				759BC62E2487FE5200E88111 /* URLReference+extensions.swift in Sources */,
 				75B38C02233E5B7C006BDEFC /* SettingsDatabaseTimeoutVC.swift in Sources */,
 				75B38C03233E5B7C006BDEFC /* AppCoverVC.swift in Sources */,
 				75BFB1482481D19B0017B980 /* FileProvider+extensions.swift in Sources */,
@@ -2288,6 +2297,7 @@
 				75A5312623C0D35500900ED1 /* NavigationRouter.swift in Sources */,
 				75D7DF82233E5E310029AD87 /* UITextView+border.swift in Sources */,
 				75D7DF83233E5E310029AD87 /* MainCoordinator.swift in Sources */,
+				759BC62F2487FE5200E88111 /* URLReference+extensions.swift in Sources */,
 				75D7DF84233E5E310029AD87 /* LongPressAwareNavigationController.swift in Sources */,
 				757ADC4823A1047600D708D2 /* HardwareKeyPicker.swift in Sources */,
 				75D7DF85233E5E310029AD87 /* NewsCenter.swift in Sources */,

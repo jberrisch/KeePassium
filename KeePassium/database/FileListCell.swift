@@ -9,9 +9,6 @@
 import KeePassiumLib
 
 class FileListCellFactory {
-    fileprivate static let databaseFileIconProvider = DatabaseListCellIconProvider()
-    fileprivate static let keyFileIconProvider = KeyFileListCellIconProvider()
-    
     public static func dequeueReusableCell(
         from tableView: UITableView,
         withIdentifier identifier: String,
@@ -21,19 +18,9 @@ class FileListCellFactory {
         let cell = tableView
             .dequeueReusableCell(withIdentifier: identifier, for: indexPath)
             as! FileListCell
-        
-        switch fileType {
-        case .database:
-            cell.iconProvider = FileListCellFactory.databaseFileIconProvider
-        case .keyFile:
-            cell.iconProvider = FileListCellFactory.keyFileIconProvider
-        }
+        cell.fileType = fileType
         return cell
     }
-}
-
-fileprivate protocol FileListCellIconProvider: class {
-    func getFileIcon(for urlRef: URLReference, hasError: Bool) -> UIImage?
 }
 
 /// Accessory button for `FileListCell`
@@ -55,9 +42,9 @@ class FileListCell: UITableViewCell {
     @IBOutlet weak var fileNameLabel: UILabel!
     @IBOutlet weak var fileDetailLabel: UILabel!
     @IBOutlet weak var spinner: UIActivityIndicatorView!
-    var accessoryTapHandler: ((FileListCell)->())? // strong ref
     
-    fileprivate var iconProvider: FileListCellIconProvider?
+    var accessoryTapHandler: ((FileListCell)->())? // strong ref
+    fileprivate(set) var fileType: FileType!
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
@@ -90,7 +77,7 @@ class FileListCell: UITableViewCell {
 
             switch result {
             case .success(let fileInfo):
-                self.fileIconView?.image = self.getFileIcon(for: urlRef, hasError: false)
+                self.fileIconView?.image = urlRef.getIcon(fileType: self.fileType)
                 if let modificationDate = fileInfo.modificationDate {
                     let dateString = DateFormatter.localizedString(
                         from: modificationDate,
@@ -107,12 +94,12 @@ class FileListCell: UITableViewCell {
                 guard let error = urlRef.error else {
                     // no error, but failed -- probably info refresh is not finished yet
                     self.fileDetailLabel?.text = "..."
-                    self.fileIconView?.image = self.getFileIcon(for: urlRef, hasError: false)
+                    self.fileIconView?.image = urlRef.getIcon(fileType: self.fileType)
                     return
                 }
                 self.fileDetailLabel?.text = error.localizedDescription
                 self.fileDetailLabel?.textColor = UIColor.errorMessage
-                self.fileIconView?.image = self.getFileIcon(for: urlRef, hasError: true)
+                self.fileIconView?.image = urlRef.getIcon(fileType: self.fileType)
             }
         }
     }
@@ -128,22 +115,5 @@ class FileListCell: UITableViewCell {
                 spinner.isHidden = true
             }
         }
-    }
-    
-    /// Returns an appropriate icon for the target file.
-    func getFileIcon(for urlRef: URLReference, hasError: Bool) -> UIImage? {
-        return iconProvider?.getFileIcon(for: urlRef, hasError: hasError)
-    }
-}
-
-fileprivate class DatabaseListCellIconProvider: FileListCellIconProvider {
-    func getFileIcon(for urlRef: URLReference, hasError: Bool) -> UIImage? {
-        return UIImage.databaseIcon(for: urlRef)
-    }
-}
-
-fileprivate class KeyFileListCellIconProvider: FileListCellIconProvider {
-    func getFileIcon(for urlRef: URLReference, hasError: Bool) -> UIImage? {
-        return UIImage(asset: .keyFileListitem)
     }
 }

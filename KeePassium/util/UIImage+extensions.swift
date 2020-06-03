@@ -84,16 +84,4 @@ extension UIImage {
         return kpIcon(forID: group.iconID)
     }
     
-    /// Icon for database with the given reference (depends on location and error state).
-    static func databaseIcon(for urlRef: URLReference) -> UIImage {
-        // TODO: move this method from UIImage to URLReference extension
-        switch urlRef.location {
-        case .external:
-            return urlRef.fileProvider?.icon ?? UIImage(asset: .databaseCloudListitem)
-        case .internalDocuments, .internalInbox:
-            return UIImage(asset: .databaseLocalListitem)
-        case .internalBackup:
-            return UIImage(asset: .databaseBackupListitem)
-        }
-    }
 }

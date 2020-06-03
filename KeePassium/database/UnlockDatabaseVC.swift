@@ -161,7 +161,7 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
     func refresh() {
         guard isViewLoaded else { return }
         
-        databaseIconImage.image = UIImage.databaseIcon(for: databaseRef)
+        databaseIconImage.image = databaseRef.getIcon(fileType: .database)
         databaseNameLabel.text = databaseRef.visibleFileName
         if databaseRef.hasError {
             let text = databaseRef.error?.localizedDescription

@@ -170,7 +170,7 @@ class DatabaseUnlockerVC: UIViewController, Refreshable {
         } else {
             databaseFileNameLabel.text = dbRef.visibleFileName
             databaseFileNameLabel.textColor = UIColor.primaryText
-            databaseLocationIconImage.image = UIImage.databaseIcon(for: dbRef)
+            databaseLocationIconImage.image = dbRef.getIcon(fileType: .database)
         }
         
         let dbSettings = DatabaseSettingsManager.shared.getSettings(for: dbRef)
