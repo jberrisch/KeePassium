@@ -43,6 +43,8 @@ extension FileProvider {
             return UIImage(named: "fp-synology-drive-listitem")
         case .usbDrive:
             return UIImage(named: "fp-usb-drive-listitem")
+        case .amerigo: fallthrough
+        case .amerigoFree: fallthrough
         case .resilioSync: fallthrough
         case .tresorit:    fallthrough
         case .yandexDisk:  fallthrough

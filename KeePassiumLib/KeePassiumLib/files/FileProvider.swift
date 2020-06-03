@@ -11,6 +11,8 @@ public enum FileProvider: RawRepresentable, Hashable {
 
     private static let providerByID: [String: FileProvider] = [
         "com.apple.FileProvider.LocalStorage": .localStorage,
+        "it.ideasolutions.amerigo.FileExtension": .amerigo,
+        "it.ideasolutions.amerigo-free.FileExtension": .amerigoFree,
         "net.box.BoxNet.documentPickerFileProvider": .box,
         "com.boxcryptor.ios.BoxcryptorDocumentProviderFileProvider": .boxcryptor,
         "com.getdropbox.Dropbox.FileProvider": .dropbox,
@@ -32,6 +34,8 @@ public enum FileProvider: RawRepresentable, Hashable {
         uniqueKeysWithValues: FileProvider.providerByID.map { ($1, $0) }
     )
 
+    case amerigo
+    case amerigoFree
     case box
     case boxcryptor
     case dropbox
@@ -74,6 +78,13 @@ public enum FileProvider: RawRepresentable, Hashable {
     /// Internal name of the file provider
     public var localizedName: String {
         switch self {
+        case .amerigoFree: fallthrough
+        case .amerigo:
+            return NSLocalizedString(
+                "[FileProvider/Amerigo/name]",
+                bundle: Bundle.framework,
+                value: "Amerigo",
+                comment: "Localized name of the storage service: Amerigo (https://www.amerigo-app.com)")
         case .box:
             return NSLocalizedString(
                 "[FileProvider/Box/name]",
