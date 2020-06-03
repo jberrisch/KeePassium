@@ -36,6 +36,11 @@ class FileInfoReloader: Synchronizable {
         update updateHandler: @escaping UpdateHandler,
         completion: @escaping ()->())
     {
+        guard refs.count > 0 else {
+            completion()
+            return
+        }
+        
         for ref in refs {
             guard !ref.isRefreshingInfo else {
                 continue
