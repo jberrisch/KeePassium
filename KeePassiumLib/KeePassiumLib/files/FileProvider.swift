@@ -12,19 +12,19 @@ public enum FileProvider: RawRepresentable, Hashable {
     private static let providerByID: [String: FileProvider] = [
         "com.apple.FileProvider.LocalStorage": .localStorage,
         "net.box.BoxNet.documentPickerFileProvider": .box,
-        "com.boxcryptor      define this": .boxcryptor,
+        "com.boxcryptor.ios.BoxcryptorDocumentProviderFileProvider": .boxcryptor,
         "com.getdropbox.Dropbox.FileProvider": .dropbox,
         "com.apple.CloudDocs.MobileDocumentsFileProvider": .iCloudDrive,
         "com.google.Drive.FileProviderExtension": .googleDrive,
         "it.twsweb.Nextcloud.File-Provider-Extension": .nextcloud,
         "com.microsoft.skydrive.onedrivefileprovider": .oneDrive,
         "com.owncloud.ios-app.ownCloud-File-Provider": .ownCloud,
-        "com.pcloud      define this": .pCloud,
+        "com.pcloud.pcloud.FileProvider": .pCloud,
         "com.resilio.sync.fileprovider": .resilioSync,
         "com.apple.SMBClientProvider.FileProvider": .smbShare,
-        "com.synology.   define this ": .synologyDrive,
+        "com.synology.DSdrive.FileProvider ": .synologyDrive,
         "com.synology.DSfile.ExtFileProvider": .synologyDSfile,
-        "com.tresorit    define this": .tresorit,
+        "com.tresorit.ios.TresoritiOS-DocumentProviderFileProvider": .tresorit,
         "com.apple.filesystems.UserFS.FileProvider": .usbDrive,
         "ru.yandex.disk.filesext": .yandexDisk
     ]
