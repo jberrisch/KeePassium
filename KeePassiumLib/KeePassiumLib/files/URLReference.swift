@@ -259,9 +259,9 @@ public class URLReference:
         // Stage 2: try to create after accessing the document
         let readingIntentOptions: NSFileCoordinator.ReadingOptions = [
             .withoutChanges, // don't force other processes to save the file first
-            .resolvesSymbolicLink, // if sym link, resolve the real target URL first
-            .immediatelyAvailableMetadataOnly] // don't download, use as-is immediately
-                                               // N.B.: Shouldn't actually read the contents
+            .resolvesSymbolicLink // if sym link, resolve the real target URL first
+            // .immediatelyAvailableMetadataOnly - causes "File does not exist" with some providers
+        ]
         staticFileCoordinator.coordinateReading(
             at: url,
             options: readingIntentOptions,
