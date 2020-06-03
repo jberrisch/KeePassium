@@ -201,8 +201,8 @@ class FileInfoVC: UITableViewController {
     
     /// Human-readable file location
     private func getFileLocationValue() -> String {
-        if let fileProviderID = urlRef.fileProviderID {
-            return fileProviderID
+        if let fileProvider = urlRef.fileProvider {
+            return fileProvider.localizedName
         }
         return urlRef.location.description
     }

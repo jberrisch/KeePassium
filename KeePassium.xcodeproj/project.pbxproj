@@ -366,6 +366,10 @@
 		75BFB1402481553D0017B980 /* DynamicFileList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75BFB13E2481553D0017B980 /* DynamicFileList.swift */; };
 		75BFB1412481553D0017B980 /* DynamicFileList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75BFB13E2481553D0017B980 /* DynamicFileList.swift */; };
 		75BFB1422481553D0017B980 /* DynamicFileList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75BFB13E2481553D0017B980 /* DynamicFileList.swift */; };
+		75BFB1462481D19B0017B980 /* FileProvider+extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75BFB1452481D19B0017B980 /* FileProvider+extensions.swift */; };
+		75BFB1472481D19B0017B980 /* FileProvider+extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75BFB1452481D19B0017B980 /* FileProvider+extensions.swift */; };
+		75BFB1482481D19B0017B980 /* FileProvider+extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75BFB1452481D19B0017B980 /* FileProvider+extensions.swift */; };
+		75BFB1492481D19B0017B980 /* FileProvider+extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75BFB1452481D19B0017B980 /* FileProvider+extensions.swift */; };
 		75C11F1E22208D6B0042FB2B /* LAContext+biometrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75C11F1D22208D6B0042FB2B /* LAContext+biometrics.swift */; };
 		75C11F1F22208D6B0042FB2B /* LAContext+biometrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75C11F1D22208D6B0042FB2B /* LAContext+biometrics.swift */; };
 		75C3801B217A0B76006F74C2 /* UIViewController+storyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75C3801A217A0B76006F74C2 /* UIViewController+storyboard.swift */; };
@@ -983,6 +987,7 @@
 		75B5FB7820D6101100D402D9 /* ItemCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemCategory.swift; sourceTree = "<group>"; };
 		75B5FB7A20D61BC000D402D9 /* ViewableEntryFieldFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewableEntryFieldFactory.swift; sourceTree = "<group>"; };
 		75BFB13E2481553D0017B980 /* DynamicFileList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DynamicFileList.swift; sourceTree = "<group>"; };
+		75BFB1452481D19B0017B980 /* FileProvider+extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FileProvider+extensions.swift"; sourceTree = "<group>"; };
 		75C11F1D22208D6B0042FB2B /* LAContext+biometrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LAContext+biometrics.swift"; sourceTree = "<group>"; };
 		75C3801A217A0B76006F74C2 /* UIViewController+storyboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+storyboard.swift"; sourceTree = "<group>"; };
 		75C3802C217A2650006F74C2 /* AppCoverVC.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = AppCoverVC.storyboard; sourceTree = "<group>"; };
@@ -1407,6 +1412,7 @@
 				7535079F23783729003B65C9 /* HapticFeedback.swift */,
 				75B59A6723887A2C00239CFF /* SystemIssueDetector.swift */,
 				75A5312223C0D35500900ED1 /* NavigationRouter.swift */,
+				75BFB1452481D19B0017B980 /* FileProvider+extensions.swift */,
 			);
 			path = util;
 			sourceTree = "<group>";
@@ -2026,6 +2032,7 @@
 				7582544B2211BB830053FCC9 /* Watchdog.swift in Sources */,
 				753376F223CA650C00603F4A /* PasswordStringHelper.swift in Sources */,
 				750CFC0721BAD98B00E62B09 /* LString.swift in Sources */,
+				75BFB1472481D19B0017B980 /* FileProvider+extensions.swift in Sources */,
 				75151D3423268AB300F3C411 /* UILabel+strikethrough.swift in Sources */,
 				757ADC5123A5180600D708D2 /* DismissablePopover.swift in Sources */,
 				75A2677E22904E0D0097C693 /* PremiumFeature+extension.swift in Sources */,
@@ -2062,6 +2069,7 @@
 				7529310D21ADA46C00E4B0D2 /* FileInfoVC.swift in Sources */,
 				757D336120EF382D000A47F0 /* SettingsDatabaseTimeoutVC.swift in Sources */,
 				7550D24C215FDEC500360E0C /* AppCoverVC.swift in Sources */,
+				75BFB1462481D19B0017B980 /* FileProvider+extensions.swift in Sources */,
 				75DC043320E9E0C9007E63EC /* GroupChangeObserver+Notifier.swift in Sources */,
 				75514A3420DF5B6200202340 /* EditEntryFieldsCells.swift in Sources */,
 				75BFB13F2481553D0017B980 /* DynamicFileList.swift in Sources */,
@@ -2176,6 +2184,7 @@
 				75B38C01233E5B7C006BDEFC /* FileInfoVC.swift in Sources */,
 				75B38C02233E5B7C006BDEFC /* SettingsDatabaseTimeoutVC.swift in Sources */,
 				75B38C03233E5B7C006BDEFC /* AppCoverVC.swift in Sources */,
+				75BFB1482481D19B0017B980 /* FileProvider+extensions.swift in Sources */,
 				75B38C04233E5B7C006BDEFC /* GroupChangeObserver+Notifier.swift in Sources */,
 				75B38C05233E5B7C006BDEFC /* EditEntryFieldsCells.swift in Sources */,
 				75BFB1412481553D0017B980 /* DynamicFileList.swift in Sources */,
@@ -2317,6 +2326,7 @@
 				75D7DFA1233E5E310029AD87 /* Watchdog.swift in Sources */,
 				753376F423CA650C00603F4A /* PasswordStringHelper.swift in Sources */,
 				75D7DFA2233E5E310029AD87 /* LString.swift in Sources */,
+				75BFB1492481D19B0017B980 /* FileProvider+extensions.swift in Sources */,
 				75D7DFA3233E5E310029AD87 /* UILabel+strikethrough.swift in Sources */,
 				757ADC5323A5180600D708D2 /* DismissablePopover.swift in Sources */,
 				75D7DFA4233E5E310029AD87 /* PremiumFeature+extension.swift in Sources */,

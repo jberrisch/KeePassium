@@ -26,6 +26,7 @@
 		75A26770228DAC440097C693 /* PremiumManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75A2676F228DAC430097C693 /* PremiumManager.swift */; };
 		75A2677B229045A60097C693 /* PremiumFeature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75A2677A229045A60097C693 /* PremiumFeature.swift */; };
 		75B8608C2475E2F800C5E6C0 /* LString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75B8608B2475E2F800C5E6C0 /* LString.swift */; };
+		75BFB1442481B2FA0017B980 /* FileProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75BFB1432481B2FA0017B980 /* FileProvider.swift */; };
 		75C01EFF2474AC290099698C /* Synchronizable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75C01EFE2474AC290099698C /* Synchronizable.swift */; };
 		75C01F01247553540099698C /* FileCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75C01F00247553540099698C /* FileCoordinator.swift */; };
 		75C01F03247554EA0099698C /* FileAccessError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75C01F02247554EA0099698C /* FileAccessError.swift */; };
@@ -163,6 +164,7 @@
 		75AC534A2326FCDB000AA4FB /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		75AC53A2232766EB000AA4FB /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		75B8608B2475E2F800C5E6C0 /* LString.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LString.swift; sourceTree = "<group>"; };
+		75BFB1432481B2FA0017B980 /* FileProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileProvider.swift; sourceTree = "<group>"; };
 		75C01EFE2474AC290099698C /* Synchronizable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Synchronizable.swift; sourceTree = "<group>"; };
 		75C01F00247553540099698C /* FileCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileCoordinator.swift; sourceTree = "<group>"; };
 		75C01F02247554EA0099698C /* FileAccessError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileAccessError.swift; sourceTree = "<group>"; };
@@ -597,6 +599,7 @@
 				75F4ACDC2177469500B22D8B /* BaseDocument.swift */,
 				75F4ACD82177469500B22D8B /* TemporaryFileURL.swift */,
 				75F4ACDE2177469500B22D8B /* URLReference.swift */,
+				75BFB1432481B2FA0017B980 /* FileProvider.swift */,
 				75C01F00247553540099698C /* FileCoordinator.swift */,
 				75C01F02247554EA0099698C /* FileAccessError.swift */,
 			);
@@ -757,6 +760,7 @@
 				75D09C2D2174F77000F7DEF2 /* VarDict.swift in Sources */,
 				75A2677B229045A60097C693 /* PremiumFeature.swift in Sources */,
 				75F4ACD6217745B300B22D8B /* DatabaseManagerObserver.swift in Sources */,
+				75BFB1442481B2FA0017B980 /* FileProvider.swift in Sources */,
 				75F4ACF421774A6400B22D8B /* URL+extensions.swift in Sources */,
 				75D09C1F2174F77000F7DEF2 /* Attachment.swift in Sources */,
 				75D09C362174F77000F7DEF2 /* FixedWidthInteger+extension.swift in Sources */,

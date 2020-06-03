@@ -138,9 +138,6 @@ class FileListCell: UITableViewCell {
 
 fileprivate class DatabaseListCellIconProvider: FileListCellIconProvider {
     func getFileIcon(for urlRef: URLReference, hasError: Bool) -> UIImage? {
-        guard !hasError else {
-            return UIImage(asset: .databaseErrorListitem)
-        }
         return UIImage.databaseIcon(for: urlRef)
     }
 }

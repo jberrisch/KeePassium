@@ -138,7 +138,7 @@ public class URLReference:
     
     
     /// A unique identifier of the serving file provider.
-    public private(set) var fileProviderID: String?
+    public private(set) var fileProvider: FileProvider?
     
     /// Coordinator for static methods (like `create`)
     fileprivate static let staticFileCoordinator = FileCoordinator()
@@ -221,7 +221,7 @@ public class URLReference:
             " ‣ bookmarkedURL: \(bookmarkedURL?.relativeString ?? "nil")\n" +
             " ‣ cachedURL: \(cachedURL?.relativeString ?? "nil")\n" +
             " ‣ resolvedURL: \(resolvedURL?.relativeString ?? "nil")\n" +
-            " ‣ fileProviderID: \(fileProviderID ?? "nil")\n" +
+            " ‣ fileProvider: \(fileProvider?.id ?? "nil")\n" +
             " ‣ data: \(data.count) bytes"
     }
     
@@ -659,7 +659,12 @@ public class URLReference:
             // This is a debugger bug: https://stackoverflow.com/questions/58155061/convert-string-to-url-why-is-resulting-variable-nil
             self.bookmarkedURL = URL(fileURLWithPath: urlString)
         }
-        self.fileProviderID = _fileProviderID
+        if let fileProviderID = _fileProviderID {
+            self.fileProvider = FileProvider(rawValue: fileProviderID)
+        } else {
+            assertionFailure()
+            self.fileProvider = nil
+        }
     }
 
 }

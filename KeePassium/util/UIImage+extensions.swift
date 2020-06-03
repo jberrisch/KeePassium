@@ -22,10 +22,10 @@ enum ImageAsset: String {
     case fileInfoCellAccessory = "file-info-cellaccessory"
     case deleteItemListitem = "delete-item-listitem"
     case editItemListitem = "rename-item-listitem"
-    case databaseCloudListitem = "database-cloud-listitem"
-    case databaseLocalListitem = "database-local-listitem"
     case databaseBackupListitem = "database-backup-listitem"
-    case databaseErrorListitem = "database-error-listitem"
+    case fileProviderGenericListitem = "fp-generic-listitem"
+    case fileProviderOnMyIPadListitem = "fp-on-ipad-listitem"
+    case fileProviderOnMyIPhoneListitem = "fp-on-iphone-listitem"
     case keyFileListitem = "keyfile-listitem"
     case hideAccessory = "hide-accessory"
     case unhideAccessory = "unhide-accessory"
@@ -86,12 +86,10 @@ extension UIImage {
     
     /// Icon for database with the given reference (depends on location and error state).
     static func databaseIcon(for urlRef: URLReference) -> UIImage {
-        guard !urlRef.hasError else {
-            return UIImage(asset: .databaseErrorListitem)
-        }
+        // TODO: move this method from UIImage to URLReference extension
         switch urlRef.location {
         case .external:
-            return UIImage(asset: .databaseCloudListitem)
+            return urlRef.fileProvider?.icon ?? UIImage(asset: .databaseCloudListitem)
         case .internalDocuments, .internalInbox:
             return UIImage(asset: .databaseLocalListitem)
         case .internalBackup:
