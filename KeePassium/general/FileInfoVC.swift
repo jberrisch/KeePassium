@@ -121,17 +121,20 @@ class FileInfoVC: UITableViewController {
         tableView.addObserver(self, forKeyPath: "contentSize", options: .new, context: nil)
         
         setupButtons()
+        
+        // pre-fill fixed fields
         refreshControl?.beginRefreshing()
-        refresh()
+        refreshFixedFields()
+        tableView.reloadData()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        if refreshControl!.isRefreshing {
+        if let refreshControl = refreshControl, refreshControl.isRefreshing {
             UIView.performWithoutAnimation { [self] in
                 self.refreshControl?.endRefreshing()
             }
-            refreshControl?.beginRefreshing()
+            refreshControl.beginRefreshing()
         }
         refresh()
     }
@@ -182,9 +185,10 @@ class FileInfoVC: UITableViewController {
                     accessError.localizedDescription
                 ))
             }
-            self.tableView.reloadSections([0], with: .automatic) // like reloadData, but animated
+            self.tableView.reloadSections([0], with: .fade) // like reloadData, but animated
             if let refreshControl = self.tableView.refreshControl, refreshControl.isRefreshing {
                 refreshControl.endRefreshing()
+                self.tableView.refreshControl = nil
             }
         }
     }
