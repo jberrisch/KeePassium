@@ -569,7 +569,12 @@ public class URLReference:
     /// - `bookmarkedURL` (might be `nil` if missing)
     /// - `fileProviderID` (might be `nil` if missing)
     fileprivate func processReference() {
-        guard !data.isEmpty else { return }
+        guard !data.isEmpty else {
+            if location.isInternal {
+                fileProvider = .localStorage
+            }
+            return
+        }
         
         func getRecordValue(data: ByteArray, fpOffset: Int) -> String? {
             let contentBytes = data[fpOffset..<data.count]
