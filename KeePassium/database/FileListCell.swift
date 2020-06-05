@@ -72,36 +72,51 @@ class FileListCell: UITableViewCell {
     public func showInfo(from urlRef: URLReference) {
         fileNameLabel?.text = urlRef.visibleFileName
         
+        if let error = urlRef.error {
+            // There's a pre-existing error, it is more important to show than old cached info.
+            // For example, if we cached file info and then the file was deleted:
+            // the fact "file is missing" is more important than outdated cache info.
+            showFileError(error, for: urlRef)
+            return
+        }
+        
         urlRef.getCachedInfo(canFetch: false) { [weak self] result in
             guard let self = self else { return }
-
             switch result {
             case .success(let fileInfo):
-                self.fileIconView?.image = urlRef.getIcon(fileType: self.fileType)
-                if let modificationDate = fileInfo.modificationDate {
-                    let dateString = DateFormatter.localizedString(
-                        from: modificationDate,
-                        dateStyle: .long,
-                        timeStyle: .medium)
-                    self.fileDetailLabel?.text = dateString
-                } else {
-                    self.fileDetailLabel?.text = nil
-                }
-                self.fileDetailLabel?.textColor = UIColor.auxiliaryText
+                self.showFileInfo(fileInfo, for: urlRef)
             case .failure:
-                // The provided error can be .noInfoAvaiable, which is not informative.
-                // So check the urlRef's error property instead.
-                guard let error = urlRef.error else {
-                    // no error, but failed -- probably info refresh is not finished yet
-                    self.fileDetailLabel?.text = "..."
-                    self.fileIconView?.image = urlRef.getIcon(fileType: self.fileType)
-                    return
-                }
-                self.fileDetailLabel?.text = error.localizedDescription
-                self.fileDetailLabel?.textColor = UIColor.errorMessage
-                self.fileIconView?.image = urlRef.getIcon(fileType: self.fileType)
+                self.showFileError(urlRef.error, for: urlRef)
             }
         }
+    }
+    
+    private func showFileInfo(_ fileInfo: FileInfo, for urlRef: URLReference) {
+        fileIconView?.image = urlRef.getIcon(fileType: fileType)
+        if let modificationDate = fileInfo.modificationDate {
+            let dateString = DateFormatter.localizedString(
+                from: modificationDate,
+                dateStyle: .long,
+                timeStyle: .medium)
+            fileDetailLabel?.text = dateString
+        } else {
+            fileDetailLabel?.text = nil
+        }
+        fileDetailLabel?.textColor = UIColor.auxiliaryText
+    }
+    
+    private func showFileError(_ error: FileAccessError?, for urlRef: URLReference) {
+        // The provided error can be .noInfoAvaiable, which is not informative.
+        // So check the urlRef's error property instead.
+        guard let error = error else {
+            // no error, but failed -- probably info refresh is not finished yet
+            self.fileDetailLabel?.text = "..."
+            self.fileIconView?.image = urlRef.getIcon(fileType: self.fileType)
+            return
+        }
+        self.fileDetailLabel?.text = error.localizedDescription
+        self.fileDetailLabel?.textColor = UIColor.errorMessage
+        self.fileIconView?.image = urlRef.getIcon(fileType: self.fileType)
     }
     
     var isAnimating: Bool {
