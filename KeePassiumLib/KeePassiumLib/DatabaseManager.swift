@@ -343,9 +343,9 @@ public class DatabaseManager {
                 DatabaseManager.shared.changeCompositeKey(to: newCompositeKey)
                 
                 // we don't have dedicated location for temporary files,
-                // so set it to generic `.external`
+                // so set it to generic `.internalInbox`
                 do {
-                    self.databaseRef = try URLReference(from: databaseURL, location: .external)
+                    self.databaseRef = try URLReference(from: databaseURL, location: .internalInbox)
                         // throws some internal system error
                     successHandler()
                 } catch {
