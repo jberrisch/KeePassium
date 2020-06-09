@@ -189,10 +189,18 @@ class EditEntryVC: UITableViewController, Refreshable {
         tableView.beginUpdates()
         tableView.insertRows(at: [newIndexPath], with: .fade)
         tableView.endUpdates()
-        tableView.scrollToRow(at: newIndexPath, at: .top, animated: false) // if animated is true, insertedCell will be nil
-        let insertedCell = tableView.cellForRow(at: newIndexPath)
-        insertedCell?.becomeFirstResponder()
-        (insertedCell as? EditEntryCustomFieldCell)?.selectNameText()
+        
+        UIView.animate(
+            withDuration: 0.3,
+            animations: { [self] in
+                self.tableView.scrollToRow(at: newIndexPath, at: .top, animated: false) // animation is handled by the wrapping call
+            },
+            completion: { [weak self] finished in
+                let insertedCell = self?.tableView.cellForRow(at: newIndexPath)
+                insertedCell?.becomeFirstResponder()
+                (insertedCell as? EditEntryCustomFieldCell)?.selectNameText()
+            }
+        )
         
         isModified = true
         revalidate()
