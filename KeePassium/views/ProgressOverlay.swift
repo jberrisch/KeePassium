@@ -56,6 +56,12 @@ class ProgressOverlay: UIView {
         } else {
             parent.addSubview(overlay)
         }
+        overlay.translatesAutoresizingMaskIntoConstraints = false
+        overlay.topAnchor.constraint(equalTo: parent.topAnchor, constant: 0).isActive = true
+        overlay.bottomAnchor.constraint(equalTo: parent.bottomAnchor, constant: 0).isActive = true
+        overlay.leadingAnchor.constraint(equalTo: parent.leadingAnchor, constant: 0).isActive = true
+        overlay.trailingAnchor.constraint(equalTo: parent.trailingAnchor, constant: 0).isActive = true
+        parent.layoutSubviews()
         return overlay
     }
     
@@ -79,7 +85,7 @@ class ProgressOverlay: UIView {
         UIView.animate(
             withDuration: 0.3,
             delay: 0,
-            options: .curveEaseOut,
+            options: [.curveEaseOut, .beginFromCurrentState],
             animations: {
                 // strong self
                 self.alpha = 0.0

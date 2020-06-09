@@ -328,7 +328,7 @@ class EditEntryVC: UITableViewController, Refreshable {
             isModalInPresentation = true // block dismissal while in progress
         }
         savingOverlay = ProgressOverlay.addTo(
-            view,
+            navigationController?.view ?? self.view,
             title: LString.databaseStatusSaving,
             animated: true)
         savingOverlay?.isCancellable = true
@@ -337,8 +337,7 @@ class EditEntryVC: UITableViewController, Refreshable {
     private func hideSavingOverlay() {
         guard savingOverlay != nil else { return }
         navigationController?.setNavigationBarHidden(false, animated: true)
-        savingOverlay?.dismiss(animated: true)
-        {
+        savingOverlay?.dismiss(animated: true) {
             [weak self] (finished) in
             guard let _self = self else { return }
             _self.savingOverlay?.removeFromSuperview()

@@ -169,18 +169,16 @@ class EditGroupVC: UIViewController, Refreshable {
     
     fileprivate func showSavingOverlay() {
         savingOverlay = ProgressOverlay.addTo(
-            view,
+            navigationController?.view ?? self.view,
             title: LString.databaseStatusSaving,
             animated: true)
         if #available(iOS 13, *) {
             isModalInPresentation = true // block dismissal while in progress
         }
-        navigationController?.setNavigationBarHidden(true, animated: true)
     }
     
     fileprivate func hideSavingOverlay() {
         guard savingOverlay != nil else { return }
-        navigationController?.setNavigationBarHidden(false, animated: true)
         savingOverlay?.dismiss(animated: true) {
             [weak self] (finished) in
             guard let _self = self else { return }
