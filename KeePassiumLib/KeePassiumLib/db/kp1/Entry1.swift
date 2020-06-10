@@ -47,11 +47,11 @@ public class Entry1: Entry {
         set {
             let never = Date.kp1Never
             if newValue {
-                expiryTime = never
+                // yes, can expire -- set a "non-special" expiration date
+                expiryTime = never - 1.0
             } else {
-                if expiryTime == never {
-                    expiryTime = never
-                } // else leave the original expiryTime
+                // no, cannot expire
+                expiryTime = never
             }
         }
     }
@@ -74,7 +74,11 @@ public class Entry1: Entry {
     override init(database: Database?) {
         groupID = 0
         super.init(database: database)
+        
+        // enforce the suitable expiration date
+        canExpire = false
     }
+    
     deinit {
         erase()
     }
@@ -82,6 +86,9 @@ public class Entry1: Entry {
     override public func erase() {
         groupID = 0
         super.erase()
+        
+        // enforce the suitable expiration date
+        canExpire = false
     }
     
     /// Returns a new entry instance with the same field values.

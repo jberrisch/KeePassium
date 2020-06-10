@@ -39,11 +39,10 @@ public class Group1: Group {
         set {
             let never = Date.kp1Never
             if newValue {
-                expiryTime = never
+                // yes, it can expire
+                expiryTime = never - 1.0
             } else {
-                if expiryTime == never {
-                    expiryTime = never
-                } // else leave the original expiryTime
+                expiryTime = never
             }
         }
     }
@@ -53,15 +52,23 @@ public class Group1: Group {
         level = 0
         flags = 0
         super.init(database: database)
+        
+        // ensure the expiration date is .kp1never
+        canExpire = false
     }
+    
     deinit {
         erase()
     }
+    
     override public func erase() {
         id = -1
         level = 0
         flags = 0
         super.erase()
+        
+        // ensure the expiration date is .kp1never
+        canExpire = false
     }
     
     /// Checks if a group name is reserved for internal use and cannot be assigned by the user.
