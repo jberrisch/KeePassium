@@ -46,6 +46,7 @@ extension FileProvider {
         case .amerigo: fallthrough
         case .amerigoFree: fallthrough
         case .resilioSync: fallthrough
+        case .syncCom:     fallthrough
         case .tresorit:    fallthrough
         case .yandexDisk:  fallthrough
         case .other:

@@ -24,6 +24,7 @@ public enum FileProvider: RawRepresentable, Hashable {
         "com.pcloud.pcloud.FileProvider": .pCloud,
         "com.resilio.sync.fileprovider": .resilioSync,
         "com.apple.SMBClientProvider.FileProvider": .smbShare,
+        "com.sync.mobileapp.NewFileProvider": .syncCom,
         "com.synology.DSdrive.FileProvider ": .synologyDrive,
         "com.synology.DSfile.ExtFileProvider": .synologyDSfile,
         "com.tresorit.ios.TresoritiOS-DocumentProviderFileProvider": .tresorit,
@@ -47,6 +48,7 @@ public enum FileProvider: RawRepresentable, Hashable {
     case pCloud
     case resilioSync
     case smbShare
+    case syncCom
     case synologyDrive
     case synologyDSfile
     case tresorit
@@ -151,6 +153,12 @@ public enum FileProvider: RawRepresentable, Hashable {
                 bundle: Bundle.framework,
                 value: "SMB server",
                 comment: "Localized name of the storage service: SMB server (network share) via native iOS integration.")
+        case .syncCom:
+            return NSLocalizedString(
+                "[FileProvider/sync.com/name]",
+                bundle: Bundle.framework,
+                value: "Sync.com",
+                comment: "Localized name of the storage service: Sync.com (https://sync.com)")
         case .synologyDrive:
             return NSLocalizedString(
                 "[FileProvider/Synology Drive/name]",
