@@ -967,7 +967,12 @@ extension ViewGroupVC: DatabaseManagerObserver {
 
 extension ViewGroupVC: SettingsObserver {
     public func settingsDidChange(key: Settings.Keys) {
-        if key == .entryListDetail || key == .groupSortOrder {
+        let isRelevantChange =
+                key == .entryListDetail ||
+                key == .groupSortOrder ||
+                key == .searchFieldNames ||
+                key == .searchProtectedValues
+        if isRelevantChange {
             refresh()
         }
     }
