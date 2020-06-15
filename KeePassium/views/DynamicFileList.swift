@@ -34,8 +34,13 @@ extension DynamicFileList {
         refs = indexedAndSorted.map { return $0.1 }
         let oldIndices = indexedAndSorted.map { return $0.0 }
 
-        DispatchQueue.main.async { [weak self, tableView, oldIndices] in
-            self?.animateSorting(oldIndices: oldIndices, in: tableView)
+        DispatchQueue.main.async { [weak self, weak tableView, oldIndices] in
+            guard let self = self, let tableView = tableView else { return }
+            // Avoid animation when the table is off screen.
+            // Prevents UITableViewAlertForLayoutOutsideViewHierarchy
+            guard tableView.window != nil else { return }
+            
+            self.animateSorting(oldIndices: oldIndices, in: tableView)
         }
     }
     
