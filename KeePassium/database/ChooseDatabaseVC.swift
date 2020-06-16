@@ -577,6 +577,9 @@ class ChooseDatabaseVC: UITableViewController, Refreshable {
         editActionsForRowAt indexPath: IndexPath
         ) -> [UITableViewRowAction]?
     {
+        guard indexPath.row < databaseRefs.count else {
+            return nil
+        }
         let shareAction = UITableViewRowAction(
             style: .default,
             title: LString.actionExport)
