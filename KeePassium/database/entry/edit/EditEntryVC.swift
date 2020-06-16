@@ -135,6 +135,7 @@ class EditEntryVC: UITableViewController, Refreshable {
         case .edit:
             if let entry = entry, let originalEntry = originalEntry {
                 originalEntry.apply(to: entry, makeNewUUID: false)
+                EntryChangeNotifications.post(entryDidChange: entry)
             }
         }
     }
