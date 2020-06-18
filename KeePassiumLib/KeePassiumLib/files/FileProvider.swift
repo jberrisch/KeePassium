@@ -25,7 +25,7 @@ public enum FileProvider: RawRepresentable, Hashable {
         "com.resilio.sync.fileprovider": .resilioSync,
         "com.apple.SMBClientProvider.FileProvider": .smbShare,
         "com.sync.mobileapp.NewFileProvider": .syncCom,
-        "com.synology.DSdrive.FileProvider ": .synologyDrive,
+        "com.synology.DSdrive.FileProvider": .synologyDrive,
         "com.synology.DSfile.ExtFileProvider": .synologyDSfile,
         "com.tresorit.ios.TresoritiOS-DocumentProviderFileProvider": .tresorit,
         "com.apple.filesystems.UserFS.FileProvider": .usbDrive,
