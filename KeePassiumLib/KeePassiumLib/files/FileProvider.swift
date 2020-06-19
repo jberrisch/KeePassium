@@ -23,6 +23,7 @@ public enum FileProvider: RawRepresentable, Hashable {
         "com.microsoft.skydrive.onedrivefileprovider": .oneDrive,
         "com.owncloud.ios-app.ownCloud-File-Provider": .ownCloud,
         "com.pcloud.pcloud.FileProvider": .pCloud,
+        "com.readdle.ReaddleDocsIPad.DocsExtFileProvider": .readdleDocuments,
         "com.resilio.sync.fileprovider": .resilioSync,
         "com.apple.SMBClientProvider.FileProvider": .smbShare,
         "com.sync.mobileapp.NewFileProvider": .syncCom,
@@ -48,6 +49,7 @@ public enum FileProvider: RawRepresentable, Hashable {
     case oneDrive
     case ownCloud
     case pCloud
+    case readdleDocuments
     case resilioSync
     case smbShare
     case syncCom
@@ -149,6 +151,12 @@ public enum FileProvider: RawRepresentable, Hashable {
                 bundle: Bundle.framework,
                 value: "pCloud",
                 comment: "Localized name of the storage service: pCloud (https://pcloud.com)")
+        case .readdleDocuments:
+            return NSLocalizedString(
+                "[FileProvider/Readdle Documents/name]",
+                bundle: Bundle.framework,
+                value: "Documents by Readdle",
+                comment: "Localized name of the storage service: Documents by Readdle (https://apps.apple.com/app/id364901807)")
         case .resilioSync:
             return NSLocalizedString(
                 "[FileProvider/Resilio Sync/name]",
