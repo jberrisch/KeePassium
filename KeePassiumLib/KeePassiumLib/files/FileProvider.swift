@@ -16,8 +16,9 @@ public enum FileProvider: RawRepresentable, Hashable {
         "net.box.BoxNet.documentPickerFileProvider": .box,
         "com.boxcryptor.ios.BoxcryptorDocumentProviderFileProvider": .boxcryptor,
         "com.getdropbox.Dropbox.FileProvider": .dropbox,
-        "com.apple.CloudDocs.MobileDocumentsFileProvider": .iCloudDrive,
+        "com.skyjos.fileexplorer.fileprovider": .feFileExplorer,
         "com.google.Drive.FileProviderExtension": .googleDrive,
+        "com.apple.CloudDocs.MobileDocumentsFileProvider": .iCloudDrive,
         "it.twsweb.Nextcloud.File-Provider-Extension": .nextcloud,
         "com.microsoft.skydrive.onedrivefileprovider": .oneDrive,
         "com.owncloud.ios-app.ownCloud-File-Provider": .ownCloud,
@@ -40,6 +41,7 @@ public enum FileProvider: RawRepresentable, Hashable {
     case box
     case boxcryptor
     case dropbox
+    case feFileExplorer
     case googleDrive
     case iCloudDrive
     case nextcloud
@@ -105,6 +107,12 @@ public enum FileProvider: RawRepresentable, Hashable {
                 bundle: Bundle.framework,
                 value: "Dropbox",
                 comment: "Localized name of the storage service: Dropbox (https://dropbox.com)")
+        case .feFileExplorer:
+            return NSLocalizedString(
+                "[FileProvider/FE File Explorer/name]",
+                bundle: Bundle.framework,
+                value: "FE File Explorer",
+                comment: "Localized name of the storage service: FE File Explorer (https://apps.apple.com/app/fe-file-explorer-file-manager/id510282524)")
         case .googleDrive:
             return NSLocalizedString(
                 "[FileProvider/Google Drive/name]",

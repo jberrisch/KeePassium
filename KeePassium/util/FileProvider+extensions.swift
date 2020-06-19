@@ -49,6 +49,7 @@ extension FileProvider {
         case .syncCom:     fallthrough
         case .tresorit:    fallthrough
         case .yandexDisk:  fallthrough
+        case .feFileExplorer: fallthrough
         case .other:
             return UIImage(asset: .fileProviderGenericListitem)
         }
