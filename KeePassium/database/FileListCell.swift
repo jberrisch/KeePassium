@@ -29,6 +29,7 @@ class FileInfoAccessoryButton: UIButton {
         super.init(frame: CGRect(x: 0, y: 0, width: 25, height: 25))
         setImage(UIImage(asset: .fileInfoCellAccessory), for: .normal)
         contentMode = .scaleAspectFill
+        accessibilityLabel = LString.actionShowDetails
     }
     required init?(coder aDecoder: NSCoder) {
         fatalError("Not implemented")
