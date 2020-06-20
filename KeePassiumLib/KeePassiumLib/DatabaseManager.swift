@@ -722,7 +722,13 @@ fileprivate class DatabaseLoader: ProgressObserver {
         
         // Create DB instance of appropriate version
         guard let db = initDatabase(signature: dbDoc.encryptedData) else {
-            Diag.error("Unrecognized database format [firstBytes: \(dbDoc.encryptedData.prefix(8).asHexString)]")
+            let hexPrefix = dbDoc.encryptedData.prefix(8).asHexString
+            Diag.error("Unrecognized database format [firstBytes: \(hexPrefix)]")
+            if hexPrefix == "7b226572726f7222" {
+                // additional diagnostics for DS file error
+                let fullResponse = String(data: dbDoc.encryptedData.asData, encoding: .utf8) ?? "nil"
+                Diag.debug("Full error content for DS file: \(fullResponse)")
+            }
             stopObservingProgress()
             notifier.notifyDatabaseLoadError(
                 database: dbRef,
