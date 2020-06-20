@@ -211,6 +211,7 @@
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics" translucent="NO"/>
                     <connections>
                         <outlet property="addDatabaseBarButton" destination="qPq-UR-uZs" id="a7h-6a-Mnv"/>
+                        <outlet property="sortOrderButton" destination="lnO-nD-gvh" id="JWF-cH-xup"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="7yP-IW-NS6" userLabel="First Responder" sceneMemberID="firstResponder"/>

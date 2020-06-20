@@ -25,6 +25,7 @@ class ChooseDatabaseVC: UITableViewController, DynamicFileList, Refreshable {
         case appLockSetup = "AppLockSetupCell"
     }
     @IBOutlet weak var addDatabaseBarButton: UIBarButtonItem!
+    @IBOutlet weak var sortOrderButton: UIBarButtonItem!
     
     private var _isEnabled = true
     var isEnabled: Bool {
@@ -179,6 +180,8 @@ class ChooseDatabaseVC: UITableViewController, DynamicFileList, Refreshable {
 
     /// Reloads the list of available DB files
     @objc func refresh() {
+        refreshSortOrderButton()
+        
         databaseRefs = FileKeeper.shared.getAllReferences(
             fileType: .database,
             includeBackup: Settings.current.isBackupFilesVisible)
@@ -207,6 +210,10 @@ class ChooseDatabaseVC: UITableViewController, DynamicFileList, Refreshable {
         let fileSortOrder = Settings.current.filesSortOrder
         databaseRefs.sort { return fileSortOrder.compare($0, $1) }
         tableView.reloadData()
+    }
+    
+    private func refreshSortOrderButton() {
+        sortOrderButton.image = Settings.current.filesSortOrder.toolbarIcon
     }
     
     func getIndexPath(for fileIndex: Int) -> IndexPath {

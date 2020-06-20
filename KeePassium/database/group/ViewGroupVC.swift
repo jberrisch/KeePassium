@@ -28,6 +28,7 @@ open class ViewGroupVC: UITableViewController, Refreshable {
     
     @IBOutlet fileprivate weak var groupIconView: UIImageView!
     @IBOutlet fileprivate weak var groupTitleLabel: UILabel!
+    @IBOutlet weak var sortOrderButton: UIBarButtonItem!
     
     weak var group: Group? {
         didSet {
@@ -256,6 +257,7 @@ open class ViewGroupVC: UITableViewController, Refreshable {
     // MARK: - Refreshing/updating
     
     func refresh() {
+        refreshSortOrderButton()
         if isSearchActive {
             // changes could have affected the search results
             updateSearchResults(for: searchController)
@@ -284,6 +286,9 @@ open class ViewGroupVC: UITableViewController, Refreshable {
         }
     }
     
+    private func refreshSortOrderButton() {
+        sortOrderButton.image = Settings.current.groupSortOrder.toolbarIcon
+    }
     // MARK: - Table view data source
 
     override open func numberOfSections(in tableView: UITableView) -> Int {

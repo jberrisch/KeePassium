@@ -22,6 +22,8 @@ enum ImageAsset: String {
     case fileInfoCellAccessory = "file-info-cellaccessory"
     case deleteItemListitem = "delete-item-listitem"
     case editItemListitem = "rename-item-listitem"
+    case sortOrderAscToolbar = "sort-order-asc-toolbar"
+    case sortOrderDescToolbar = "sort-order-desc-toolbar"
     case databaseBackupListitem = "database-backup-listitem"
     case fileProviderGenericListitem = "fp-generic-listitem"
     case fileProviderOnMyIPadListitem = "fp-on-ipad-listitem"
