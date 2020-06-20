@@ -10,56 +10,58 @@ import Foundation
 import KeePassiumLib
 
 /// Helper class to manage reloading of `URLReference` attributes.
-class FileInfoReloader {
-    
-    private let refreshQueue = DispatchQueue(
-        label: "com.keepassium.FileInfoReloader",
-        qos: .background,
-        attributes: .concurrent)
-    
-    /// Refreshes `info` field of each given URL reference,
-    /// by opening and immediately closing a corresponding UIDocument.
-    /// Expensive operation: requires network traffic, and potentially
-    /// downloads each changed file.
-    ///
-    /// - Parameters:
-    ///   - refs: references to refresh
-    ///   - completion: called (in main dispatch queue) after all references have been processed
-    public func reload(_ refs: [URLReference], completion: @escaping (() -> Void)) {
-        for urlRef in refs {
-            refreshQueue.async { [weak self] in
-                self?.refreshFileAttributes(urlRef: urlRef)
-            }
-        }
-        refreshQueue.asyncAfter(deadline: .now(), qos: .background, flags: .barrier) {
-            DispatchQueue.main.async {
-                completion()
-            }
+class FileInfoReloader: Synchronizable {
+    /// wait time before giving up on a reference
+    static let timeout = URLReference.defaultTimeout
+
+    /// True while not all the references have been refreshed
+    public var isRefreshing: Bool {
+        return synchronized { [self] in
+            self.refreshingRefsCount > 0
         }
     }
+
+    /// Number of currently ongoing refresh requests
+    private var refreshingRefsCount = 0
     
-    /// Refreshes `info` attributes of the given URLReference,
-    /// by quickly opening and closing the corresponding document.
-    ///
-    /// - Parameters:
-    ///   - urlRef: file to refresh
-    private func refreshFileAttributes(urlRef: URLReference)
+    /// Called once info for the`ref` reference has been reloaded.
+    /// If successful, `fileInfo` contains the new info.
+    /// Otherwise, `fileInfo` will be `nil` and `ref.error` will contain the error information.
+    typealias UpdateHandler = (_ ref: URLReference) -> ()
+    
+    
+    /// The caller is responsible for avoiding excessive calls.
+    public func getInfo(
+        for refs: [URLReference],
+        update updateHandler: @escaping UpdateHandler,
+        completion: @escaping ()->())
     {
-        guard let url = try? urlRef.resolve() else {
-            // Refresh to reflect there was a problem.
-            urlRef.refreshInfo()
+        guard refs.count > 0 else {
+            completion()
             return
         }
         
-        let document = FileDocument(fileURL: url)
-        document.open(
-            successHandler: {
-                urlRef.refreshInfo()
-                document.close(completionHandler: nil)
-            },
-            errorHandler: { (error) in
-                urlRef.refreshInfo()
+        for ref in refs {
+            guard !ref.isRefreshingInfo else {
+                continue
             }
-        )
+            synchronized { refreshingRefsCount += 1 }
+            ref.refreshInfo { [weak self] result in
+                guard let self = self else { return }
+                self.synchronized {
+                    self.refreshingRefsCount -= 1
+                }
+                switch result {
+                case .success:
+                    updateHandler(ref)
+                case .failure(let error):
+                    Diag.warning("Failed to get file info [reason: \(error.localizedDescription)]")
+                    updateHandler(ref)
+                }
+                if !self.isRefreshing {
+                    completion()
+                }
+            }
+        }
     }
 }

@@ -17,13 +17,15 @@ class AppLockSetupCell: UITableViewCell {
     }
 }
 
-class ChooseDatabaseVC: UITableViewController, Refreshable {
+class ChooseDatabaseVC: UITableViewController, DynamicFileList, Refreshable {
+    
     private enum CellID: String {
         case fileItem = "FileItemCell"
         case noFiles = "NoFilesCell"
         case appLockSetup = "AppLockSetupCell"
     }
     @IBOutlet weak var addDatabaseBarButton: UIBarButtonItem!
+    @IBOutlet weak var sortOrderButton: UIBarButtonItem!
     
     private var _isEnabled = true
     var isEnabled: Bool {
@@ -58,6 +60,9 @@ class ChooseDatabaseVC: UITableViewController, Refreshable {
     
     // Flag to auto-unlock DB on launch only
     private var isJustLaunched = true
+    
+    // Keeps track of animations while sorting files
+    internal var ongoingUpdateAnimations = 0
     
     // MAKE: - VC lifecycle
     override func viewDidLoad() {
@@ -171,24 +176,48 @@ class ChooseDatabaseVC: UITableViewController, Refreshable {
         }
     }
     
+    // MARK: - Refreshing and sorting
+
     /// Reloads the list of available DB files
     @objc func refresh() {
+        refreshSortOrderButton()
+        
         databaseRefs = FileKeeper.shared.getAllReferences(
             fileType: .database,
             includeBackup: Settings.current.isBackupFilesVisible)
-        fileInfoReloader.reload(databaseRefs) { [weak self] in
-            guard let self = self else { return }
-            self.sortFileList()
-            if self.refreshControl?.isRefreshing ?? false {
+        sortFileList()
+
+        fileInfoReloader.getInfo(
+            for: databaseRefs,
+            update: { [weak self] (ref) in
+                guard let self = self else { return }
                 self.refreshControl?.endRefreshing()
+                self.sortAndAnimateFileInfoUpdate(refs: &self.databaseRefs, in: self.tableView)
+            },
+            completion: { [weak self] in
+                guard let self = self else { return }
+                self.refreshControl?.endRefreshing()
+                // wait for any ongoing animation to finish, and reload the final data, just in case
+                DispatchQueue.main.asyncAfter(deadline: .now() + self.sortingAnimationDuration) {
+                    [weak self] in
+                    self?.sortFileList()
+                }
             }
-        }
+        )
     }
     
     fileprivate func sortFileList() {
         let fileSortOrder = Settings.current.filesSortOrder
         databaseRefs.sort { return fileSortOrder.compare($0, $1) }
         tableView.reloadData()
+    }
+    
+    private func refreshSortOrderButton() {
+        sortOrderButton.image = Settings.current.filesSortOrder.toolbarIcon
+    }
+    
+    func getIndexPath(for fileIndex: Int) -> IndexPath {
+        return IndexPath(row: fileIndex, section: 0)
     }
     
     // MARK: -
@@ -203,8 +232,7 @@ class ChooseDatabaseVC: UITableViewController, Refreshable {
     /// For deletion, the action name depends on where that file is.
     /// This function returns the appropriate title.
     private func getDeleteActionName(for urlRef: URLReference) -> String {
-        let fileInfo = urlRef.getInfo()
-        if urlRef.location == .external || fileInfo.hasError {
+        if urlRef.location == .external || urlRef.hasError {
             return LString.actionRemoveFile
         } else {
             return LString.actionDeleteFile
@@ -344,37 +372,13 @@ class ChooseDatabaseVC: UITableViewController, Refreshable {
 
     func didPressExportDatabase(at indexPath: IndexPath) {
         let urlRef = databaseRefs[indexPath.row]
-        do {
-            let url = try urlRef.resolve()
-            let exportSheet = UIActivityViewController(
-                activityItems: [url],
-                applicationActivities: nil)
-            if let popover = exportSheet.popoverPresentationController {
-                guard let sourceView = tableView.cellForRow(at: indexPath) else {
-                    assertionFailure()
-                    return
-                }
-                popover.sourceView = sourceView
-                popover.sourceRect = CGRect(
-                    x: sourceView.bounds.width,
-                    y: sourceView.center.y,
-                    width: 0,
-                    height: 0)
-            }
-            present(exportSheet, animated: true, completion: nil)
-        } catch {
-            Diag.error("Failed to resolve URL reference [message: \(error.localizedDescription)]")
-            let alert = UIAlertController.make(
-                title: LString.titleFileExportError,
-                message: error.localizedDescription)
-            present(alert, animated: true, completion: nil)
-        }
+        let popoverAnchor = PopoverAnchor(tableView: tableView, at: indexPath)
+        FileExportHelper.showFileExportSheet(urlRef, at: popoverAnchor, parent: self)
     }
         
     func didPressDeleteDatabase(at indexPath: IndexPath) {
         let urlRef = databaseRefs[indexPath.row]
-        let info = urlRef.getInfo()
-        if info.hasError {
+        if urlRef.hasError {
             // dead reference, just remove it without confirmation
             removeDatabaseFile(urlRef: urlRef)
             return
@@ -407,7 +411,7 @@ class ChooseDatabaseVC: UITableViewController, Refreshable {
             }
         }
         let confirmationAlert = UIAlertController.make(
-            title: info.fileName,
+            title: urlRef.visibleFileName,
             message: message,
             cancelButtonTitle: LString.actionCancel)
         confirmationAlert.addAction(destructiveAction)
@@ -435,11 +439,10 @@ class ChooseDatabaseVC: UITableViewController, Refreshable {
 
         DatabaseSettingsManager.shared.removeSettings(for: urlRef)
         do {
-            let fileInfo = urlRef.getInfo()
             try FileKeeper.shared.deleteFile(
                 urlRef,
                 fileType: .database,
-                ignoreErrors: fileInfo.hasError)
+                ignoreErrors: urlRef.hasError)
                 // throws `FileKeeperError`
             refresh()
         } catch {
@@ -515,10 +518,18 @@ class ChooseDatabaseVC: UITableViewController, Refreshable {
                 .dequeueReusableCell(withIdentifier: cellType.rawValue, for: indexPath)
             return cell
         case .fileItem:
-            let cell = tableView
-                .dequeueReusableCell(withIdentifier: cellType.rawValue, for: indexPath)
-                as! DatabaseFileListCell
-            cell.urlRef = databaseRefs[indexPath.row]
+            let cell = FileListCellFactory.dequeueReusableCell(
+                from: tableView,
+                withIdentifier: cellType.rawValue,
+                for: indexPath,
+                for: .database)
+            let dbRef = databaseRefs[indexPath.row]
+            cell.showInfo(from: dbRef)
+            cell.isAnimating = dbRef.isRefreshingInfo
+            cell.accessoryTapHandler = { [weak self, indexPath] cell in
+                guard let self = self else { return }
+                self.tableView(self.tableView, accessoryButtonTappedForRowWith: indexPath)
+            }
             return cell
         case .appLockSetup:
             let cell = tableView
@@ -561,8 +572,9 @@ class ChooseDatabaseVC: UITableViewController, Refreshable {
         let popoverAnchor = PopoverAnchor(tableView: tableView, at: indexPath)
         let databaseInfoVC = FileInfoVC.make(urlRef: urlRef, fileType: .database, at: popoverAnchor)
         databaseInfoVC.canExport = true
-        databaseInfoVC.onDismiss = {
-            databaseInfoVC.dismiss(animated: true, completion: nil)
+        databaseInfoVC.onDismiss = { [weak self, weak databaseInfoVC] in
+            self?.refresh()
+            databaseInfoVC?.dismiss(animated: true, completion: nil)
         }
         present(databaseInfoVC, animated: true, completion: nil)
     }

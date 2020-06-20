@@ -97,13 +97,20 @@ class ChooseKeyFileVC: UITableViewController, Refreshable {
     @objc func refresh() {
         // Key files are non-modifiable, so no backups
         urlRefs = FileKeeper.shared.getAllReferences(fileType: .keyFile, includeBackup: false)
-        fileInfoReloader.reload(urlRefs) { [weak self] in
-            guard let self = self else { return }
-            self.sortFileList()
-            if self.refreshControl?.isRefreshing ?? false {
-                self.refreshControl?.endRefreshing()
+        fileInfoReloader.getInfo(
+            for: urlRefs,
+            update: { [weak self] (ref) in
+                self?.tableView.reloadData()
+            },
+            completion: { [weak self] in
+                self?.sortFileList()
+                if let refreshControl = self?.refreshControl, refreshControl.isRefreshing {
+                    refreshControl.endRefreshing()
+                }
             }
-        }
+        )
+        // animates each row until it updates
+        tableView.reloadData()
     }
     
     fileprivate func sortFileList() {
@@ -136,13 +143,12 @@ class ChooseKeyFileVC: UITableViewController, Refreshable {
     
     func didPressDeleteKeyFile(at indexPath: IndexPath) {
         let urlRef = urlRefs[indexPath.row - 1]
-        let fileInfo = urlRef.getInfo()
-        if fileInfo.hasError {
+        if urlRef.hasError {
             // there is nothing useful in this reference, so delete without confirmation
             deleteKeyFile(urlRef: urlRef)
         } else {
             let confirmDeletionAlert = UIAlertController.make(
-                title: fileInfo.fileName,
+                title: urlRef.visibleFileName,
                 message: LString.confirmKeyFileDeletion,
                 cancelButtonTitle: LString.actionCancel)
             let deleteAction = UIAlertAction(title: LString.actionDelete, style: .destructive)
@@ -210,24 +216,17 @@ class ChooseKeyFileVC: UITableViewController, Refreshable {
                 for: indexPath)
         }
         
-        let fileInfo = urlRefs[indexPath.row - 1].getInfo()
-
-        let cell = tableView.dequeueReusableCell(withIdentifier: CellID.keyFile, for: indexPath)
-        cell.textLabel?.text = fileInfo.fileName
-        guard !fileInfo.hasError else {
-            cell.detailTextLabel?.text = fileInfo.errorMessage
-            cell.detailTextLabel?.textColor = UIColor.errorMessage
-            return cell
-        }
-        
-        if let lastModifiedDate = fileInfo.modificationDate  {
-            let dateString = DateFormatter.localizedString(
-                from: lastModifiedDate,
-                dateStyle: .long,
-                timeStyle: .medium)
-            cell.detailTextLabel?.text = dateString
-        } else {
-            cell.detailTextLabel?.text = nil
+        let keyFileRef = urlRefs[indexPath.row - 1]
+        let cell = FileListCellFactory.dequeueReusableCell(
+            from: tableView,
+            withIdentifier: CellID.keyFile,
+            for: indexPath,
+            for: .keyFile)
+        cell.showInfo(from: keyFileRef)
+        cell.isAnimating = keyFileRef.isRefreshingInfo
+        cell.accessoryTapHandler = { [weak self, indexPath] cell in
+            guard let self = self else { return }
+            self.tableView(self.tableView, accessoryButtonTappedForRowWith: indexPath)
         }
         return cell
     }
@@ -251,12 +250,13 @@ class ChooseKeyFileVC: UITableViewController, Refreshable {
     {
         let urlRef = urlRefs[indexPath.row - 1]
         let popoverAnchor = PopoverAnchor(tableView: tableView, at: indexPath)
-        let databaseInfoVC = FileInfoVC.make(urlRef: urlRef, fileType: .keyFile, at: popoverAnchor)
-        databaseInfoVC.canExport = true
-        databaseInfoVC.onDismiss = {
-            databaseInfoVC.dismiss(animated: true, completion: nil)
+        let keyFileInfoVC = FileInfoVC.make(urlRef: urlRef, fileType: .keyFile, at: popoverAnchor)
+        keyFileInfoVC.canExport = false
+        keyFileInfoVC.onDismiss = { [weak self, weak keyFileInfoVC] in
+            self?.refresh()
+            keyFileInfoVC?.dismiss(animated: true, completion: nil)
         }
-        present(databaseInfoVC, animated: true, completion: nil)
+        present(keyFileInfoVC, animated: true, completion: nil)
     }
     
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
@@ -294,7 +294,7 @@ class ChooseKeyFileVC: UITableViewController, Refreshable {
             try FileKeeper.shared.deleteFile(
                 urlRef,
                 fileType: .keyFile,
-                ignoreErrors: urlRef.info.hasError)
+                ignoreErrors: urlRef.hasError)
             DatabaseSettingsManager.shared.removeAllAssociations(of: urlRef)
             refresh()
         } catch {

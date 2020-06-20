@@ -17,7 +17,7 @@ final class TwofishDataCipher: DataCipher {
     var initialVectorSize: Int { return Twofish.blockSize }
     var keySize: Int { return 32 }
     
-    private var progress = ProgressEx()
+    internal var progress = ProgressEx()
     
     /// Twofish plugin for KeePass2 pads with garbage instead of PKCS#7.
     /// And our XML parser does not like trailing garbage...
@@ -27,11 +27,6 @@ final class TwofishDataCipher: DataCipher {
     
     init(isPaddingLikelyMessedUp: Bool) {
         self.isPaddingLikelyMessedUp = isPaddingLikelyMessedUp
-    }
-
-    func initProgress() -> ProgressEx {
-        progress = ProgressEx()
-        return progress
     }
 
     /// Encrypts `plainText` using Twofish (automatically adding PKCS7 padding).

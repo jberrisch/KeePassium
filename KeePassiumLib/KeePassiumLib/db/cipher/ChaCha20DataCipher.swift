@@ -16,15 +16,10 @@ final class ChaCha20DataCipher: DataCipher {
     
     var initialVectorSize: Int { return 12 } // 96 bits
     var keySize: Int { return 32 }
-    private var progress = ProgressEx()
+    internal var progress = ProgressEx()
 
     init() {
         // left empty
-    }
-    
-    func initProgress() -> ProgressEx {
-        progress = ProgressEx()
-        return progress
     }
     
     /// - Throws: `ProgressInterruption`

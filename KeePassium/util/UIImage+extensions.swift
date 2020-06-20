@@ -19,12 +19,16 @@ enum ImageAsset: String {
     case editItemToolbar = "edit-item-toolbar"
     case lockDatabaseToolbar = "lock-database-toolbar"
     case openURLCellAccessory = "open-url-cellaccessory"
+    case fileInfoCellAccessory = "file-info-cellaccessory"
     case deleteItemListitem = "delete-item-listitem"
     case editItemListitem = "rename-item-listitem"
-    case databaseCloudListitem = "database-cloud-listitem"
-    case databaseLocalListitem = "database-local-listitem"
+    case sortOrderAscToolbar = "sort-order-asc-toolbar"
+    case sortOrderDescToolbar = "sort-order-desc-toolbar"
     case databaseBackupListitem = "database-backup-listitem"
-    case databaseErrorListitem = "database-error-listitem"
+    case fileProviderGenericListitem = "fp-generic-listitem"
+    case fileProviderOnMyIPadListitem = "fp-on-ipad-listitem"
+    case fileProviderOnMyIPhoneListitem = "fp-on-iphone-listitem"
+    case keyFileListitem = "keyfile-listitem"
     case hideAccessory = "hide-accessory"
     case unhideAccessory = "unhide-accessory"
     case hideListitem = "hide-listitem"
@@ -82,18 +86,4 @@ extension UIImage {
         return kpIcon(forID: group.iconID)
     }
     
-    /// Icon for database with the given reference (depends on location and error state).
-    static func databaseIcon(for urlRef: URLReference) -> UIImage {
-        guard !urlRef.info.hasError else {
-            return UIImage(asset: .databaseErrorListitem)
-        }
-        switch urlRef.location {
-        case .external:
-            return UIImage(asset: .databaseCloudListitem)
-        case .internalDocuments, .internalInbox:
-            return UIImage(asset: .databaseLocalListitem)
-        case .internalBackup:
-            return UIImage(asset: .databaseBackupListitem)
-        }
-    }
 }

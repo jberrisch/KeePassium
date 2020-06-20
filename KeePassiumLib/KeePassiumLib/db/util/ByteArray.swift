@@ -44,10 +44,14 @@ public class ByteArray: Eraseable, Codable, CustomDebugStringConvertible {
             }
             return out
         }
-//        func readString(count: Int, using encoding: String.Encoding = .utf8) -> String? {
-//            guard let data = read(count: count) else { return nil }
-//            return data.toString(using: encoding)
-//        }
+        
+        /// Skips up to `count` bytes from the stream.
+        /// Returns the actual number of bytes skipped
+        @discardableResult
+        func skip(count: Int) -> Int {
+            let dataRead = read(count: count)
+            return dataRead?.count ?? 0
+        }
         func readUInt8() -> UInt8? {
             let data = self.read(count: MemoryLayout<UInt8>.size)
             return UInt8(data: data)
@@ -60,6 +64,10 @@ public class ByteArray: Eraseable, Codable, CustomDebugStringConvertible {
             let data = self.read(count: MemoryLayout<UInt32>.size)
             return UInt32(data: data)
         }
+        func readUInt64() -> UInt64? {
+            let data = self.read(count: MemoryLayout<UInt64>.size)
+            return UInt64(data: data)
+        }
         func readInt8() -> Int8? {
             let data = self.read(count: MemoryLayout<Int8>.size)
             return Int8(data: data)
@@ -71,6 +79,10 @@ public class ByteArray: Eraseable, Codable, CustomDebugStringConvertible {
         func readInt32() -> Int32? {
             let data = self.read(count: MemoryLayout<Int32>.size)
             return Int32(data: data)
+        }
+        func readInt64() -> Int64? {
+            let data = self.read(count: MemoryLayout<Int64>.size)
+            return Int64(data: data)
         }
     }
     public class OutputStream {
