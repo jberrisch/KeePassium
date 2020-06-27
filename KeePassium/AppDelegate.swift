@@ -54,17 +54,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
 
-        // First thing first, cover the app to avoid flashing any content.
-        // The cover will be hidden by Watchdog, if appropriate.
-        showAppCoverScreen()
-        return true
-    }
-    
-    func applicationDidBecomeActive(_ application: UIApplication) {
         // Make sure that FileKeeper can ask user for confirmations
         let rootVC = window?.rootViewController as? FileKeeperDelegate
         assert(rootVC != nil, "FileKeeper needs a delegate")
         FileKeeper.shared.delegate = rootVC
+
+        // First thing first, cover the app to avoid flashing any content.
+        // The cover will be hidden by Watchdog, if appropriate.
+        showAppCoverScreen()
+        return true
     }
     
     func applicationWillTerminate(_ application: UIApplication) {

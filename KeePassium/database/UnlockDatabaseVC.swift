@@ -684,7 +684,9 @@ extension UnlockDatabaseVC: FileKeeperObserver {
     }
 
     func fileKeeperHasPendingOperation() {
-        processPendingFileOperations()
+        if isViewLoaded {
+            processPendingFileOperations()
+        }
     }
 
     /// Adds pending files, if any
