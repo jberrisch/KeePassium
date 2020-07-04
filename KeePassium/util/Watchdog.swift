@@ -257,9 +257,13 @@ class Watchdog {
         Diag.info("Engaging Database Lock")
         self.databaseLockTimer?.invalidate()
         self.databaseLockTimer = nil
-        DatabaseSettingsManager.shared.eraseAllMasterKeys()
+        
+        let isLockDatabases = Settings.current.isLockDatabasesOnTimeout
+        if isLockDatabases {
+            DatabaseSettingsManager.shared.eraseAllMasterKeys()
+        }
         DatabaseManager.shared.closeDatabase(
-            clearStoredKey: true,
+            clearStoredKey: isLockDatabases,
             ignoreErrors: true,
             completion: { // strong self
                 (errorMessage) in // errorMessage is always nil, due to ignoreErrors = true

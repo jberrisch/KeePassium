@@ -79,6 +79,7 @@ public class Settings {
         case recentUserActivityTimestamp
         case appLockTimeout
         case databaseLockTimeout
+        case lockDatabasesOnTimeout
         
         // Clipboard
         case clipboardTimeout
@@ -1036,6 +1037,22 @@ public class Settings {
             if newValue != oldValue {
                 postChangeNotification(changedKey: Keys.databaseLockTimeout)
             }
+        }
+    }
+    
+    /// Erase all stored master keys on database timeout
+    public var isLockDatabasesOnTimeout: Bool {
+        get {
+            let stored = UserDefaults.appGroupShared
+                .object(forKey: Keys.lockDatabasesOnTimeout.rawValue)
+                as? Bool
+            return stored ?? true
+        }
+        set {
+            updateAndNotify(
+                oldValue: isLockDatabasesOnTimeout,
+                newValue: newValue,
+                key: .lockDatabasesOnTimeout)
         }
     }
     

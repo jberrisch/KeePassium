@@ -18,6 +18,7 @@ class SettingsDataProtectionVC: UITableViewController, Refreshable {
     @IBOutlet weak var clearKeyFileAssociationsButton: UIButton!
     
     @IBOutlet weak var databaseTimeoutCell: UITableViewCell!
+    @IBOutlet weak var clearMasterKeysOnTimeoutSwitch: UISwitch!
     
     @IBOutlet weak var clipboardTimeoutCell: UITableViewCell!
     @IBOutlet weak var universalClipboardSwitch: UISwitch!
@@ -58,6 +59,7 @@ class SettingsDataProtectionVC: UITableViewController, Refreshable {
         universalClipboardSwitch.isOn = settings.isUniversalClipboardEnabled
         hideProtectedFieldsSwitch.isOn = settings.isHideProtectedFields
         databaseTimeoutCell.detailTextLabel?.text = settings.premiumDatabaseLockTimeout.shortTitle
+        clearMasterKeysOnTimeoutSwitch.isOn = settings.isLockDatabasesOnTimeout
         clipboardTimeoutCell.detailTextLabel?.text = settings.clipboardTimeout.shortTitle
     }
     
@@ -110,6 +112,11 @@ class SettingsDataProtectionVC: UITableViewController, Refreshable {
     @objc func didPressDatabaseTimeout(_ sender: Any) {
         let databaseTimeoutVC = SettingsDatabaseTimeoutVC.make()
         show(databaseTimeoutVC, sender: self)
+    }
+    
+    @IBAction func didToggleLockDatabasesOnTimeoutSwitch(_ sender: UISwitch) {
+        Settings.current.isLockDatabasesOnTimeout = sender.isOn
+        refresh()
     }
     
     func didPressClipboardTimeout(_ sender: Any) {
