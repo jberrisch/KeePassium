@@ -53,4 +53,18 @@ public extension Settings {
             return true
         }
     }
+    
+    /// Whether given timeout value should be shown as available for the given premium status.
+    func isShownAvailable(timeout: Settings.DatabaseLockTimeout, for status: PremiumManager.Status) -> Bool {
+        switch status {
+        case .initialGracePeriod,
+             .freeLightUse:
+            return timeout <= Settings.lightUseDatabaseLockTimeout && timeout != .never
+        case .freeHeavyUse:
+            return timeout <= Settings.heavyUseDatabaseLockTimeout && timeout != .never
+        case .subscribed,
+             .lapsed:
+            return true
+        }
+    }
 }

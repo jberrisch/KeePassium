@@ -36,6 +36,7 @@ enum ImageAsset: String {
     case copyToClipboardAccessory = "copy-to-clipboard-accessory"
     case biometryTouchIDListitem = "touch-id-listitem"
     case biometryFaceIDListitem = "face-id-listitem"
+    case premiumFeatureBadge = "premium-feature-badge"
     case premiumBenefitMultiDB = "premium-benefit-multidb"
     case premiumBenefitDBTimeout = "premium-benefit-db-timeout"
     case premiumBenefitPreview = "premium-benefit-preview"
