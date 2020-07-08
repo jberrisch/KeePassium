@@ -43,6 +43,8 @@ enum ImageAsset: String {
     case premiumBenefitHardwareKeys = "premium-benefit-yubikey"
     case premiumBenefitSupport = "premium-benefit-support"
     case premiumBenefitShiny = "premium-benefit-shiny"
+    case premiumConditionCheckedListitem = "premium-condition-checked-listitem"
+    case premiumConditionUncheckedListitem = "premium-condition-unchecked-listitem"
     case expandRowCellAccessory = "expand-row-cellaccessory"
     case collapseRowCellAccessory = "collapse-row-cellaccessory"
     case viewMoreAccessory = "view-more-accessory"
