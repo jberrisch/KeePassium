@@ -20,9 +20,10 @@ extension SKProduct {
         return formatter.string(from: price) ?? String(format: "%.2f", price)
     }
     
-    /// Number of days in the trial period (if any).
+    /// Number of days in the trial period (if any).)
     var trialDays: Int? {
-        guard let period = introductoryPrice?.subscriptionPeriod else { return nil }
+        guard #available(iOS 11.2, *),
+            let period = introductoryPrice?.subscriptionPeriod else { return nil }
         switch period.unit {
         case .day:
             return period.numberOfUnits
@@ -37,7 +38,6 @@ extension SKProduct {
     
     /// Returns string describing the duration of the trial period (if any).
     /// For example: "90 days".
-    @available(iOS 11.2,*)
     var localizedTrialDuration: String? {
         guard let trialDays = self.trialDays else { return nil }
         
