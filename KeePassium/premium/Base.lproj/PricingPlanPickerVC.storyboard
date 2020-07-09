@@ -13,7 +13,7 @@
         <!--Premium-->
         <scene sceneID="sa3-gR-wXM">
             <objects>
-                <viewController storyboardIdentifier="PremiumUpgradeVC" id="R3A-LD-8BE" customClass="PremiumUpgradeVC" customModule="KeePassium" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="PricingPlanPickerVC" id="R3A-LD-8BE" customClass="PricingPlanPickerVC" customModule="KeePassium" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Szn-BO-6SU">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -67,14 +67,14 @@
                                                                             <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                                                             <prototypes>
                                                                                 <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="TitleCell" id="Vtp-v7-ygP" customClass="PricingPlanTitleCell" customModule="KeePassium" customModuleProvider="target">
-                                                                                    <rect key="frame" x="0.0" y="55.333332061767578" width="339" height="150.66667175292969"/>
+                                                                                    <rect key="frame" x="0.0" y="55.333332061767578" width="339" height="154.66667175292969"/>
                                                                                     <autoresizingMask key="autoresizingMask"/>
                                                                                     <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Vtp-v7-ygP" id="C5k-6E-2o7">
-                                                                                        <rect key="frame" x="0.0" y="0.0" width="339" height="150.66667175292969"/>
+                                                                                        <rect key="frame" x="0.0" y="0.0" width="339" height="154.66667175292969"/>
                                                                                         <autoresizingMask key="autoresizingMask"/>
                                                                                         <subviews>
                                                                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="dV3-3o-x2x">
-                                                                                                <rect key="frame" x="20" y="15" width="299" height="128.66666666666666"/>
+                                                                                                <rect key="frame" x="20" y="15" width="299" height="132.66666666666666"/>
                                                                                                 <subviews>
                                                                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="752" text="{Title}" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AIy-Yk-0kz" userLabel="Title">
                                                                                                         <rect key="frame" x="114" y="0.0" width="71.333333333333314" height="33.666666666666664"/>
@@ -86,10 +86,10 @@
                                                                                                         </attributedString>
                                                                                                     </label>
                                                                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="uih-aA-pev">
-                                                                                                        <rect key="frame" x="0.0" y="37.666666666666657" width="299" height="91"/>
+                                                                                                        <rect key="frame" x="0.0" y="37.666666666666657" width="299" height="95"/>
                                                                                                         <subviews>
                                                                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalCompressionResistancePriority="751" verticalCompressionResistancePriority="751" ambiguous="YES" text="{Price Note}" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Dtm-ej-mCt" userLabel="Price Note">
-                                                                                                                <rect key="frame" x="189.33333333333334" y="40.000000000000007" width="87.666666666666657" height="19.333333333333336"/>
+                                                                                                                <rect key="frame" x="189.33333333333334" y="42.000000000000007" width="87.666666666666657" height="19.333333333333336"/>
                                                                                                                 <fontDescription key="fontDescription" style="UICTFontTextStyleCallout"/>
                                                                                                                 <color key="textColor" name="PrimaryText"/>
                                                                                                                 <nil key="highlightedColor"/>
@@ -98,7 +98,7 @@
                                                                                                                 </attributedString>
                                                                                                             </label>
                                                                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalCompressionResistancePriority="751" verticalCompressionResistancePriority="751" ambiguous="YES" text="{Price}" textAlignment="right" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="osi-an-u9s" userLabel="Price">
-                                                                                                                <rect key="frame" x="109.66666666666666" y="28.666666666666668" width="79.666666666666657" height="33.666666666666657"/>
+                                                                                                                <rect key="frame" x="109.66666666666666" y="30.666666666666668" width="79.666666666666657" height="33.666666666666657"/>
                                                                                                                 <fontDescription key="fontDescription" style="UICTFontTextStyleTitle1"/>
                                                                                                                 <color key="textColor" name="PrimaryText"/>
                                                                                                                 <nil key="highlightedColor"/>
@@ -138,7 +138,7 @@
                                                                                     </connections>
                                                                                 </tableViewCell>
                                                                                 <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="ConditionCell" id="rPV-Ps-KHN" customClass="PricingPlanConditionCell" customModule="KeePassium" customModuleProvider="target">
-                                                                                    <rect key="frame" x="0.0" y="206.00000381469727" width="339" height="37.333332061767578"/>
+                                                                                    <rect key="frame" x="0.0" y="210.00000381469727" width="339" height="37.333332061767578"/>
                                                                                     <autoresizingMask key="autoresizingMask"/>
                                                                                     <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="rPV-Ps-KHN" id="8Zx-wl-ASv">
                                                                                         <rect key="frame" x="0.0" y="0.0" width="339" height="37.333332061767578"/>
@@ -192,7 +192,7 @@
                                                                                     </connections>
                                                                                 </tableViewCell>
                                                                                 <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="BenefitCell" rowHeight="60" id="1dU-uE-J0P" customClass="PricingPlanBenefitCell" customModule="KeePassium" customModuleProvider="target">
-                                                                                    <rect key="frame" x="0.0" y="243.33333587646484" width="339" height="60"/>
+                                                                                    <rect key="frame" x="0.0" y="247.33333587646484" width="339" height="60"/>
                                                                                     <autoresizingMask key="autoresizingMask"/>
                                                                                     <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="1dU-uE-J0P" id="kGG-bH-38I">
                                                                                         <rect key="frame" x="0.0" y="0.0" width="339" height="60"/>
@@ -265,7 +265,7 @@
                                                                         <constraint firstAttribute="height" constant="5" id="nCI-aM-Nju"/>
                                                                     </constraints>
                                                                 </view>
-                                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="wordWrap" translatesAutoresizingMaskIntoConstraints="NO" id="6qT-UV-P49">
+                                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="wordWrap" translatesAutoresizingMaskIntoConstraints="NO" id="6qT-UV-P49" customClass="MultilineButton" customModule="KeePassium" customModuleProvider="target">
                                                                     <rect key="frame" x="8" y="370.33333333333331" width="323" height="44"/>
                                                                     <color key="backgroundColor" name="ActionTint"/>
                                                                     <constraints>
@@ -329,7 +329,7 @@
                                             <constraint firstItem="DHw-Tm-Wbg" firstAttribute="leading" secondItem="Rng-i2-FCe" secondAttribute="leading" id="mXN-QD-V40"/>
                                         </constraints>
                                     </view>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="wordWrap" translatesAutoresizingMaskIntoConstraints="NO" id="j7c-Gd-QEh" userLabel="Restore Purchases Button">
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="wordWrap" translatesAutoresizingMaskIntoConstraints="NO" id="j7c-Gd-QEh" userLabel="Restore Purchases Button" customClass="MultilineButton" customModule="KeePassium" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="676" width="414" height="32"/>
                                         <fontDescription key="fontDescription" style="UICTFontTextStyleCallout"/>
                                         <color key="tintColor" name="ActionTint"/>
@@ -341,7 +341,7 @@
                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="f3M-nh-HoU" userLabel="Footer">
                                         <rect key="frame" x="0.0" y="708" width="414" height="28"/>
                                         <subviews>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="wordWrap" translatesAutoresizingMaskIntoConstraints="NO" id="NSz-U1-2ye">
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="wordWrap" translatesAutoresizingMaskIntoConstraints="NO" id="NSz-U1-2ye" customClass="MultilineButton" customModule="KeePassium" customModuleProvider="target">
                                                 <rect key="frame" x="0.0" y="0.0" width="203" height="28"/>
                                                 <fontDescription key="fontDescription" style="UICTFontTextStyleFootnote"/>
                                                 <color key="tintColor" name="ActionTint"/>
@@ -350,7 +350,7 @@
                                                     <action selector="didPressTerms:" destination="R3A-LD-8BE" eventType="touchUpInside" id="QOO-sI-fL1"/>
                                                 </connections>
                                             </button>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="wordWrap" translatesAutoresizingMaskIntoConstraints="NO" id="fC2-en-cOo" userLabel="Privacy Policy">
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="wordWrap" translatesAutoresizingMaskIntoConstraints="NO" id="fC2-en-cOo" userLabel="Privacy Policy" customClass="MultilineButton" customModule="KeePassium" customModuleProvider="target">
                                                 <rect key="frame" x="211" y="0.0" width="203" height="28"/>
                                                 <fontDescription key="fontDescription" style="UICTFontTextStyleFootnote"/>
                                                 <color key="tintColor" name="ActionTint"/>
@@ -373,9 +373,16 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="Kmt-xm-cCJ"/>
                     </view>
-                    <navigationItem key="navigationItem" title="Premium" id="LNd-e9-YY7"/>
+                    <navigationItem key="navigationItem" title="Premium" id="LNd-e9-YY7">
+                        <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="U8O-hP-2p8">
+                            <connections>
+                                <action selector="didPressCancel:" destination="R3A-LD-8BE" id="GMm-r1-kcQ"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="activityIndcator" destination="sHV-pv-uji" id="dSi-Cr-ySf"/>
+                        <outlet property="collectionView" destination="DHw-Tm-Wbg" id="xke-m2-YXc"/>
                         <outlet property="privacyPolicyButton" destination="fC2-en-cOo" id="yhd-RN-ei3"/>
                         <outlet property="restorePurchasesButton" destination="j7c-Gd-QEh" id="vzl-Ph-A04"/>
                         <outlet property="statusLabel" destination="9f1-at-zbB" id="5LN-Id-TY4"/>
