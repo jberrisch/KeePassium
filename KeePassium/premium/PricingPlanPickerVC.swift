@@ -10,7 +10,7 @@ import KeePassiumLib
 import StoreKit
 
 protocol PricingPlanPickerDelegate: class {
-    func getAvailablePlans() -> [PricePlan]
+    func getAvailablePlans() -> [PricingPlan]
     func didPressCancel(in viewController: PricingPlanPickerVC)
     func didPressRestorePurchases(in viewController: PricingPlanPickerVC)
     func didPressBuy(product: SKProduct, in viewController: PricingPlanPickerVC)
@@ -29,7 +29,7 @@ class PricingPlanPickerVC: UIViewController {
 
     weak var delegate: PricingPlanPickerDelegate?
     
-    private var pricePlans = [PricePlan]()
+    private var pricingPlans = [PricingPlan]()
     
     /// Disables purchase buttons during operations with App Store
     var isPurchaseEnabled = false {
@@ -54,10 +54,10 @@ class PricingPlanPickerVC: UIViewController {
             // show expensive first
             let sortedPlans = unsortedPlans.sorted {
                 (plan1, plan2) -> Bool in
-                let isP1BeforeP2 = plan1.product.price.doubleValue < plan2.product.price.doubleValue
+                let isP1BeforeP2 = plan1.price.doubleValue < plan2.price.doubleValue
                 return isP1BeforeP2
             }
-            self.pricePlans = sortedPlans
+            self.pricingPlans = sortedPlans
         }
         
         if animated {
@@ -125,7 +125,7 @@ class PricingPlanPickerVC: UIViewController {
 // MARK: UICollectionViewDataSource
 extension PricingPlanPickerVC: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return pricePlans.count
+        return pricingPlans.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -142,7 +142,7 @@ extension PricingPlanPickerVC: UICollectionViewDataSource {
         cell.layer.shadowOffset = CGSize(width: 0.0, height: 3.0)
         
         cell.isPurchaseEnabled = self.isPurchaseEnabled
-        cell.pricePlan = pricePlans[indexPath.item]
+        cell.pricingPlan = pricingPlans[indexPath.item]
         cell.delegate = self
         return cell
     }
@@ -150,11 +150,19 @@ extension PricingPlanPickerVC: UICollectionViewDataSource {
 
 // MARK: - PricingPlanCollectionCellDelegate
 extension PricingPlanPickerVC: PricingPlanCollectionCellDelegate {
-    func didPressPurchaseButton(in cell: PricingPlanCollectionCell, with pricePlan: PricePlan) {
-        delegate?.didPressBuy(product: pricePlan.product, in: self)
+    func didPressPurchaseButton(in cell: PricingPlanCollectionCell, with pricingPlan: PricingPlan) {
+        guard let realPricingPlan = pricingPlan as? RealPricingPlan else {
+            assert(pricingPlan.isFree)
+            delegate?.didPressCancel(in: self)
+            return
+        }
+        delegate?.didPressBuy(product: realPricingPlan.product, in: self)
     }
     
-    func didPressPerpetualFallbackDetail(in cell: PricingPlanCollectionCell, with pricePlan: PricePlan) {
+    func didPressPerpetualFallbackDetail(
+        in cell: PricingPlanCollectionCell,
+        with pricingPlan: PricingPlan)
+    {
         //TODO
     }
 }

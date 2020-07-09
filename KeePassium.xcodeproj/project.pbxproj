@@ -209,6 +209,8 @@
 		758BADB624B5EAFF00CC9265 /* GradientSeparatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 758BADB424B5EAFF00CC9265 /* GradientSeparatorView.swift */; };
 		758BADB724B5EAFF00CC9265 /* GradientSeparatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 758BADB424B5EAFF00CC9265 /* GradientSeparatorView.swift */; };
 		758BADB824B5EAFF00CC9265 /* GradientSeparatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 758BADB424B5EAFF00CC9265 /* GradientSeparatorView.swift */; };
+		758BADBA24B5F8BF00CC9265 /* PricingPlans.swift in Sources */ = {isa = PBXBuildFile; fileRef = 758BADB924B5F8BF00CC9265 /* PricingPlans.swift */; };
+		758BADBB24B5F8BF00CC9265 /* PricingPlans.swift in Sources */ = {isa = PBXBuildFile; fileRef = 758BADB924B5F8BF00CC9265 /* PricingPlans.swift */; };
 		758BF0D820D1B1DA00897C83 /* ValidatingTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 758BF0D720D1B1DA00897C83 /* ValidatingTextField.swift */; };
 		758BF0DD20D220B300897C83 /* WatchdogAwareTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 758BF0DC20D220B300897C83 /* WatchdogAwareTextField.swift */; };
 		758D8E902274D2BE00644FA6 /* DatabaseCreatorVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 758D8E8F2274D2BE00644FA6 /* DatabaseCreatorVC.swift */; };
@@ -224,6 +226,8 @@
 		7598963F2341590300DF39AA /* KeePassiumLib.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 75FEC2222175292C0034334B /* KeePassiumLib.framework */; };
 		759896402341590300DF39AA /* KeePassiumLib.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 75FEC2222175292C0034334B /* KeePassiumLib.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		7599637022E112E50004BC85 /* Attachment+extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7599636F22E112E50004BC85 /* Attachment+extensions.swift */; };
+		759992F024B6140D006CC379 /* LString+premium.swift in Sources */ = {isa = PBXBuildFile; fileRef = 759992EF24B6140D006CC379 /* LString+premium.swift */; };
+		759992F124B6140D006CC379 /* LString+premium.swift in Sources */ = {isa = PBXBuildFile; fileRef = 759992EF24B6140D006CC379 /* LString+premium.swift */; };
 		759992F324B666F7006CC379 /* PricingPlanCollectionLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 759992F224B666F7006CC379 /* PricingPlanCollectionLayout.swift */; };
 		759992F424B666F7006CC379 /* PricingPlanCollectionLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 759992F224B666F7006CC379 /* PricingPlanCollectionLayout.swift */; };
 		759BC62C2487FE5200E88111 /* URLReference+extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 759BC62B2487FE5200E88111 /* URLReference+extensions.swift */; };
@@ -875,6 +879,7 @@
 		758BADB024B53AE700CC9265 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/PricingPlanPickerVC.strings"; sourceTree = "<group>"; };
 		758BADB124B5408F00CC9265 /* PricingPlanCollectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PricingPlanCollectionCell.swift; sourceTree = "<group>"; };
 		758BADB424B5EAFF00CC9265 /* GradientSeparatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientSeparatorView.swift; sourceTree = "<group>"; };
+		758BADB924B5F8BF00CC9265 /* PricingPlans.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PricingPlans.swift; sourceTree = "<group>"; };
 		758BF0D720D1B1DA00897C83 /* ValidatingTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidatingTextField.swift; sourceTree = "<group>"; };
 		758BF0DC20D220B300897C83 /* WatchdogAwareTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchdogAwareTextField.swift; sourceTree = "<group>"; };
 		758D8E8F2274D2BE00644FA6 /* DatabaseCreatorVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseCreatorVC.swift; sourceTree = "<group>"; };
@@ -882,6 +887,7 @@
 		759894B624620AF6006B6709 /* FileExportHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileExportHelper.swift; sourceTree = "<group>"; };
 		759894BB24620D33006B6709 /* FileDestructionHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDestructionHelper.swift; sourceTree = "<group>"; };
 		7599636F22E112E50004BC85 /* Attachment+extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Attachment+extensions.swift"; sourceTree = "<group>"; };
+		759992EF24B6140D006CC379 /* LString+premium.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LString+premium.swift"; sourceTree = "<group>"; };
 		759992F224B666F7006CC379 /* PricingPlanCollectionLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PricingPlanCollectionLayout.swift; sourceTree = "<group>"; };
 		759BC62B2487FE5200E88111 /* URLReference+extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URLReference+extensions.swift"; sourceTree = "<group>"; };
 		759BCEAF2144E6E7002FC18B /* RootSplitVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RootSplitVC.swift; sourceTree = "<group>"; };
@@ -1393,6 +1399,8 @@
 				758BAD9424B5392200CC9265 /* PricingPlanPickerVC.swift */,
 				758BADB124B5408F00CC9265 /* PricingPlanCollectionCell.swift */,
 				759992F224B666F7006CC379 /* PricingPlanCollectionLayout.swift */,
+				758BADB924B5F8BF00CC9265 /* PricingPlans.swift */,
+				759992EF24B6140D006CC379 /* LString+premium.swift */,
 			);
 			path = premium;
 			sourceTree = "<group>";
@@ -2172,6 +2180,7 @@
 				75514A3420DF5B6200202340 /* EditEntryFieldsCells.swift in Sources */,
 				75BFB13F2481553D0017B980 /* DynamicFileList.swift in Sources */,
 				759BCEB02144E6E8002FC18B /* RootSplitVC.swift in Sources */,
+				759992F024B6140D006CC379 /* LString+premium.swift in Sources */,
 				758BADB224B5408F00CC9265 /* PricingPlanCollectionCell.swift in Sources */,
 				7550D22B215CC99100360E0C /* ChangeMasterKeyVC.swift in Sources */,
 				7599637022E112E50004BC85 /* Attachment+extensions.swift in Sources */,
@@ -2222,6 +2231,7 @@
 				7561850520E0379F00EEFAEE /* ValidatingTextView.swift in Sources */,
 				75CD364121537A320018AF46 /* AppStoreHelper.swift in Sources */,
 				75B5FB7720D53EA700D402D9 /* ViewEntryFieldsVC.swift in Sources */,
+				758BADBA24B5F8BF00CC9265 /* PricingPlans.swift in Sources */,
 				75A2677D22904E0D0097C693 /* PremiumFeature+extension.swift in Sources */,
 				75B3B7BC20EABD9D007E8FA9 /* PlaceholderVC.swift in Sources */,
 				7578488622C165C900BBEF9A /* SettingsBackupVC.swift in Sources */,
@@ -2293,6 +2303,7 @@
 				75B38C05233E5B7C006BDEFC /* EditEntryFieldsCells.swift in Sources */,
 				75BFB1412481553D0017B980 /* DynamicFileList.swift in Sources */,
 				75B38C06233E5B7C006BDEFC /* RootSplitVC.swift in Sources */,
+				759992F124B6140D006CC379 /* LString+premium.swift in Sources */,
 				758BADB324B5408F00CC9265 /* PricingPlanCollectionCell.swift in Sources */,
 				75B38C07233E5B7C006BDEFC /* ChangeMasterKeyVC.swift in Sources */,
 				75B38C08233E5B7C006BDEFC /* Attachment+extensions.swift in Sources */,
@@ -2305,7 +2316,6 @@
 				75B38C0E233E5B7C006BDEFC /* UIColor+namedColors.swift in Sources */,
 				75B38C0F233E5B7C006BDEFC /* ViewableEntryFieldFactory.swift in Sources */,
 				759992F424B666F7006CC379 /* PricingPlanCollectionLayout.swift in Sources */,
-				759992EE24B60EAE006CC379 /* InAppProduct+pricePlan.swift in Sources */,
 				75B38C10233E5B7C006BDEFC /* UITableViewCell+extension.swift in Sources */,
 				75B38C11233E5B7C006BDEFC /* EntryChangeObserver+Notifier.swift in Sources */,
 				75B38C12233E5B7C006BDEFC /* ViewEntryHistoryVC.swift in Sources */,
@@ -2344,6 +2354,7 @@
 				75B38C2E233E5B7C006BDEFC /* ValidatingTextView.swift in Sources */,
 				75B38C2F233E5B7C006BDEFC /* AppStoreHelper.swift in Sources */,
 				75B38C30233E5B7C006BDEFC /* ViewEntryFieldsVC.swift in Sources */,
+				758BADBB24B5F8BF00CC9265 /* PricingPlans.swift in Sources */,
 				75B38C31233E5B7C006BDEFC /* PremiumFeature+extension.swift in Sources */,
 				75B38C32233E5B7C006BDEFC /* PlaceholderVC.swift in Sources */,
 				75B38C33233E5B7C006BDEFC /* SettingsBackupVC.swift in Sources */,

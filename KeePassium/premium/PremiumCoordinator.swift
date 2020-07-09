@@ -26,7 +26,7 @@ class PremiumCoordinator: NSObject {
     private let navigationController: UINavigationController
     private let planPicker: PricingPlanPickerVC
     
-    private var availableProducts = [SKProduct]()
+    private var availablePricingPlans = [PricingPlan]()
     private var isProductsRefreshed: Bool = false
     
     init(presentingViewController: UIViewController) {
@@ -83,8 +83,12 @@ class PremiumCoordinator: NSObject {
                 self.planPicker.showMessage(message)
                 return
             }
+            var availablePlans = products.compactMap { (product) in
+                return PricingPlanFactory.make(for: product)
+            }
+            availablePlans.append(FreePricingPlan()) // free tier is always available
             self.isProductsRefreshed = true
-            self.availableProducts = products
+            self.availablePricingPlans = availablePlans
             self.planPicker.refresh(animated: true)
         }
     }
@@ -103,8 +107,8 @@ class PremiumCoordinator: NSObject {
 
 // MARK: - PricingPlanPickerDelegate
 extension PremiumCoordinator: PricingPlanPickerDelegate {
-    func getAvailableProducts() -> [SKProduct] {
-        return availableProducts
+    func getAvailablePlans() -> [PricingPlan] {
+        return availablePricingPlans
     }
 
     func didPressBuy(product: SKProduct, in viewController: PricingPlanPickerVC) {

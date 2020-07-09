@@ -47,15 +47,15 @@ class PricingPlanBenefitCell: UITableViewCell {
 // MARK: - PricingPlanCollectionCell
 
 protocol PricingPlanCollectionCellDelegate: class {
-    func didPressPurchaseButton(in cell: PricingPlanCollectionCell, with pricePlan: PricePlan)
-    func didPressPerpetualFallbackDetail(in cell: PricingPlanCollectionCell, with pricePlan: PricePlan)
+    func didPressPurchaseButton(in cell: PricingPlanCollectionCell, with pricePlan: PricingPlan)
+    func didPressPerpetualFallbackDetail(in cell: PricingPlanCollectionCell, with pricePlan: PricingPlan)
 }
 
 /// Represents one page/tile in the price plan picker
 class PricingPlanCollectionCell: UICollectionViewCell {
     static let storyboardID = "PricingPlanCollectionCell"
     private enum Section: Int {
-        static let allValues = [Section]([.title, .conditions, .premiumFeatures])
+        static let allValues = [Section]([.title, .conditions, .benefits])
         case title = 0
         case conditions = 1
         case benefits = 2
@@ -66,13 +66,14 @@ class PricingPlanCollectionCell: UICollectionViewCell {
     @IBOutlet weak var footerLabel: UILabel!
     
     weak var delegate: PricingPlanCollectionCellDelegate?
+    
     /// Enables/disables the purchase button
-    var isPurchaseEnabled: Bool {
+    var isPurchaseEnabled: Bool = false {
         didSet {
             refresh()
         }
     }
-    var pricePlan: PricePlan! {
+    var pricingPlan: PricingPlan! {
         didSet { refresh() }
     }
     
@@ -87,8 +88,8 @@ class PricingPlanCollectionCell: UICollectionViewCell {
     }
     
     func refresh() {
-        guard pricePlan != nil else { return }
-        if pricePlan.isFree {
+        guard pricingPlan != nil else { return }
+        if pricingPlan.isFree {
             purchaseButton.borderColor = .actionTint
             purchaseButton.borderWidth = 1
             purchaseButton.backgroundColor = .actionText
@@ -99,9 +100,9 @@ class PricingPlanCollectionCell: UICollectionViewCell {
             purchaseButton.backgroundColor = .actionTint
             purchaseButton.tintColor = .actionText
         }
-        purchaseButton.setTitle(pricePlan.callForAction, for: .normal)
+        purchaseButton.setTitle(pricingPlan.callToAction, for: .normal)
         purchaseButton.isEnabled = isPurchaseEnabled
-        footerLabel.text = pricePlan.cfaSubtitle
+        footerLabel.text = pricingPlan.ctaSubtitle
         tableView.dataSource = self
         tableView.reloadData()
     }
@@ -109,7 +110,7 @@ class PricingPlanCollectionCell: UICollectionViewCell {
     // MARK: Actions
     
     @IBAction func didPressPurchaseButton(_ sender: Any) {
-        delegate?.didPressPurchaseButton(in: self, with: pricePlan)
+        delegate?.didPressPurchaseButton(in: self, with: pricingPlan)
     }
 }
 
@@ -150,9 +151,9 @@ extension PricingPlanCollectionCell: UITableViewDataSource {
         case .title:
             return 1
         case .conditions:
-            return pricePlan.conditions.count
+            return pricingPlan.conditions.count
         case .benefits:
-            return pricePlan.benefits.count
+            return pricingPlan.benefits.count
         }
     }
     
@@ -161,7 +162,7 @@ extension PricingPlanCollectionCell: UITableViewDataSource {
             return nil
         }
         
-        if pricePlan.isFree {
+        if pricingPlan.isFree {
             return LString.premiumWhatYouMiss
         } else {
             return LString.premiumWhatYouGet
@@ -172,7 +173,7 @@ extension PricingPlanCollectionCell: UITableViewDataSource {
         guard Section(rawValue: section)! == .benefits else {
             return nil
         }
-        return pricePlan.smallPrint
+        return pricingPlan.smallPrint
     }
     
     // MARK: Cell setup
@@ -196,9 +197,9 @@ extension PricingPlanCollectionCell: UITableViewDataSource {
         let cell = tableView
             .dequeueReusableCell(withIdentifier: PricingPlanTitleCell.storyboardID, for: indexPath)
             as! PricingPlanTitleCell
-        cell.titleLabel?.text = nil //pricePlan?.title
-        cell.priceLabel?.text = pricePlan?.priceString
-        cell.priceNoteLabel?.text = pricePlan.pricePeriodString
+        cell.titleLabel?.text = pricingPlan.title
+        cell.priceLabel?.text = pricingPlan.localizedPrice
+        cell.priceNoteLabel?.text = pricingPlan.localizedPriceWithPeriod
         return cell
     }
     
@@ -207,7 +208,7 @@ extension PricingPlanCollectionCell: UITableViewDataSource {
         cellForRowAt indexPath: IndexPath)
         -> PricingPlanConditionCell
     {
-        let condition = pricePlan.conditions[indexPath.row]
+        let condition = pricingPlan.conditions[indexPath.row]
         let cell = tableView
             .dequeueReusableCell(withIdentifier: PricingPlanConditionCell.storyboardID, for: indexPath)
             as! PricingPlanConditionCell
@@ -237,19 +238,19 @@ extension PricingPlanCollectionCell: UITableViewDataSource {
         cellForRowAt indexPath: IndexPath)
         -> PricingPlanBenefitCell
     {
-        let feature = pricePlan.benefits[indexPath.row]
         let cell = tableView
             .dequeueReusableCell(withIdentifier: PricingPlanBenefitCell.storyboardID, for: indexPath)
             as! PricingPlanBenefitCell
-        cell.titleLabel?.text = feature.title
-        cell.subtitleLabel?.text = feature.description
-        if let imageAsset = feature.image {
+        let benefit = pricingPlan.benefits[indexPath.row]
+        cell.titleLabel?.text = benefit.title
+        cell.subtitleLabel?.text = benefit.description
+        if let imageAsset = benefit.image {
             cell.iconView?.image = UIImage(asset: imageAsset)
         } else {
             cell.iconView.image = nil
         }
 
-        if pricePlan.isFree {
+        if pricingPlan.isFree {
             cell.titleLabel.textColor = .disabledText
             cell.iconView?.tintColor = .disabledText
         } else {
@@ -263,6 +264,6 @@ extension PricingPlanCollectionCell: UITableViewDataSource {
 // MARK: PricingPlanConditionCellDelegate
 extension PricingPlanCollectionCell: PricingPlanConditionCellDelegate {
     func didPressDetailButton(in cell: PricingPlanConditionCell) {
-        delegate?.didPressPerpetualFallbackDetail(in: self, with: pricePlan)
+        delegate?.didPressPerpetualFallbackDetail(in: self, with: pricingPlan)
     }
 }
