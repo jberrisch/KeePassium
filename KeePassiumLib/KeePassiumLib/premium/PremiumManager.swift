@@ -44,18 +44,6 @@ public enum InAppProduct: String {
         }
     }
     
-    /// True iff this product comes with a priority (email) support
-    public var hasPrioritySupport: Bool {
-        switch self {
-        case .forever,
-             .forever2,
-             .betaForever,
-             .montlySubscription,
-             .yearlySubscription:
-            return false
-        }
-    }
-
     public static func period(productIdentifier: String) -> Period {
         if productIdentifier.contains(".forever") {
             return .oneTime
