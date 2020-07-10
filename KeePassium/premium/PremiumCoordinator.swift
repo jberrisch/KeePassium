@@ -128,12 +128,6 @@ extension PremiumCoordinator: PricingPlanPickerDelegate {
     }
 }
 
-extension PremiumCoordinator: PremiumProDelegate {
-    func didPressOpenInAppStore(_ sender: PremiumProVC) {
-        AppStoreHelper.openInAppStore(appID: AppStoreHelper.proVersionID)
-    }
-}
-
 // MARK: - PremiumManagerDelegate
 extension PremiumCoordinator: PremiumManagerDelegate {
     func purchaseStarted(in premiumManager: PremiumManager) {
