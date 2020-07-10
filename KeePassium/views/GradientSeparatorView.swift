@@ -27,7 +27,7 @@ class GradientSeparatorView: UIView {
         let gradient = CAGradientLayer()
         gradient.colors = [
             UIColor.white.withAlphaComponent(0).cgColor,
-            UIColor.black.withAlphaComponent(0.5).cgColor,
+            UIColor.white.withAlphaComponent(0.7).cgColor,
         ]
         gradient.locations = [0, 1]
         gradient.startPoint = CGPoint(x: 0.0, y: 0)

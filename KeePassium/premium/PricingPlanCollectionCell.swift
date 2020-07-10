@@ -17,7 +17,6 @@ class PricingPlanTitleCell: UITableViewCell {
     
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var priceLabel: UILabel!
-    @IBOutlet weak var priceNoteLabel: UILabel!
 }
 
 protocol PricingPlanConditionCellDelegate: class {
@@ -89,19 +88,18 @@ class PricingPlanCollectionCell: UICollectionViewCell {
     
     func refresh() {
         guard pricingPlan != nil else { return }
+        purchaseButton.borderColor = .actionTint
+        purchaseButton.borderWidth = 1
         if pricingPlan.isFree {
-            purchaseButton.borderColor = .actionTint
-            purchaseButton.borderWidth = 1
-            purchaseButton.backgroundColor = .actionText
+            purchaseButton.backgroundColor = .clear
             purchaseButton.tintColor = .actionTint
         } else {
-            purchaseButton.borderColor = .actionTint
-            purchaseButton.borderWidth = 1
             purchaseButton.backgroundColor = .actionTint
             purchaseButton.tintColor = .actionText
         }
         purchaseButton.setTitle(pricingPlan.callToAction, for: .normal)
         purchaseButton.isEnabled = isPurchaseEnabled
+
         footerLabel.text = pricingPlan.ctaSubtitle
         tableView.dataSource = self
         tableView.reloadData()
@@ -197,9 +195,12 @@ extension PricingPlanCollectionCell: UITableViewDataSource {
         let cell = tableView
             .dequeueReusableCell(withIdentifier: PricingPlanTitleCell.storyboardID, for: indexPath)
             as! PricingPlanTitleCell
-        cell.titleLabel?.text = pricingPlan.title
-        cell.priceLabel?.text = pricingPlan.localizedPrice
-        cell.priceNoteLabel?.text = pricingPlan.localizedPriceWithPeriod
+        if pricingPlan.isFree {
+            cell.titleLabel?.text = nil
+        } else {
+            cell.titleLabel?.text = pricingPlan.title
+        }
+        cell.priceLabel?.attributedText = makeAttributedPrice(for: pricingPlan)
         return cell
     }
     
@@ -252,12 +253,48 @@ extension PricingPlanCollectionCell: UITableViewDataSource {
 
         if pricingPlan.isFree {
             cell.titleLabel.textColor = .disabledText
+            cell.subtitleLabel.textColor = .disabledText
             cell.iconView?.tintColor = .disabledText
         } else {
             cell.titleLabel.textColor = .primaryText
+            cell.subtitleLabel.textColor = .auxiliaryText
             cell.iconView?.tintColor = .actionTint
         }
         return cell
+    }
+    
+    
+    // MARK: Text formatting
+    
+    /// Returns formatted text for product's purchase button
+    private func makeAttributedPrice(for pricingPlan: PricingPlan) -> NSAttributedString {
+        let priceWithPeriod = pricingPlan.localizedPriceWithPeriod ?? pricingPlan.localizedPrice
+        let price = pricingPlan.localizedPrice
+
+        assert(priceWithPeriod.contains(price))
+        guard priceWithPeriod.count > 0 else {
+            assertionFailure()
+            return NSAttributedString()
+        }
+        
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.alignment = .center
+        let mainAttributes: [NSAttributedString.Key: Any] = [
+            NSAttributedString.Key.paragraphStyle: paragraphStyle,
+            NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .callout),
+        ]
+        let priceAttributes: [NSAttributedString.Key: Any] = [
+            NSAttributedString.Key.paragraphStyle: paragraphStyle,
+            NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .title1),
+        ]
+        
+        let result = NSMutableAttributedString(string: priceWithPeriod, attributes: mainAttributes)
+        // Highlight the price with different attributes
+        if let priceRange = priceWithPeriod.range(of: price) {
+            let nsPriceRange = NSRange(priceRange, in: priceWithPeriod)
+            result.addAttributes(priceAttributes, range: nsPriceRange)
+        }
+        return result
     }
 }
 

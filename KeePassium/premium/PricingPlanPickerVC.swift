@@ -44,13 +44,33 @@ class PricingPlanPickerVC: UIViewController {
         return vc
     }
     
-    // MARK: - VC life cycle
+    // MARK: VC life cycle
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        collectionView.decelerationRate = .fast
+        
+        statusLabel.text = LString.statusContactingAppStore
+        activityIndcator.isHidden = false
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        refresh(animated: animated)
+    }
+    
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        collectionView?.collectionViewLayout.invalidateLayout()
+    }
     
     public func refresh(animated: Bool) {
+        guard isViewLoaded else { return }
         restorePurchasesButton.isEnabled = isPurchaseEnabled
         
-        if let unsortedPlans = delegate?.getAvailablePlans() {
-            hideMessage()
+        if let unsortedPlans = delegate?.getAvailablePlans(), unsortedPlans.count > 0 {
             // show expensive first
             let sortedPlans = unsortedPlans.sorted {
                 (plan1, plan2) -> Bool in
@@ -58,16 +78,13 @@ class PricingPlanPickerVC: UIViewController {
                 return isP1BeforeP2
             }
             self.pricingPlans = sortedPlans
+            hideMessage()
         }
-        
-        if animated {
-            collectionView.reloadSections([0])
-        } else {
-            collectionView.reloadData()
-        }
+
+        collectionView.reloadData()
     }
     
-    // MARK: - Error message routines
+    // MARK: Error message routines
     
     public func showMessage(_ message: String) {
         statusLabel.text = message
@@ -84,7 +101,7 @@ class PricingPlanPickerVC: UIViewController {
         }
     }
     
-    // MARK: - Purchasing
+    // MARK: Purchasing
     
     /// Locks/unlocks user interaction during purchase communication with AppStore.
     ///
@@ -104,7 +121,7 @@ class PricingPlanPickerVC: UIViewController {
         }
     }
     
-    // MARK: - Actions
+    // MARK: Actions
     
     @IBAction func didPressCancel(_ sender: Any) {
         delegate?.didPressCancel(in: self)
@@ -122,7 +139,86 @@ class PricingPlanPickerVC: UIViewController {
     }
 }
 
-// MARK: UICollectionViewDataSource
+// MARK: - UICollectionViewDelegateFlowLayout
+extension PricingPlanPickerVC: UICollectionViewDelegateFlowLayout {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        sizeForItemAt indexPath: IndexPath)
+        -> CGSize
+    {
+        let desiredAspectRatio = CGFloat(1.69)
+        let frameWidth = collectionView.frame.width
+        let width = min(
+            max(350, frameWidth * 0.6), // fill a narrow screen, but only a fraction of a wide screen
+            frameWidth - 32) // leave some margins to see adjacent cells
+                             // 32 = (2 * purchase button margin)
+                             //     These margins hide the purchase buttons in adjacent cells.
+        
+        let height = min(
+            max(width * desiredAspectRatio, collectionView.frame.height * 0.6),
+            collectionView.frame.height - 30)
+            // 0.6 — so that there is only one row on the screen
+        return CGSize(width: width, height: height)
+    }
+    
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        referenceSizeForHeaderInSection section: Int)
+        -> CGSize
+    {
+        let cellSize = self.collectionView(
+            collectionView,
+            layout: collectionViewLayout,
+            sizeForItemAt: IndexPath(item: 0, section: section)
+        )
+        // Left offset of the first cell
+        let headerSize = (collectionView.frame.width - cellSize.width) / 2
+        return CGSize(width: headerSize, height: 0)
+    }
+    
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        referenceSizeForFooterInSection section: Int)
+        -> CGSize
+    {
+        let cellSize = self.collectionView(
+            collectionView,
+            layout: collectionViewLayout,
+            sizeForItemAt: IndexPath(item: 0, section: section)
+        )
+        // Right offset of the last cell
+        let footerSize = (collectionView.frame.width - cellSize.width) / 2
+        return CGSize(width: footerSize, height: 0)
+    }
+    
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        minimumInteritemSpacingForSectionAt section: Int)
+        -> CGFloat
+    {
+        return 0
+    }
+    
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        minimumLineSpacingForSectionAt section: Int)
+        -> CGFloat
+    {
+        let headerSize = self.collectionView(
+            collectionView,
+            layout: collectionViewLayout,
+            referenceSizeForHeaderInSection: section
+        )
+        return 0.5 * headerSize.width
+    }
+}
+
+// MARK: - UICollectionViewDataSource
 extension PricingPlanPickerVC: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return pricingPlans.count

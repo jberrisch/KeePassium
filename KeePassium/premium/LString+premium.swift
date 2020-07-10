@@ -15,13 +15,14 @@ extension LString {
     
     public static let subscriptionConditions = NSLocalizedString(
         "[Premium/Subscription/Legal/text]",
-        value: """
+        value:
+            """
             Payment will be charged to your Apple ID account at the confirmation of purchase.
             
             Subscription automatically renews unless it is canceled at least 24 hours before the end of the current period. Your account will be charged for renewal within 24 hours prior to the end of the current period.
             
             You can manage and cancel your subscriptions by going to your account settings on the App Store after purchase.
-        """,
+            """,
         comment: "Subscription conditions")
     
     
@@ -30,21 +31,28 @@ extension LString {
     public static let premiumFreePlanTitle = NSLocalizedString(
         "[Premium/Price Plan/Free/title]",
         value: "Free",
-        comment: "Title of the FREE pricing plan")
+        comment: "Name of the free pricing plan")
     public static let premiumFreePlanPrice = NSLocalizedString(
         "[Premium/Price Plan/Free/price]",
         value: "Free",
-        comment: "Price of the FREE pricing plan")
+        comment: "Price of the free pricing plan")
     
     public static let priceTemplateMonthly = NSLocalizedString(
-        "[Premium/Price/monthly]",
-        value: "%@ per month",
-        comment: "Monthly price")
+        "[Premium/Upgrade/price] %@ / month",
+        value: "%@ / month",
+        comment: "Product price for monthly premium subscription. [localizedPrice: String]")
     public static let priceTemplateYearly = NSLocalizedString(
-        "[Premium/Price/yearly]",
-        value: "%@ per year",
-        comment: "Yearly price")
-
+        "[Premium/Upgrade/price] %@ / year",
+        value: "%@ / year",
+        comment: "Product price for annual premium subscription. [localizedPrice: String]")
+    public static let priceTemplateOnce = NSLocalizedString(
+        "[Premium/Upgrade/price] %@ once",
+        value: "%@ once",
+        comment: "Product price for once-and-forever premium. [localizedPrice: String]")
+    public static let trialConditionsTemplate = NSLocalizedString(
+        "[Premium/Trial/trial then price]",
+        value: "Free trial for %@, then %@",
+        comment: "Trial conditions. For example `Free trial for 30 days, then $1 per month`")
     
     public static let premiumWhatYouGet = NSLocalizedString(
         "[Premium/Benefits/Positive/header] ",
@@ -61,6 +69,10 @@ extension LString {
         "[Premium/CallToAction/free]",
         value: "Continue Testing",
         comment: "Call to action: continue using the free version")
+    public static let premiumCallToActionStartTrial = NSLocalizedString(
+        "[Premium/CallToAction/startTrial]",
+        value: "Start Free Trial",
+        comment: "Call to action: upgrade to premium")
     public static let premiumCallToActionUpgradeNow = NSLocalizedString(
         "[Premium/CallToAction/upgradeNow]",
         value: "Upgrade Now",

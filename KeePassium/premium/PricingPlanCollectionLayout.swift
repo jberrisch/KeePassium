@@ -16,7 +16,6 @@ class PricingPlanCollectionLayout: UICollectionViewFlowLayout {
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         scrollDirection = .horizontal
-        collectionView?.decelerationRate = .fast
     }
     
     override func targetContentOffset(
