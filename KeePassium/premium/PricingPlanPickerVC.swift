@@ -121,6 +121,16 @@ class PricingPlanPickerVC: UIViewController {
         }
     }
     
+    public func scrollToDefaultPlan(animated: Bool) {
+        var targetPlanIndex = pricingPlans.count - 1
+        if let promotedPlanIndex = pricingPlans.firstIndex(where: { $0.isDefault }) {
+            targetPlanIndex = promotedPlanIndex
+        }
+        collectionView.scrollToItem(
+            at: IndexPath(item: targetPlanIndex, section: 0),
+            at: .centeredHorizontally,
+            animated: animated)
+    }
     // MARK: Actions
     
     @IBAction func didPressCancel(_ sender: Any) {

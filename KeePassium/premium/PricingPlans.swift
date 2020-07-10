@@ -139,8 +139,10 @@ class PricingPlanFactory {
 
 class PricingPlan {
     fileprivate(set) var title: String
-    
     fileprivate(set) var isFree: Bool
+    
+    /// True for the (promoted) plan that should be shown by default
+    fileprivate(set) var isDefault: Bool
     fileprivate(set) var price: NSDecimalNumber
     /// E.g. "$12.34" or "€ 12,34" or "FREE"
     fileprivate(set) var localizedPrice: String
@@ -157,6 +159,7 @@ class PricingPlan {
     init() {
         self.title = ""
         self.isFree = true
+        self.isDefault = false
         self.price = 0
         self.localizedPrice = ""
         self.localizedPriceWithPeriod = nil
@@ -239,6 +242,7 @@ class PricingPlanPremiumYearly: RealPricingPlan {
     override init(_ product: SKProduct) {
         super.init(product)
         
+        isDefault = true
         self.localizedPriceWithPeriod =
             String.localizedStringWithFormat(LString.priceTemplateYearly, localizedPrice)
         self.ctaSubtitle = nil

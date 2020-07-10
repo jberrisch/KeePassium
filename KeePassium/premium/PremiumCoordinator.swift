@@ -90,6 +90,7 @@ class PremiumCoordinator: NSObject {
             self.isProductsRefreshed = true
             self.availablePricingPlans = availablePlans
             self.planPicker.refresh(animated: true)
+            self.planPicker.scrollToDefaultPlan(animated: false)
         }
     }
     
