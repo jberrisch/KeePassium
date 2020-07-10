@@ -54,10 +54,11 @@ protocol PricingPlanCollectionCellDelegate: class {
 class PricingPlanCollectionCell: UICollectionViewCell {
     static let storyboardID = "PricingPlanCollectionCell"
     private enum Section: Int {
-        static let allValues = [Section]([.title, .conditions, .benefits])
+        static let allValues = [Section]([.title, .conditions, .benefits, .smallprint])
         case title = 0
         case conditions = 1
         case benefits = 2
+        case smallprint = 3
     }
     
     @IBOutlet weak var tableView: UITableView!
@@ -101,6 +102,7 @@ class PricingPlanCollectionCell: UICollectionViewCell {
         purchaseButton.isEnabled = isPurchaseEnabled
 
         footerLabel.text = pricingPlan.ctaSubtitle
+        footerLabel.isHidden = (pricingPlan.ctaSubtitle?.isEmpty ?? true)
         tableView.dataSource = self
         tableView.reloadData()
     }
@@ -123,6 +125,8 @@ extension PricingPlanCollectionCell: UITableViewDelegate {
             return 0.1 // no header
         case .benefits:
             return UITableView.automaticDimension
+        case .smallprint:
+            return UITableView.automaticDimension
         }
     }
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
@@ -132,6 +136,8 @@ extension PricingPlanCollectionCell: UITableViewDelegate {
         case .conditions:
             return 8 // just a small gap
         case .benefits:
+            return 0.1 // no footer
+        case .smallprint:
             return UITableView.automaticDimension
         }
     }
@@ -152,6 +158,8 @@ extension PricingPlanCollectionCell: UITableViewDataSource {
             return pricingPlan.conditions.count
         case .benefits:
             return pricingPlan.benefits.count
+        case .smallprint:
+            return 0 // no cells, just footer
         }
     }
     
@@ -168,7 +176,7 @@ extension PricingPlanCollectionCell: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        guard Section(rawValue: section)! == .benefits else {
+        guard Section(rawValue: section)! == .smallprint else {
             return nil
         }
         return pricingPlan.smallPrint
@@ -184,6 +192,8 @@ extension PricingPlanCollectionCell: UITableViewDataSource {
             return dequeueConditionCell(tableView, cellForRowAt: indexPath)
         case .benefits:
             return dequeueBenefitCell(tableView, cellForRowAt: indexPath)
+        case .smallprint:
+            fatalError()
         }
     }
     
