@@ -244,51 +244,53 @@
                                                                         <constraint firstAttribute="height" constant="16" id="nCI-aM-Nju"/>
                                                                     </constraints>
                                                                 </view>
-                                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="wordWrap" translatesAutoresizingMaskIntoConstraints="NO" id="6qT-UV-P49" customClass="MultilineButton" customModule="KeePassium" customModuleProvider="target">
-                                                                    <rect key="frame" x="8" y="348.33333333333331" width="236" height="44"/>
-                                                                    <color key="backgroundColor" name="ActionTint"/>
-                                                                    <constraints>
-                                                                        <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="44" id="LHv-fe-CFs"/>
-                                                                    </constraints>
-                                                                    <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
-                                                                    <color key="tintColor" name="ActionText"/>
-                                                                    <state key="normal" title="{Call for Action}"/>
-                                                                    <attributedString key="userComments">
-                                                                        <fragment content="#bc-ignore!"/>
-                                                                    </attributedString>
-                                                                    <userDefinedRuntimeAttributes>
-                                                                        <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
-                                                                            <real key="value" value="10"/>
-                                                                        </userDefinedRuntimeAttribute>
-                                                                    </userDefinedRuntimeAttributes>
-                                                                    <connections>
-                                                                        <action selector="didPressPurchaseButton:" destination="vX4-f0-IL0" eventType="touchUpInside" id="VJ9-J6-pHz"/>
-                                                                    </connections>
-                                                                </button>
-                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" layoutMarginsFollowReadableWidth="YES" text="{Call for action footer}" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0wQ-G1-ZOk">
-                                                                    <rect key="frame" x="8" y="396.33333333333331" width="236" height="15.666666666666686"/>
-                                                                    <fontDescription key="fontDescription" style="UICTFontTextStyleFootnote"/>
-                                                                    <color key="textColor" name="AuxiliaryText"/>
-                                                                    <nil key="highlightedColor"/>
-                                                                    <attributedString key="userComments">
-                                                                        <fragment content="#bc-ignore!"/>
-                                                                    </attributedString>
-                                                                </label>
+                                                                <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="KbM-fP-ht6" userLabel="Footer Stack View">
+                                                                    <rect key="frame" x="8" y="348.33333333333331" width="236" height="63.666666666666686"/>
+                                                                    <subviews>
+                                                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="wordWrap" translatesAutoresizingMaskIntoConstraints="NO" id="6qT-UV-P49" customClass="MultilineButton" customModule="KeePassium" customModuleProvider="target">
+                                                                            <rect key="frame" x="0.0" y="0.0" width="236" height="44"/>
+                                                                            <color key="backgroundColor" name="ActionTint"/>
+                                                                            <constraints>
+                                                                                <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="44" id="LHv-fe-CFs"/>
+                                                                            </constraints>
+                                                                            <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                                                            <color key="tintColor" name="ActionText"/>
+                                                                            <state key="normal" title="{Call for Action}"/>
+                                                                            <attributedString key="userComments">
+                                                                                <fragment content="#bc-ignore!"/>
+                                                                            </attributedString>
+                                                                            <userDefinedRuntimeAttributes>
+                                                                                <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                                                                    <real key="value" value="10"/>
+                                                                                </userDefinedRuntimeAttribute>
+                                                                            </userDefinedRuntimeAttributes>
+                                                                            <connections>
+                                                                                <action selector="didPressPurchaseButton:" destination="vX4-f0-IL0" eventType="touchUpInside" id="VJ9-J6-pHz"/>
+                                                                            </connections>
+                                                                        </button>
+                                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" layoutMarginsFollowReadableWidth="YES" text="{Call for action footer}" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0wQ-G1-ZOk">
+                                                                            <rect key="frame" x="0.0" y="48" width="236" height="15.666666666666664"/>
+                                                                            <fontDescription key="fontDescription" style="UICTFontTextStyleFootnote"/>
+                                                                            <color key="textColor" name="AuxiliaryText"/>
+                                                                            <nil key="highlightedColor"/>
+                                                                            <attributedString key="userComments">
+                                                                                <fragment content="#bc-ignore!"/>
+                                                                            </attributedString>
+                                                                        </label>
+                                                                    </subviews>
+                                                                </stackView>
                                                             </subviews>
                                                             <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                                             <constraints>
-                                                                <constraint firstAttribute="bottomMargin" secondItem="0wQ-G1-ZOk" secondAttribute="bottom" id="5KJ-5a-BrR"/>
                                                                 <constraint firstAttribute="trailing" secondItem="WXP-XU-bGL" secondAttribute="trailing" id="AfD-dJ-zVa"/>
-                                                                <constraint firstItem="0wQ-G1-ZOk" firstAttribute="leading" secondItem="2g1-0c-KWj" secondAttribute="leadingMargin" id="Bmg-Lc-oTK"/>
                                                                 <constraint firstAttribute="trailing" secondItem="gEe-4O-2U3" secondAttribute="trailing" id="EZ7-dQ-THw"/>
                                                                 <constraint firstItem="gEe-4O-2U3" firstAttribute="leading" secondItem="2g1-0c-KWj" secondAttribute="leading" id="Hf8-Wh-JoR"/>
                                                                 <constraint firstItem="WXP-XU-bGL" firstAttribute="leading" secondItem="2g1-0c-KWj" secondAttribute="leading" id="Q1q-KT-FAV"/>
-                                                                <constraint firstAttribute="trailingMargin" secondItem="0wQ-G1-ZOk" secondAttribute="trailing" id="U28-MG-Rfh"/>
-                                                                <constraint firstAttribute="trailing" secondItem="6qT-UV-P49" secondAttribute="trailing" constant="8" id="Y4v-RE-MB5"/>
                                                                 <constraint firstItem="gEe-4O-2U3" firstAttribute="bottom" secondItem="WXP-XU-bGL" secondAttribute="bottom" id="Yc2-I8-8oa"/>
-                                                                <constraint firstItem="6qT-UV-P49" firstAttribute="top" secondItem="WXP-XU-bGL" secondAttribute="bottom" constant="8" id="aFs-Ig-6Df"/>
-                                                                <constraint firstItem="6qT-UV-P49" firstAttribute="leading" secondItem="2g1-0c-KWj" secondAttribute="leading" constant="8" id="gzK-2m-rLc"/>
-                                                                <constraint firstItem="0wQ-G1-ZOk" firstAttribute="top" secondItem="6qT-UV-P49" secondAttribute="bottom" constant="4" id="sHW-E3-bd5"/>
+                                                                <constraint firstItem="KbM-fP-ht6" firstAttribute="top" secondItem="gEe-4O-2U3" secondAttribute="bottom" constant="8" id="bXx-bK-xfv"/>
+                                                                <constraint firstAttribute="trailing" secondItem="KbM-fP-ht6" secondAttribute="trailing" constant="8" id="mQo-dM-xZy"/>
+                                                                <constraint firstItem="KbM-fP-ht6" firstAttribute="leading" secondItem="2g1-0c-KWj" secondAttribute="leading" constant="8" id="nOF-eG-4qr"/>
+                                                                <constraint firstAttribute="bottomMargin" secondItem="KbM-fP-ht6" secondAttribute="bottom" id="w6p-DC-WC8"/>
                                                                 <constraint firstItem="WXP-XU-bGL" firstAttribute="top" secondItem="2g1-0c-KWj" secondAttribute="top" id="wJN-v4-swq"/>
                                                             </constraints>
                                                             <userDefinedRuntimeAttributes>
