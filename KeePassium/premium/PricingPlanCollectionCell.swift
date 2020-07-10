@@ -207,8 +207,10 @@ extension PricingPlanCollectionCell: UITableViewDataSource {
             as! PricingPlanTitleCell
         if pricingPlan.isFree {
             cell.titleLabel?.text = nil
+            cell.titleLabel.isHidden = true
         } else {
             cell.titleLabel?.text = pricingPlan.title
+            cell.titleLabel.isHidden = false
         }
         cell.priceLabel?.attributedText = makeAttributedPrice(for: pricingPlan)
         return cell
