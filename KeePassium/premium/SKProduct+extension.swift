@@ -14,8 +14,13 @@ extension SKProduct {
     /// Price of the product in local currency.
     /// In case of locale trouble, falls back to number-only result.
     var localizedPrice: String {
+        return SKProduct.localizePrice(price: price, locale: priceLocale)
+    }
+    
+    /// Converts the given price to a string with local currency format.
+    public static func localizePrice(price: NSDecimalNumber, locale: Locale) -> String {
         let formatter = NumberFormatter()
-        formatter.locale = priceLocale
+        formatter.locale = locale
         formatter.numberStyle = .currency
         return formatter.string(from: price) ?? String(format: "%.2f", price)
     }
