@@ -143,10 +143,6 @@
 		75679ACE22FD897000372301 /* NewsCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75679ACD22FD896F00372301 /* NewsCenter.swift */; };
 		75679ACF22FD897000372301 /* NewsCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75679ACD22FD896F00372301 /* NewsCenter.swift */; };
 		756AE9D320CF8B5E00995846 /* ChooseIconVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 756AE9D220CF8B5E00995846 /* ChooseIconVC.swift */; };
-		756C4CA62349DFE0003F7E52 /* _201910_ProVersionReleaseNews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 756C4CA52349DFE0003F7E52 /* _201910_ProVersionReleaseNews.swift */; };
-		756C4CA7234A17DC003F7E52 /* _201910_ProVersionReleaseNews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 756C4CA52349DFE0003F7E52 /* _201910_ProVersionReleaseNews.swift */; };
-		756C4CA8234A17DC003F7E52 /* _201910_ProVersionReleaseNews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 756C4CA52349DFE0003F7E52 /* _201910_ProVersionReleaseNews.swift */; };
-		756C4CA9234A17DD003F7E52 /* _201910_ProVersionReleaseNews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 756C4CA52349DFE0003F7E52 /* _201910_ProVersionReleaseNews.swift */; };
 		756C4CC9234A49D1003F7E52 /* PremiumContainerVC.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 756C4CCC234A49D1003F7E52 /* PremiumContainerVC.storyboard */; };
 		756C4CCA234A49D1003F7E52 /* PremiumContainerVC.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 756C4CCC234A49D1003F7E52 /* PremiumContainerVC.storyboard */; };
 		756FF64420BAB20300FF890B /* UIColor+namedColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 756FF64320BAB20300FF890B /* UIColor+namedColors.swift */; };
@@ -825,7 +821,6 @@
 		756B245C243F74E000AA121A /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/PasswordGeneratorVC.strings; sourceTree = "<group>"; };
 		756B245D243F74E000AA121A /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/PasscodeInputVC.strings; sourceTree = "<group>"; };
 		756B245E243F74E000AA121A /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/SettingsBackupTimeoutPickerVC.strings; sourceTree = "<group>"; };
-		756C4CA52349DFE0003F7E52 /* _201910_ProVersionReleaseNews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = _201910_ProVersionReleaseNews.swift; sourceTree = "<group>"; };
 		756C4CBC234A41E4003F7E52 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/PremiumProVC.strings; sourceTree = "<group>"; };
 		756C4CBE234A41E7003F7E52 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/PremiumProVC.strings; sourceTree = "<group>"; };
 		756C4CC0234A41EA003F7E52 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/PremiumProVC.strings; sourceTree = "<group>"; };
@@ -1533,7 +1528,6 @@
 			isa = PBXGroup;
 			children = (
 				75679ACD22FD896F00372301 /* NewsCenter.swift */,
-				756C4CA52349DFE0003F7E52 /* _201910_ProVersionReleaseNews.swift */,
 			);
 			path = news;
 			sourceTree = "<group>";
@@ -2107,7 +2101,6 @@
 				75B59A6923887A2C00239CFF /* SystemIssueDetector.swift in Sources */,
 				750CFC0921BADBA500E62B09 /* DatabaseChooserVC.swift in Sources */,
 				757FB3CD21F9C50700F016FA /* ValidatingTextField.swift in Sources */,
-				756C4CA7234A17DC003F7E52 /* _201910_ProVersionReleaseNews.swift in Sources */,
 				75DDB5E5228BF88C0018A50F /* FileInfoReloader.swift in Sources */,
 				7573FD8C2321664F00DCDA5A /* MultilineButton.swift in Sources */,
 				750CFBD921BAD7FF00E62B09 /* Refreshable.swift in Sources */,
@@ -2240,7 +2233,6 @@
 				75CA73912144381200ADAD64 /* KeyboardLayoutConstraint.swift in Sources */,
 				75A26776228F02C80097C693 /* PremiumCoordinator.swift in Sources */,
 				757FB3CA21F8D34A00F016FA /* PasscodeInputVC.swift in Sources */,
-				756C4CA62349DFE0003F7E52 /* _201910_ProVersionReleaseNews.swift in Sources */,
 				7573FD8B2321664F00DCDA5A /* MultilineButton.swift in Sources */,
 				75A26774228E7D200097C693 /* PremiumVC.swift in Sources */,
 				7546FBC120BFB8DD00C5D834 /* WelcomeVC.swift in Sources */,
@@ -2363,7 +2355,6 @@
 				75B38C36233E5B7C006BDEFC /* KeyboardLayoutConstraint.swift in Sources */,
 				75B38C38233E5B7C006BDEFC /* PremiumCoordinator.swift in Sources */,
 				75B38C39233E5B7C006BDEFC /* PasscodeInputVC.swift in Sources */,
-				756C4CA8234A17DC003F7E52 /* _201910_ProVersionReleaseNews.swift in Sources */,
 				75B38C3A233E5B7C006BDEFC /* MultilineButton.swift in Sources */,
 				75B38C3B233E5B7C006BDEFC /* PremiumVC.swift in Sources */,
 				75B38C3C233E5B7C006BDEFC /* WelcomeVC.swift in Sources */,
@@ -2420,7 +2411,6 @@
 				75B59A6B23887A2C00239CFF /* SystemIssueDetector.swift in Sources */,
 				75D7DF8A233E5E310029AD87 /* DatabaseChooserVC.swift in Sources */,
 				75D7DF8B233E5E310029AD87 /* ValidatingTextField.swift in Sources */,
-				756C4CA9234A17DD003F7E52 /* _201910_ProVersionReleaseNews.swift in Sources */,
 				75D7DF8C233E5E310029AD87 /* FileInfoReloader.swift in Sources */,
 				75D7DF8D233E5E310029AD87 /* MultilineButton.swift in Sources */,
 				75D7DF8E233E5E310029AD87 /* Refreshable.swift in Sources */,

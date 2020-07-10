@@ -42,8 +42,6 @@ extension NewsItem {
 class NewsCenter {
     public static let shared = NewsCenter()
     
-    let proVersionReleaseNews = _201910_ProVersionReleaseNews()
-    
     public func getTopItem() -> NewsItem? {
         if Settings.current.isTestEnvironment {
             // TestFlight
@@ -53,9 +51,7 @@ class NewsCenter {
             // nothing special, fallthrough to general
         }
         
-        if proVersionReleaseNews.isCurrent && !proVersionReleaseNews.isHidden {
-            return proVersionReleaseNews
-        }
+        // check which news is relevant and return an instance
         return nil
     }
 }
