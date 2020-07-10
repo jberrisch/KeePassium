@@ -17,6 +17,7 @@ class PricingPlanTitleCell: UITableViewCell {
     
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var priceLabel: UILabel!
+    @IBOutlet weak var subpriceLabel: UILabel!
 }
 
 protocol PricingPlanConditionCellDelegate: class {
@@ -213,6 +214,7 @@ extension PricingPlanCollectionCell: UITableViewDataSource {
             cell.titleLabel.isHidden = false
         }
         cell.priceLabel?.attributedText = makeAttributedPrice(for: pricingPlan)
+        cell.subpriceLabel?.text = getSubpriceText(for: pricingPlan)
         return cell
     }
     
@@ -306,6 +308,24 @@ extension PricingPlanCollectionCell: UITableViewDataSource {
             let nsPriceRange = NSRange(priceRange, in: priceWithPeriod)
             result.addAttributes(priceAttributes, range: nsPriceRange)
         }
+        return result
+    }
+    
+    /// Given an annual subscription, returns the equivalent monthly price (properly formatted).
+    private func getSubpriceText(for pricingPlan: PricingPlan) -> String? {
+        guard let pricingPlan = pricingPlan as? RealPricingPlan,
+            let iapProduct = InAppProduct(rawValue: pricingPlan.product.productIdentifier),
+            iapProduct.period == .yearly
+            else { return nil }
+        
+        let yearlyPrice = pricingPlan.product.price
+        let monthlyPrice = yearlyPrice.dividing(by: 12)
+        let localizedMonthlyPrice = SKProduct.localizePrice(
+            price: monthlyPrice,
+            locale: pricingPlan.product.priceLocale)
+        let result =  String.localizedStringWithFormat(
+            LString.priceTemplateEquivalentMonthly,
+            localizedMonthlyPrice)
         return result
     }
 }

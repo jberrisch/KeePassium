@@ -24,7 +24,7 @@
                                     <stackView opaque="NO" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="SiG-rk-T4D" userLabel="Wait Panel">
                                         <rect key="frame" x="0.0" y="0.0" width="414" height="55.333333333333336"/>
                                         <subviews>
-                                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="sHV-pv-uji">
+                                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="sHV-pv-uji">
                                                 <rect key="frame" x="8" y="4" width="398" height="20"/>
                                             </activityIndicatorView>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="{Status / error}" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9f1-at-zbB">
@@ -43,7 +43,7 @@
                                     <view contentMode="scaleToFill" verticalCompressionResistancePriority="749" translatesAutoresizingMaskIntoConstraints="NO" id="Rng-i2-FCe" userLabel="CollectionWrapper">
                                         <rect key="frame" x="0.0" y="55.333333333333314" width="414" height="612.66666666666674"/>
                                         <subviews>
-                                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsVerticalScrollIndicator="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="DHw-Tm-Wbg">
+                                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="DHw-Tm-Wbg">
                                                 <rect key="frame" x="0.0" y="0.0" width="414" height="612.66666666666663"/>
                                                 <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                                                 <collectionViewLayout key="collectionViewLayout" id="DqF-Nq-DUa" customClass="PricingPlanCollectionLayout" customModule="KeePassium" customModuleProvider="target"/>
@@ -63,14 +63,14 @@
                                                                             <color key="backgroundColor" systemColor="secondarySystemGroupedBackgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                             <prototypes>
                                                                                 <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="TitleCell" id="Vtp-v7-ygP" customClass="PricingPlanTitleCell" customModule="KeePassium" customModuleProvider="target">
-                                                                                    <rect key="frame" x="0.0" y="55.333332061767578" width="252" height="108"/>
+                                                                                    <rect key="frame" x="0.0" y="55.333332061767578" width="252" height="127.66666412353516"/>
                                                                                     <autoresizingMask key="autoresizingMask"/>
                                                                                     <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Vtp-v7-ygP" id="C5k-6E-2o7">
-                                                                                        <rect key="frame" x="0.0" y="0.0" width="252" height="108"/>
+                                                                                        <rect key="frame" x="0.0" y="0.0" width="252" height="127.66666412353516"/>
                                                                                         <autoresizingMask key="autoresizingMask"/>
                                                                                         <subviews>
                                                                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="dV3-3o-x2x">
-                                                                                                <rect key="frame" x="16" y="25" width="220" height="58"/>
+                                                                                                <rect key="frame" x="16" y="25" width="220" height="77.666666666666671"/>
                                                                                                 <subviews>
                                                                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="752" text="{Title}" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AIy-Yk-0kz" userLabel="Title">
                                                                                                         <rect key="frame" x="87.333333333333329" y="0.0" width="45.666666666666671" height="20.333333333333332"/>
@@ -90,10 +90,19 @@
                                                                                                             <fragment content="#bc-ignore!"/>
                                                                                                         </attributedString>
                                                                                                     </label>
+                                                                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalCompressionResistancePriority="751" verticalCompressionResistancePriority="751" text="{Subprice}" textAlignment="right" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zkd-iK-aqd" userLabel="Subprice">
+                                                                                                        <rect key="frame" x="78" y="61.999999999999993" width="64" height="15.666666666666664"/>
+                                                                                                        <fontDescription key="fontDescription" style="UICTFontTextStyleFootnote"/>
+                                                                                                        <color key="textColor" name="AuxiliaryText"/>
+                                                                                                        <nil key="highlightedColor"/>
+                                                                                                        <attributedString key="userComments">
+                                                                                                            <fragment content="#bc-ignore!"/>
+                                                                                                        </attributedString>
+                                                                                                    </label>
                                                                                                 </subviews>
                                                                                             </stackView>
                                                                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="7mw-3H-531" userLabel="Separator">
-                                                                                                <rect key="frame" x="16" y="99" width="220" height="1"/>
+                                                                                                <rect key="frame" x="16" y="118.66666666666667" width="220" height="1"/>
                                                                                                 <color key="backgroundColor" systemColor="separatorColor" red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.28999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
                                                                                                 <constraints>
                                                                                                     <constraint firstAttribute="height" constant="1" id="czm-og-xzI"/>
@@ -113,11 +122,12 @@
                                                                                     </tableViewCellContentView>
                                                                                     <connections>
                                                                                         <outlet property="priceLabel" destination="osi-an-u9s" id="V2H-ml-NIx"/>
+                                                                                        <outlet property="subpriceLabel" destination="zkd-iK-aqd" id="QtA-sK-n0y"/>
                                                                                         <outlet property="titleLabel" destination="AIy-Yk-0kz" id="6D9-RX-N4X"/>
                                                                                     </connections>
                                                                                 </tableViewCell>
                                                                                 <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="ConditionCell" id="rPV-Ps-KHN" customClass="PricingPlanConditionCell" customModule="KeePassium" customModuleProvider="target">
-                                                                                    <rect key="frame" x="0.0" y="163.33333206176758" width="252" height="37"/>
+                                                                                    <rect key="frame" x="0.0" y="182.99999618530273" width="252" height="37"/>
                                                                                     <autoresizingMask key="autoresizingMask"/>
                                                                                     <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="rPV-Ps-KHN" id="8Zx-wl-ASv">
                                                                                         <rect key="frame" x="0.0" y="0.0" width="252" height="37"/>
@@ -171,7 +181,7 @@
                                                                                     </connections>
                                                                                 </tableViewCell>
                                                                                 <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="BenefitCell" rowHeight="60" id="1dU-uE-J0P" customClass="PricingPlanBenefitCell" customModule="KeePassium" customModuleProvider="target">
-                                                                                    <rect key="frame" x="0.0" y="200.33333206176758" width="252" height="60"/>
+                                                                                    <rect key="frame" x="0.0" y="219.99999618530273" width="252" height="60"/>
                                                                                     <autoresizingMask key="autoresizingMask"/>
                                                                                     <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="1dU-uE-J0P" id="kGG-bH-38I">
                                                                                         <rect key="frame" x="0.0" y="0.0" width="252" height="60"/>
@@ -280,7 +290,7 @@
                                                                     </subviews>
                                                                 </stackView>
                                                             </subviews>
-                                                            <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                                            <color key="backgroundColor" systemColor="secondarySystemGroupedBackgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="trailing" secondItem="WXP-XU-bGL" secondAttribute="trailing" id="AfD-dJ-zVa"/>
                                                                 <constraint firstAttribute="trailing" secondItem="gEe-4O-2U3" secondAttribute="trailing" id="EZ7-dQ-THw"/>

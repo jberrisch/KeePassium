@@ -49,6 +49,10 @@ extension LString {
         "[Premium/Upgrade/price] %@ once",
         value: "%@ once",
         comment: "Product price for once-and-forever premium. [localizedPrice: String]")
+    public static let priceTemplateEquivalentMonthly = NSLocalizedString(
+        "[Premium/Upgrade/price] around %@ / month",
+        value: "≈ %@ / month",
+        comment: "Equivalent monthly price for an annual subscription. For example: `$12/year ≈ $1 / month`")
     public static let trialConditionsTemplate = NSLocalizedString(
         "[Premium/Trial/trial then price]",
         value: "Free trial for %@, then %@",
