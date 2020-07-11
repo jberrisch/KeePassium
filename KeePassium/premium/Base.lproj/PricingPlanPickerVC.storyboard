@@ -63,14 +63,41 @@
                                                                             <color key="backgroundColor" systemColor="secondarySystemGroupedBackgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                             <prototypes>
                                                                                 <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="TitleCell" id="Vtp-v7-ygP" customClass="PricingPlanTitleCell" customModule="KeePassium" customModuleProvider="target">
-                                                                                    <rect key="frame" x="0.0" y="55.333332061767578" width="252" height="127.66666412353516"/>
+                                                                                    <rect key="frame" x="0.0" y="55.333332061767578" width="252" height="132.33332824707031"/>
                                                                                     <autoresizingMask key="autoresizingMask"/>
                                                                                     <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Vtp-v7-ygP" id="C5k-6E-2o7">
-                                                                                        <rect key="frame" x="0.0" y="0.0" width="252" height="127.66666412353516"/>
+                                                                                        <rect key="frame" x="0.0" y="0.0" width="252" height="132.33332824707031"/>
                                                                                         <autoresizingMask key="autoresizingMask"/>
                                                                                         <subviews>
+                                                                                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rvc-pP-gih">
+                                                                                                <rect key="frame" x="167" y="-6" width="91" height="29.333333333333332"/>
+                                                                                                <subviews>
+                                                                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="{Popular}" textAlignment="right" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cEd-4Y-m9a">
+                                                                                                        <rect key="frame" x="8" y="7.9999999999999982" width="67" height="19.333333333333329"/>
+                                                                                                        <directionalEdgeInsets key="directionalLayoutMargins" top="16" leading="16" bottom="16" trailing="16"/>
+                                                                                                        <fontDescription key="fontDescription" style="UICTFontTextStyleCallout"/>
+                                                                                                        <color key="textColor" name="HighlightText"/>
+                                                                                                        <nil key="highlightedColor"/>
+                                                                                                        <attributedString key="userComments">
+                                                                                                            <fragment content="#bc-ignore!"/>
+                                                                                                        </attributedString>
+                                                                                                    </label>
+                                                                                                </subviews>
+                                                                                                <color key="backgroundColor" name="HighlightTint"/>
+                                                                                                <constraints>
+                                                                                                    <constraint firstItem="cEd-4Y-m9a" firstAttribute="top" secondItem="rvc-pP-gih" secondAttribute="top" constant="8" id="2EQ-nC-TtH"/>
+                                                                                                    <constraint firstAttribute="bottom" secondItem="cEd-4Y-m9a" secondAttribute="bottom" constant="2" id="Zas-3g-Fdi"/>
+                                                                                                    <constraint firstItem="cEd-4Y-m9a" firstAttribute="leading" secondItem="rvc-pP-gih" secondAttribute="leading" constant="8" id="kwW-Sp-AGh"/>
+                                                                                                    <constraint firstAttribute="trailing" secondItem="cEd-4Y-m9a" secondAttribute="trailing" constant="16" id="mWL-Dh-lqa"/>
+                                                                                                </constraints>
+                                                                                                <userDefinedRuntimeAttributes>
+                                                                                                    <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                                                                                        <real key="value" value="5"/>
+                                                                                                    </userDefinedRuntimeAttribute>
+                                                                                                </userDefinedRuntimeAttributes>
+                                                                                            </view>
                                                                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="dV3-3o-x2x">
-                                                                                                <rect key="frame" x="16" y="25" width="220" height="77.666666666666671"/>
+                                                                                                <rect key="frame" x="16" y="27.333333333333336" width="220" height="77.666666666666657"/>
                                                                                                 <subviews>
                                                                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="752" text="{Title}" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AIy-Yk-0kz" userLabel="Title">
                                                                                                         <rect key="frame" x="87.333333333333329" y="0.0" width="45.666666666666671" height="20.333333333333332"/>
@@ -81,8 +108,8 @@
                                                                                                             <fragment content="#bc-ignore!"/>
                                                                                                         </attributedString>
                                                                                                     </label>
-                                                                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalCompressionResistancePriority="751" verticalCompressionResistancePriority="751" text="{Price}" textAlignment="right" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="osi-an-u9s" userLabel="Price">
-                                                                                                        <rect key="frame" x="70.333333333333314" y="24.333333333333339" width="79.666666666666686" height="33.666666666666657"/>
+                                                                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalCompressionResistancePriority="751" verticalCompressionResistancePriority="751" ambiguous="YES" text="{Price}" textAlignment="right" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="osi-an-u9s" userLabel="Price">
+                                                                                                        <rect key="frame" x="70.333333333333314" y="24.333333333333332" width="79.666666666666686" height="33.666666666666671"/>
                                                                                                         <fontDescription key="fontDescription" style="UICTFontTextStyleTitle1"/>
                                                                                                         <color key="textColor" name="PrimaryText"/>
                                                                                                         <nil key="highlightedColor"/>
@@ -90,7 +117,7 @@
                                                                                                             <fragment content="#bc-ignore!"/>
                                                                                                         </attributedString>
                                                                                                     </label>
-                                                                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalCompressionResistancePriority="751" verticalCompressionResistancePriority="751" text="{Subprice}" textAlignment="right" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zkd-iK-aqd" userLabel="Subprice">
+                                                                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="249" horizontalCompressionResistancePriority="751" verticalCompressionResistancePriority="751" ambiguous="YES" text="{Subprice}" textAlignment="right" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zkd-iK-aqd" userLabel="Subprice">
                                                                                                         <rect key="frame" x="78" y="61.999999999999993" width="64" height="15.666666666666664"/>
                                                                                                         <fontDescription key="fontDescription" style="UICTFontTextStyleFootnote"/>
                                                                                                         <color key="textColor" name="AuxiliaryText"/>
@@ -102,7 +129,7 @@
                                                                                                 </subviews>
                                                                                             </stackView>
                                                                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="7mw-3H-531" userLabel="Separator">
-                                                                                                <rect key="frame" x="16" y="118.66666666666667" width="220" height="1"/>
+                                                                                                <rect key="frame" x="16" y="123.33333333333333" width="220" height="1"/>
                                                                                                 <color key="backgroundColor" systemColor="separatorColor" red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.28999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
                                                                                                 <constraints>
                                                                                                     <constraint firstAttribute="height" constant="1" id="czm-og-xzI"/>
@@ -114,20 +141,26 @@
                                                                                             <constraint firstItem="7mw-3H-531" firstAttribute="top" relation="greaterThanOrEqual" secondItem="dV3-3o-x2x" secondAttribute="bottom" constant="16" id="5nK-0D-WDd"/>
                                                                                             <constraint firstItem="dV3-3o-x2x" firstAttribute="centerY" secondItem="C5k-6E-2o7" secondAttribute="centerY" priority="250" id="95m-pT-1V3"/>
                                                                                             <constraint firstItem="dV3-3o-x2x" firstAttribute="top" relation="greaterThanOrEqual" secondItem="C5k-6E-2o7" secondAttribute="topMargin" constant="4" id="Fh4-Cc-rOV"/>
+                                                                                            <constraint firstItem="rvc-pP-gih" firstAttribute="top" secondItem="C5k-6E-2o7" secondAttribute="top" constant="-6" id="K0a-mY-hzA"/>
                                                                                             <constraint firstAttribute="bottom" secondItem="7mw-3H-531" secondAttribute="bottom" constant="8" id="OMu-yb-e5M"/>
+                                                                                            <constraint firstItem="rvc-pP-gih" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="C5k-6E-2o7" secondAttribute="leading" id="R3n-sR-Uhe"/>
                                                                                             <constraint firstAttribute="trailing" secondItem="7mw-3H-531" secondAttribute="trailing" constant="16" id="gF1-cK-IiS"/>
                                                                                             <constraint firstItem="dV3-3o-x2x" firstAttribute="leading" secondItem="C5k-6E-2o7" secondAttribute="leadingMargin" id="mGq-O9-zPQ"/>
                                                                                             <constraint firstAttribute="trailingMargin" secondItem="dV3-3o-x2x" secondAttribute="trailing" id="qHd-r1-PyF"/>
+                                                                                            <constraint firstItem="dV3-3o-x2x" firstAttribute="top" relation="greaterThanOrEqual" secondItem="rvc-pP-gih" secondAttribute="bottom" constant="4" id="usm-nV-m5M"/>
+                                                                                            <constraint firstAttribute="trailing" secondItem="rvc-pP-gih" secondAttribute="trailing" constant="-6" id="zCu-7I-tdj"/>
                                                                                         </constraints>
                                                                                     </tableViewCellContentView>
                                                                                     <connections>
+                                                                                        <outlet property="highlightLabel" destination="cEd-4Y-m9a" id="Rfc-nC-VL5"/>
+                                                                                        <outlet property="highlightPanel" destination="rvc-pP-gih" id="lTc-r7-aud"/>
                                                                                         <outlet property="priceLabel" destination="osi-an-u9s" id="V2H-ml-NIx"/>
                                                                                         <outlet property="subpriceLabel" destination="zkd-iK-aqd" id="QtA-sK-n0y"/>
                                                                                         <outlet property="titleLabel" destination="AIy-Yk-0kz" id="6D9-RX-N4X"/>
                                                                                     </connections>
                                                                                 </tableViewCell>
                                                                                 <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="ConditionCell" id="rPV-Ps-KHN" customClass="PricingPlanConditionCell" customModule="KeePassium" customModuleProvider="target">
-                                                                                    <rect key="frame" x="0.0" y="182.99999618530273" width="252" height="37"/>
+                                                                                    <rect key="frame" x="0.0" y="187.66666030883789" width="252" height="37"/>
                                                                                     <autoresizingMask key="autoresizingMask"/>
                                                                                     <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="rPV-Ps-KHN" id="8Zx-wl-ASv">
                                                                                         <rect key="frame" x="0.0" y="0.0" width="252" height="37"/>
@@ -181,7 +214,7 @@
                                                                                     </connections>
                                                                                 </tableViewCell>
                                                                                 <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="BenefitCell" rowHeight="60" id="1dU-uE-J0P" customClass="PricingPlanBenefitCell" customModule="KeePassium" customModuleProvider="target">
-                                                                                    <rect key="frame" x="0.0" y="219.99999618530273" width="252" height="60"/>
+                                                                                    <rect key="frame" x="0.0" y="224.66666030883789" width="252" height="60"/>
                                                                                     <autoresizingMask key="autoresizingMask"/>
                                                                                     <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="1dU-uE-J0P" id="kGG-bH-38I">
                                                                                         <rect key="frame" x="0.0" y="0.0" width="252" height="60"/>
@@ -411,6 +444,12 @@
         </namedColor>
         <namedColor name="DisabledText">
             <color red="0.75300002098083496" green="0.75300002098083496" blue="0.75300002098083496" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="HighlightText">
+            <color red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="HighlightTint">
+            <color red="0.91900002956390381" green="0.24799999594688416" blue="0.14599999785423279" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="PrimaryText">
             <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

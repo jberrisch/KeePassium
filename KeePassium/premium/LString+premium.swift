@@ -36,6 +36,10 @@ extension LString {
         "[Premium/Price Plan/Free/price]",
         value: "Free",
         comment: "Price of the free pricing plan")
+    public static let premiumPopularPlan = NSLocalizedString(
+        "[Premium/Price Plan/popular]",
+        value: "Popular",
+        comment: "Marks the default pricing plan")
     
     public static let priceTemplateMonthly = NSLocalizedString(
         "[Premium/Upgrade/price] %@ / month",

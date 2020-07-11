@@ -15,6 +15,8 @@ import StoreKit
 class PricingPlanTitleCell: UITableViewCell {
     static let storyboardID = "TitleCell"
     
+    @IBOutlet weak var highlightLabel: UILabel!
+    @IBOutlet weak var highlightPanel: UIView!
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var priceLabel: UILabel!
     @IBOutlet weak var subpriceLabel: UILabel!
@@ -213,6 +215,8 @@ extension PricingPlanCollectionCell: UITableViewDataSource {
             cell.titleLabel?.text = pricingPlan.title
             cell.titleLabel.isHidden = false
         }
+        cell.highlightPanel.isHidden = !pricingPlan.isDefault
+        cell.highlightLabel.text = LString.premiumPopularPlan
         cell.priceLabel?.attributedText = makeAttributedPrice(for: pricingPlan)
         cell.subpriceLabel?.text = getSubpriceText(for: pricingPlan)
         return cell
