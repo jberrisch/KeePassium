@@ -80,7 +80,7 @@ public class URLReference:
     }
     
     /// Default timeout for async operations. If exceeded, the operation will finish with `AccessError.timeout` error.
-    public static let defaultTimeout: TimeInterval = 5.0
+    public static let defaultTimeout: TimeInterval = 15.0
     
     /// Returns the most recent known target file name.
     /// In case of error returns a predefined default string.
