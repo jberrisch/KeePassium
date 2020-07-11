@@ -226,7 +226,7 @@ class PricingPlanPremiumMonthly: RealPricingPlan {
             PricingPlanCondition(kind: .updatesAndFixes, isIncluded: true, moreInfo: .none),
             PricingPlanCondition(kind: .emailSupport, isIncluded: true, moreInfo: .none),
             PricingPlanCondition(kind: .allPremiumFeatures, isIncluded: true, moreInfo: .none),
-            PricingPlanCondition(kind: .perpetualFallback, isIncluded: true, moreInfo: .perpetualFallback),
+//            PricingPlanCondition(kind: .perpetualFallback, isIncluded: true, moreInfo: .perpetualFallback),
         ]
         self.benefits = [
             PricingPlanBenefit.multipleDatabases,
@@ -250,7 +250,7 @@ class PricingPlanPremiumYearly: RealPricingPlan {
             PricingPlanCondition(kind: .updatesAndFixes, isIncluded: true, moreInfo: .none),
             PricingPlanCondition(kind: .emailSupport, isIncluded: true, moreInfo: .none),
             PricingPlanCondition(kind: .allPremiumFeatures, isIncluded: true, moreInfo: .none),
-            PricingPlanCondition(kind: .perpetualFallback, isIncluded: true, moreInfo: .perpetualFallback),
+//            PricingPlanCondition(kind: .perpetualFallback, isIncluded: true, moreInfo: .perpetualFallback),
         ]
         self.benefits = [
             PricingPlanBenefit.multipleDatabases,
