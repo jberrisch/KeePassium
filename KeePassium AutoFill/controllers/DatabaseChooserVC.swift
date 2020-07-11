@@ -44,7 +44,7 @@ class DatabaseChooserVC: UITableViewController, DynamicFileList, Refreshable {
         clearsSelectionOnViewWillAppear = true
         
         let refreshControl = UIRefreshControl()
-        refreshControl.addTarget(self, action: #selector(refresh), for: .valueChanged)
+        refreshControl.addTarget(self, action: #selector(didPullToRefresh), for: .valueChanged)
         self.refreshControl = refreshControl
 
         let longPressGestureRecognizer = UILongPressGestureRecognizer(
@@ -63,6 +63,22 @@ class DatabaseChooserVC: UITableViewController, DynamicFileList, Refreshable {
     
     // MARK: - Refreshing and sorting
     
+    @objc
+    private func didPullToRefresh() {
+        // In most cases, refresh will be triggered not here but in scrollViewDidEndDragging()
+        if !tableView.isDragging {
+            refreshControl?.endRefreshing()
+            refresh()
+        }
+    }
+    
+    override func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if refreshControl?.isRefreshing ?? false {
+            refreshControl?.endRefreshing()
+            refresh()
+        }
+    }
+
     @objc func refresh() {
         databaseRefs = FileKeeper.shared.getAllReferences(
             fileType: .database,
@@ -73,12 +89,10 @@ class DatabaseChooserVC: UITableViewController, DynamicFileList, Refreshable {
             for: databaseRefs,
             update: { [weak self] (ref) in
                 guard let self = self else { return }
-                self.refreshControl?.endRefreshing()
                 self.sortAndAnimateFileInfoUpdate(refs: &self.databaseRefs, in: self.tableView)
             },
             completion: { [weak self] in
                 guard let self = self else { return }
-                self.refreshControl?.endRefreshing()
                 DispatchQueue.main.asyncAfter(deadline: .now() + self.sortingAnimationDuration) {
                     [weak self] in
                     self?.sortFileList()

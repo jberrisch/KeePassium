@@ -55,7 +55,7 @@ class ChooseKeyFileVC: UITableViewController, Refreshable {
         
         fileKeeperNotifications = FileKeeperNotifications(observer: self)
         let refreshControl = UIRefreshControl()
-        refreshControl.addTarget(self, action: #selector(refresh), for: .valueChanged)
+        refreshControl.addTarget(self, action: #selector(didPullToRefresh), for: .valueChanged)
         self.refreshControl = refreshControl
         
         let longPressGestureRecognizer = UILongPressGestureRecognizer(
@@ -90,9 +90,25 @@ class ChooseKeyFileVC: UITableViewController, Refreshable {
         super.viewDidDisappear(animated)
     }
 
-    // MARK: - Refreshing
+    // MARK: - Refreshing and sorting
     
-    @objc func refresh() {
+    @objc
+    private func didPullToRefresh() {
+        // In most cases, refresh will be triggered not here but in scrollViewDidEndDragging()
+        if !tableView.isDragging {
+            refreshControl?.endRefreshing()
+            refresh()
+        }
+    }
+    
+    override func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if refreshControl?.isRefreshing ?? false {
+            refreshControl?.endRefreshing()
+            refresh()
+        }
+    }
+
+    func refresh() {
         // Key files are non-modifiable, so no backups
         urlRefs = FileKeeper.shared.getAllReferences(fileType: .keyFile, includeBackup: false)
         fileInfoReloader.getInfo(
@@ -102,9 +118,6 @@ class ChooseKeyFileVC: UITableViewController, Refreshable {
             },
             completion: { [weak self] in
                 self?.sortFileList()
-                if let refreshControl = self?.refreshControl, refreshControl.isRefreshing {
-                    refreshControl.endRefreshing()
-                }
             }
         )
         // animates each row until it updates

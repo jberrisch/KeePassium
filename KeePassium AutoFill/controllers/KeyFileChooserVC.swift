@@ -33,7 +33,7 @@ class KeyFileChooserVC: UITableViewController, Refreshable {
         super.viewDidLoad()
         
         let refreshControl = UIRefreshControl()
-        refreshControl.addTarget(self, action: #selector(refresh), for: .valueChanged)
+        refreshControl.addTarget(self, action: #selector(didPullToRefresh), for: .valueChanged)
         self.refreshControl = refreshControl
         
         let longPressGestureRecognizer = UILongPressGestureRecognizer(
@@ -44,7 +44,25 @@ class KeyFileChooserVC: UITableViewController, Refreshable {
         refresh()
     }
 
-    @objc func refresh() {
+    // MARK: - Refreshing and sorting
+    
+    @objc
+    private func didPullToRefresh() {
+        // In most cases, refresh will be triggered not here but in scrollViewDidEndDragging()
+        if !tableView.isDragging {
+            refreshControl?.endRefreshing()
+            refresh()
+        }
+    }
+    
+    override func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if refreshControl?.isRefreshing ?? false {
+            refreshControl?.endRefreshing()
+            refresh()
+        }
+    }
+
+    func refresh() {
         keyFileRefs = FileKeeper.shared.getAllReferences(fileType: .keyFile, includeBackup: false)
         fileInfoReloader.getInfo(
             for: keyFileRefs,
@@ -53,9 +71,6 @@ class KeyFileChooserVC: UITableViewController, Refreshable {
             },
             completion: { [weak self] in
                 self?.sortFileList()
-                if let refreshControl = self?.refreshControl, refreshControl.isRefreshing {
-                    refreshControl.endRefreshing()
-                }
             }
         )
         // animates each row until it updates
