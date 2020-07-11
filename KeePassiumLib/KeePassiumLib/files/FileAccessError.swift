@@ -11,7 +11,7 @@ import Foundation
 /// Errors while accessing a local or remote file; including timeout.
 public enum FileAccessError: LocalizedError {
     /// Operation timed out
-    case timeout
+    case timeout(fileProvider: FileProvider?)
     
     /// There is no cached file info, and caller asked not to refresh it.
     case noInfoAvailable
@@ -25,12 +25,23 @@ public enum FileAccessError: LocalizedError {
     
     public var errorDescription: String? {
         switch self {
-        case .timeout:
-            return NSLocalizedString(
-                "[FileAccessError/timeout]",
-                bundle: Bundle.framework,
-                value: "Storage provider did not respond in a timely manner",
-                comment: "Error message shown when file access operation has been aborted on timeout.")
+        case .timeout(let fileProvider):
+            if let fileProvider = fileProvider {
+                return String.localizedStringWithFormat(
+                    NSLocalizedString(
+                        "[FileAccessError/Timeout/knownFileProvider]",
+                        bundle: Bundle.framework,
+                        value: "%@ does not respond.",
+                        comment: "Error message: file provider does not respond to requests (quickly enough). For example: `Google Drive does not respond`"),
+                    fileProvider.localizedName
+                )
+            } else {
+                return NSLocalizedString(
+                    "[FileAccessError/Timeout/genericFileProvider]",
+                    bundle: Bundle.framework,
+                    value: "Storage provider does not respond.",
+                    comment: "Error message: storage provider app (e.g. Google Drive) does not respond to requests (quickly enough).")
+            }
         case .noInfoAvailable:
             assertionFailure("Should not be shown to the user")
             return nil

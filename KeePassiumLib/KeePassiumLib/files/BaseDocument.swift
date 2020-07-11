@@ -18,11 +18,20 @@ public class BaseDocument: UIDocument, Synchronizable {
     public internal(set) var error: FileAccessError?
     public var errorMessage: String? { error?.localizedDescription }
     public var hasError: Bool { return error != nil }
+    public internal(set) var fileProvider: FileProvider?
     
     private let backgroundQueue = DispatchQueue(
         label: "com.keepassium.Document",
         qos: .default,
         attributes: [.concurrent])
+    
+    public convenience init(fileURL url: URL, fileProvider: FileProvider?) {
+        self.init(fileURL: url)
+        self.fileProvider = fileProvider
+    }
+    private override init(fileURL url: URL) {
+        super.init(fileURL: url)
+    }
     
     /// Attempts to open the document with a default timeout (`BaseDocument.timeout`).
     /// - Parameter callback: called with the result of opening (either document data or a `FileAccessError`)
@@ -63,8 +72,8 @@ public class BaseDocument: UIDocument, Synchronizable {
                 // Yay, we've opened the document before the timeout!
                 // Nothing else to do, everything will be done in the callback above.
             }, onTimeout: {
-                self.error = .timeout
-                callback(.failure(.timeout))
+                self.error = .timeout(fileProvider: self.fileProvider)
+                callback(.failure(.timeout(fileProvider: self.fileProvider)))
             }
         )
     }

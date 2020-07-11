@@ -22,6 +22,7 @@ class FileCoordinator: NSFileCoordinator, Synchronizable {
     
     public func coordinateReading(
         at url: URL,
+        fileProvider: FileProvider?,
         options: NSFileCoordinator.ReadingOptions,
         timeout: TimeInterval,
         callback: @escaping ReadingCallback)
@@ -54,7 +55,7 @@ class FileCoordinator: NSFileCoordinator, Synchronizable {
                 // Yay, we've got into the coordinated read before timeout!
                 // Nothing else to do, everything will be done in the callback above.
             }, onTimeout: {
-                callback(.timeout)
+                callback(.timeout(fileProvider: fileProvider))
             }
         )
     }

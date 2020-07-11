@@ -443,7 +443,7 @@ extension ViewEntryFilesVC: UIDocumentPickerDelegate {
                 comment: "Status message: loading file to be attached to an entry"),
             allowCancelling: false)
         
-        let doc = BaseDocument(fileURL: url)
+        let doc = BaseDocument(fileURL: url, fileProvider: nil) // FP unknown
         doc.open { [weak self] result in
             guard let self = self else { return }
             switch result {
