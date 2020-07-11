@@ -28,13 +28,14 @@ public class ByteArray: Eraseable, Codable, CustomDebugStringConvertible {
         }
         
         func read(count: Int) -> ByteArray? {
-            let out = ByteArray(count: count)
+            var out = [UInt8].init(repeating: 0, count: count)
 
             var bytesRead = 0
             while bytesRead < count {
                 let remainingCount = count - bytesRead
-                let n = out.withMutableBytes { (bytes: inout [UInt8]) in
-                    return base.read(&bytes + bytesRead, maxLength: remainingCount)
+                let n = out.withUnsafeMutableBufferPointer {
+                    (bytes: inout UnsafeMutableBufferPointer<UInt8>) in
+                    return base.read(bytes.baseAddress! + bytesRead, maxLength: remainingCount)
                 }
                 guard n > 0 else {
                     print("Stream reading problem")
@@ -42,7 +43,7 @@ public class ByteArray: Eraseable, Codable, CustomDebugStringConvertible {
                 }
                 bytesRead += n
             }
-            return out
+            return ByteArray(bytes: out)
         }
         
         /// Skips up to `count` bytes from the stream.

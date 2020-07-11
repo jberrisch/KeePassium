@@ -24,38 +24,25 @@ class PremiumCoordinator: NSObject {
     
     private let premiumManager: PremiumManager
     private let navigationController: UINavigationController
-    private let premiumContainerVC: PremiumContainerVC
-    private let premiumVC: PremiumVC
-    private let premiumProVC: PremiumProVC
+    private let planPicker: PricingPlanPickerVC
     
-    private var availableProducts = [SKProduct]()
+    private var availablePricingPlans = [PricingPlan]()
     private var isProductsRefreshed: Bool = false
     
     init(presentingViewController: UIViewController) {
         self.premiumManager = PremiumManager.shared
         self.presentingViewController = presentingViewController
-        premiumContainerVC = PremiumContainerVC.create()
-        premiumVC = PremiumVC.create()
-        premiumProVC = PremiumProVC.create()
-        navigationController = UINavigationController(rootViewController: premiumContainerVC)
+        planPicker = PricingPlanPickerVC.create()
+        navigationController = UINavigationController(rootViewController: planPicker)
         super.init()
 
         navigationController.modalPresentationStyle = .formSheet
         navigationController.presentationController?.delegate = self
 
-        premiumVC.delegate = self
-        premiumProVC.delegate = self
-        premiumContainerVC.navigationDelegate = self
-        premiumContainerVC.iapPage = premiumVC
-        premiumContainerVC.proPage = premiumProVC
+        planPicker.delegate = self
     }
     
-    func start(tryRestoringPurchasesFirst: Bool=false, startWithPro: Bool=false) {
-        if startWithPro {
-            premiumContainerVC.setPage(index: 1, animated: false)
-        } else {
-            premiumContainerVC.setPage(index: 0, animated: false)
-        }
+    func start(tryRestoringPurchasesFirst: Bool=false) {
         premiumManager.delegate = self
         self.presentingViewController.present(navigationController, animated: true, completion: nil)
         
@@ -64,7 +51,7 @@ class PremiumCoordinator: NSObject {
         
         // disable manual "Restore Purchases" while loading products,
         // because this might interfere with the workflow.
-        premiumVC.allowRestorePurchases = false
+        planPicker.isPurchaseEnabled = false
         
         if tryRestoringPurchasesFirst {
             restorePurchases()
@@ -78,38 +65,37 @@ class PremiumCoordinator: NSObject {
     }
     
     fileprivate func refreshAvailableProducts() {
-        premiumManager.requestAvailableProducts(completionHandler: {
+        premiumManager.requestAvailableProducts() {
             [weak self] (products, error) in
             UIApplication.shared.isNetworkActivityIndicatorVisible = false
             guard let self = self else { return }
             
             // we're done, can restore purchases now
-            self.premiumVC.allowRestorePurchases = true
+            self.planPicker.isPurchaseEnabled = true
             
-            if let error = error {
-                self.premiumVC.showMessage(error.localizedDescription)
+            guard error == nil else {
+                self.planPicker.showMessage(error!.localizedDescription)
                 return
             }
+            
             guard let products = products, products.count > 0 else {
-                let message = NSLocalizedString(
-                    "[Premium/Upgrade] Hmm, there are no upgrades available. This should not happen, please contact support.",
-                    value: "Hmm, there are no upgrades available. This should not happen, please contact support.",
-                    comment: "Error message: AppStore returned no available in-app purchase options")
-                self.premiumVC.showMessage(message)
+                let message = LString.errorNoPurchasesAvailable
+                self.planPicker.showMessage(message)
                 return
             }
-            self.isProductsRefreshed = true
-            self.availableProducts = products
-            let currentPage = self.premiumContainerVC.viewControllers?.first
-            if currentPage === self.premiumVC {
-                self.premiumVC.refresh(animated: true)
+            var availablePlans = products.compactMap { (product) in
+                return PricingPlanFactory.make(for: product)
             }
-        })
+            availablePlans.append(FreePricingPlan()) // free tier is always available
+            self.isProductsRefreshed = true
+            self.availablePricingPlans = availablePlans
+            self.planPicker.refresh(animated: true)
+            self.planPicker.scrollToDefaultPlan(animated: false)
+        }
     }
     
     func setPurchasing(_ isPurchasing: Bool) {
-        premiumContainerVC.setPurchasing(isPurchasing)
-        premiumVC.setPurchasing(isPurchasing)
+        planPicker.setPurchasing(isPurchasing)
     }
     
     func finish(animated: Bool, completion: (() -> Void)?) {
@@ -120,50 +106,32 @@ class PremiumCoordinator: NSObject {
     }
 }
 
-// MARK: - PremiumContainerNavigationDelegate
-extension PremiumCoordinator: PremiumContainerNavigationDelegate {
-    func didPressCancel(in premiumContainerVC: PremiumContainerVC) {
-        premiumManager.delegate = nil
-        finish(animated: true, completion: nil)
+// MARK: - PricingPlanPickerDelegate
+extension PremiumCoordinator: PricingPlanPickerDelegate {
+    func getAvailablePlans() -> [PricingPlan] {
+        return availablePricingPlans
     }
-}
 
-// MARK: - PremiumDelegate
-extension PremiumCoordinator: PremiumDelegate {
-    func getAvailableProducts() -> [SKProduct] {
-        return availableProducts
-    }
-    
-    func didPressBuy(product: SKProduct, in premiumController: PremiumVC) {
+    func didPressBuy(product: SKProduct, in viewController: PricingPlanPickerVC) {
         setPurchasing(true)
         premiumManager.purchase(product)
     }
     
-    func didPressCancel(in premiumController: PremiumVC) {
+    func didPressCancel(in viewController: PricingPlanPickerVC) {
         premiumManager.delegate = nil
         finish(animated: true, completion: nil)
     }
     
-    func didPressRestorePurchases(in premiumController: PremiumVC) {
+    func didPressRestorePurchases(in viewController: PricingPlanPickerVC) {
         setPurchasing(true)
         restorePurchases()
-    }
-}
-
-extension PremiumCoordinator: PremiumProDelegate {
-    func didPressOpenInAppStore(_ sender: PremiumProVC) {
-        AppStoreHelper.openInAppStore(appID: AppStoreHelper.proVersionID)
     }
 }
 
 // MARK: - PremiumManagerDelegate
 extension PremiumCoordinator: PremiumManagerDelegate {
     func purchaseStarted(in premiumManager: PremiumManager) {
-        premiumVC.showMessage(NSLocalizedString(
-            "[Premium/Upgrade/Progress] Purchasing...",
-            value: "Purchasing...",
-            comment: "Status: in-app purchase started")
-        )
+        planPicker.showMessage(LString.statusPurchasing)
         setPurchasing(true)
     }
     
@@ -174,10 +142,7 @@ extension PremiumCoordinator: PremiumManagerDelegate {
     
     func purchaseDeferred(in premiumManager: PremiumManager) {
         setPurchasing(false)
-        premiumVC.showMessage(NSLocalizedString(
-            "[Premium/Upgrade/Deferred/text] Thank you! You can use KeePassium while purchase is awaiting approval from a parent",
-            value: "Thank you! You can use KeePassium while purchase is awaiting approval from a parent",
-            comment: "Message shown when in-app purchase is deferred until parental approval."))
+        planPicker.showMessage(LString.statusDeferredPurchase)
     }
     
     func purchaseFailed(with error: Error, in premiumManager: PremiumManager) {
@@ -185,13 +150,13 @@ extension PremiumCoordinator: PremiumManagerDelegate {
             title: LString.titleError,
             message: error.localizedDescription,
             cancelButtonTitle: LString.actionDismiss)
-        premiumVC.present(errorAlert, animated: true, completion: nil)
+        planPicker.present(errorAlert, animated: true, completion: nil)
         setPurchasing(false)
     }
     
     func purchaseCancelledByUser(in premiumManager: PremiumManager) {
         setPurchasing(false)
-        // keep premiumVC on screen, otherwise might look like something crashed
+        // keep planPicker on screen, otherwise might look like something crashed
     }
     
     func purchaseRestoringFinished(in premiumManager: PremiumManager) {
@@ -200,21 +165,15 @@ extension PremiumCoordinator: PremiumManagerDelegate {
         case .subscribed:
             // successfully restored
             let successAlert = UIAlertController(
-                title: NSLocalizedString(
-                    "[Premium/Upgrade/Restored/title] Purchase Restored",
-                    value: "Purchase Restored",
-                    comment: "Title of the message shown after in-app purchase was successfully restored"),
-                message: NSLocalizedString(
-                    "[Premium/Upgrade/Restored/text] Upgrade successful, enjoy the app!",
-                    value: "Upgrade successful, enjoy the app!",
-                    comment: "Text of the message shown after in-app purchase was successfully restored"),
+                title: LString.titlePurchaseRestored,
+                message: LString.purchaseRestored,
                 preferredStyle: .alert)
             let okAction = UIAlertAction(title: LString.actionOK, style: .default) {
                 [weak self] _ in
                 self?.finish(animated: true, completion: nil)
             }
             successAlert.addAction(okAction)
-            premiumVC.present(successAlert, animated: true, completion: nil)
+            planPicker.present(successAlert, animated: true, completion: nil)
         default:
             // sorry, no previous purchase could be restored
             if !isProductsRefreshed {
@@ -222,26 +181,18 @@ extension PremiumCoordinator: PremiumManagerDelegate {
                 refreshAvailableProducts()
             }
             let notRestoredAlert = UIAlertController.make(
-                title: NSLocalizedString(
-                    "[Premium/Upgrade/RestoreFailed/title] Sorry",
-                    value: "Sorry",
-                    comment: "Title of an error message: there were no in-app purchases that can be restored"),
-                message: NSLocalizedString(
-                    "[Premium/Upgrade/RestoreFailed/text] No previous purchase could be restored.",
-                    value: "No previous purchase could be restored.",
-                    comment: "Text of an error message: there were no in-app purchases that can be restored"),
+                title: LString.titleRestorePurchaseError,
+                message: LString.errorNoPreviousPurchaseToRestore,
                 cancelButtonTitle: LString.actionOK)
-            premiumVC.present(notRestoredAlert, animated: true, completion: nil)
+            planPicker.present(notRestoredAlert, animated: true, completion: nil)
             // keep premiumVC on screen for eventual purchase
         }
     }
-    
-    
 }
 
 // MARK: - UIAdaptivePresentationControllerDelegate
 extension PremiumCoordinator: UIAdaptivePresentationControllerDelegate {
     func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
-        didPressCancel(in: premiumVC)
+        didPressCancel(in: planPicker)
     }
 }
