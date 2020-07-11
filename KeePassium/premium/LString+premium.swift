@@ -71,6 +71,45 @@ extension LString {
         value: "What you are missing",
         comment: "List of premium benefits/advantages")
     
+    // MARK: Pricing plan conditions
+    
+    public static let planConditionUpdatesAndFixes = NSLocalizedString(
+        "[Premium/Price Plan/Conditions/updates and bug fixes]",
+        value: "Updates and bug fixes",
+        comment: "What's included in a price plan")
+    public static let planConditionFreemiumReminders = NSLocalizedString(
+        "[Premium/Price Plan/Conditions/freemium reminders]",
+        value: "Freemium reminders",
+        comment: "What's included in a free plan: reminders that the version is free")
+    public static let planConditionCommunitySupport = NSLocalizedString(
+        "[Premium/Price Plan/Conditions/community support]",
+        value: "Customer support: Online forums",
+        comment: "What's included in a free plan: support via forums (as opposed to email support)")
+    public static let planConditionEmailSupport = NSLocalizedString(
+        "[Premium/Price Plan/Conditions/email support]",
+        value: "Customer support: Email",
+        comment: "What's included in a price plan: support via email")
+    public static let planConditionOneYearEmailSupport = NSLocalizedString(
+        "[Premium/Price Plan/Conditions/1 year email support]",
+        value: "One year of email support",
+        comment: "What's included in a price plan: 1 year of support via email")
+    public static let planConditionAllPremiumFeatures = NSLocalizedString(
+        "[Premium/Price Plan/Conditions/all premium features]",
+        value: "All premium features",
+        comment: "What's included in a price plan")
+    public static let planConditionCurrentPremiumFeatures = NSLocalizedString(
+        "[Premium/Price Plan/Conditions/current premium features]",
+        value: "Current premium features",
+        comment: "What's included in a price plan: existing premium features only (as opposed to `current + future`)")
+    public static let planConditionUpcomingPremiumFeatures = NSLocalizedString(
+        "[Premium/Price Plan/Conditions/future premium features]",
+        value: "Future premium features",
+        comment: "What's included in a price plan: upcoming premium features (as opposed to `current only`)")
+    public static let planConditionPerpetualFallback = NSLocalizedString(
+        "[Premium/Price Plan/Conditions/perpetual fallback]",
+        value: "Rent-to-own license (Perpetual fallback license)",
+        comment: "What's included in a price plan. Please leave `perpetual fallback license` in English.")
+
     // MARK: Purchase call for action
     
     public static let premiumCallToActionFree = NSLocalizedString(

@@ -16,10 +16,7 @@ struct PricingPlanCondition {
         case communitySupport
         case emailSupport
         case oneYearEmailSupport
-        case oneDatabase
-        case unlimitedDatabases
         case allPremiumFeatures
-        case accessToAllPremiumFeatures
         case upcomingPremiumFeatures
         case currentPremiumFeatures
         case perpetualFallback
@@ -35,29 +32,23 @@ struct PricingPlanCondition {
     var localizedTitle: String {
         switch kind {
         case .updatesAndFixes:
-            return "Updates and bug fixes"
+            return LString.planConditionUpdatesAndFixes
         case .freemiumReminders:
-            return "Freemium reminders"
+            return LString.planConditionFreemiumReminders
         case .communitySupport:
-            return "Customer support: Online forums"
+            return LString.planConditionCommunitySupport
         case .emailSupport:
-            return "Customer support: Email"
+            return LString.planConditionEmailSupport
         case .oneYearEmailSupport:
-            return "One year of email support"
-        case .oneDatabase:
-            return "One database only"
-        case .unlimitedDatabases:
-            return "Multiple databases"
+            return LString.planConditionOneYearEmailSupport
         case .allPremiumFeatures:
-            return "All premium features"
-        case .accessToAllPremiumFeatures:
-            return "Access to all premium features"
+            return LString.planConditionAllPremiumFeatures
         case .upcomingPremiumFeatures:
-            return "Future premium features"
+            return LString.planConditionUpcomingPremiumFeatures
         case .currentPremiumFeatures:
-            return "Current premium features"
+            return LString.planConditionCurrentPremiumFeatures
         case .perpetualFallback:
-            return "Rent-to-own license (Perpetual fallback license)"
+            return LString.planConditionPerpetualFallback
         }
     }
 }
