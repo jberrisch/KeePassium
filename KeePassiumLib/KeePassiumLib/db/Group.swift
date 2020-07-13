@@ -30,6 +30,13 @@ public class Group: DatabaseItem, Eraseable {
     /// True if the group is in Recycle Bin
     public var isDeleted: Bool
     
+    /// Whether entries of this group should be included in search results.
+    /// Applies to further restrict other criteria (e.g. non-deleted only, current level only, etc).
+    /// Applies only to the current level, subgroups can return a different value.
+    public var isIncludeEntriesInSearch: Bool {
+        return true // no additiona filtering
+    }
+    
     private var isChildrenModified: Bool
     public var groups = [Group]()
     public var entries = [Entry]()
@@ -262,6 +269,9 @@ public class Group: DatabaseItem, Eraseable {
             }
         }
         
+        guard isIncludeEntriesInSearch else {
+            return
+        }
         for entry in entries {
             if entry.matches(query: query) {
                 result.append(entry)
