@@ -59,8 +59,8 @@ extension LString {
         comment: "Equivalent monthly price for an annual subscription. For example: `$12/year ≈ $1 / month`")
     public static let trialConditionsTemplate = NSLocalizedString(
         "[Premium/Trial/trial then price]",
-        value: "Free trial for %@, then %@",
-        comment: "Trial conditions. For example `Free trial for 30 days, then $1 per month`")
+        value: "%@ free, then %@",
+        comment: "Trial conditions. For example `30 days free, then $1 per month`")
     
     public static let premiumWhatYouGet = NSLocalizedString(
         "[Premium/Benefits/Positive/header] ",
@@ -118,8 +118,8 @@ extension LString {
         comment: "Call to action: continue using the free version")
     public static let premiumCallToActionStartTrial = NSLocalizedString(
         "[Premium/CallToAction/startTrial]",
-        value: "Start Free Trial",
-        comment: "Call to action: upgrade to premium")
+        value: "Try it free",
+        comment: "Call to action: start free trial")
     public static let premiumCallToActionUpgradeNow = NSLocalizedString(
         "[Premium/CallToAction/upgradeNow]",
         value: "Upgrade Now",
