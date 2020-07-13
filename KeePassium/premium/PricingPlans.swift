@@ -19,7 +19,7 @@ struct PricingPlanCondition {
         case allPremiumFeatures
         case upcomingPremiumFeatures
         case currentPremiumFeatures
-        case perpetualFallback
+//        case perpetualFallback
     }
     enum HelpReference {
         case none
@@ -47,8 +47,8 @@ struct PricingPlanCondition {
             return LString.planConditionUpcomingPremiumFeatures
         case .currentPremiumFeatures:
             return LString.planConditionCurrentPremiumFeatures
-        case .perpetualFallback:
-            return LString.planConditionPerpetualFallback
+//        case .perpetualFallback:
+//            return LString.planConditionPerpetualFallback
         }
     }
 }
