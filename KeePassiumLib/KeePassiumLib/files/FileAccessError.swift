@@ -20,8 +20,10 @@ public enum FileAccessError: LocalizedError {
     /// In particular, when both result and error params of a callback are nil.
     case internalError
     
+    case fileProviderDoesNotRespond(fileProvider: FileProvider?)
+    
     /// Wrapper for an underlying error
-    case accessError(_ originalError: Error?)
+    case systemError(_ originalError: Error?)
     
     public var errorDescription: String? {
         switch self {
@@ -51,8 +53,49 @@ public enum FileAccessError: LocalizedError {
                 bundle: Bundle.framework,
                 value: "Internal KeePassium error, please tell us about it.",
                 comment: "Error message shown when there's internal inconsistency in KeePassium.")
-        case .accessError(let originalError):
+        case .fileProviderDoesNotRespond(let fileProvider):
+            if let fileProvider = fileProvider {
+                return String.localizedStringWithFormat(
+                    NSLocalizedString(
+                        "[FileAccessError/NoResponse/knownFileProvider]",
+                        bundle: Bundle.framework,
+                        value: "%@ does not respond.",
+                        comment: "Error message: file provider does not respond to requests. For example: `Google Drive does not respond.`"),
+                    fileProvider.localizedName
+                )
+            } else {
+                return NSLocalizedString(
+                    "[FileAccessError/NoResponse/genericFileProvider]",
+                    bundle: Bundle.framework,
+                    value: "Storage provider does not respond.",
+                    comment: "Error message: storage provider app (e.g. Google Drive) does not respond to requests.")
+            }
+        case .systemError(let originalError):
             return originalError?.localizedDescription
+        }
+    }
+    
+    /// Processes a generic system error and returns a suitable case of `FileAccessError`,
+    /// initialized with necessary details.
+    public static func make(from originalError: Error, fileProvider: FileProvider?) -> FileAccessError {
+        let nsError = originalError as NSError
+        // Since we don't know anything about the error, it is useful to log some debug info about it.
+        Diag.error("""
+            Failed to access the file \
+            [fileProvider: \(fileProvider?.id ?? "nil"), systemError: \(nsError.debugDescription)]
+            """)
+        switch (nsError.domain, nsError.code) {
+        // "Could not communicate with the helper app" - Google Drive offline
+        case ("NSCocoaErrorDomain", 4101):
+            fallthrough
+            
+        // "Could not communicate with the helper app" - Sync.com offline after device restart
+        case ("NSCocoaErrorDomain", 4097): fallthrough
+        case ("NSCocoaErrorDomain", 4099):
+            return .fileProviderDoesNotRespond(fileProvider: fileProvider)
+        default:
+            // Generic catch-all error
+            return .systemError(originalError)
         }
     }
 }

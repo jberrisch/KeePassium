@@ -135,7 +135,7 @@ public class BaseDocument: UIDocument, Synchronizable {
     }
     
     override public func handleError(_ error: Error, userInteractionPermitted: Bool) {
-        self.error = .accessError(error)
+        self.error = FileAccessError.make(from: error, fileProvider: fileProvider)
         super.handleError(error, userInteractionPermitted: userInteractionPermitted)
     }
 }

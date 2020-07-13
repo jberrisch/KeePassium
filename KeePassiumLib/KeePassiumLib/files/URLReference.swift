@@ -310,7 +310,8 @@ public class URLReference:
         } catch {
             if callbackOnError {
                 DispatchQueue.main.async {
-                    callback(.failure(.accessError(error)))
+                    let fileAccessError = FileAccessError.make(from: error, fileProvider: nil)
+                    callback(.failure(fileAccessError))
                 }
             }
             return false
@@ -350,9 +351,13 @@ public class URLReference:
                         callback(.success(url))
                     }
                 case .failure(let error):
-                    self.error = .accessError(error)
+                    let fileAccessError = FileAccessError.make(
+                        from: error,
+                        fileProvider: self.fileProvider
+                    )
+                    self.error = fileAccessError
                     self.dispatchMain {
-                        callback(.failure(.accessError(error)))
+                        callback(.failure(fileAccessError))
                     }
                 }
             },

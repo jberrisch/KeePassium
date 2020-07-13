@@ -45,7 +45,7 @@ class FileCoordinator: NSFileCoordinator, Synchronizable {
                         return
                     }
                     if let error = error {
-                        callback(.accessError(error))
+                        callback(FileAccessError.make(from: error, fileProvider: fileProvider))
                     } else {
                         callback(nil)
                     }
