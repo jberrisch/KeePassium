@@ -12,7 +12,8 @@ public enum PremiumFeature: Int {
         .canUseMultipleDatabases, // enforced
         .canUseLongDatabaseTimeouts, // enforced
         .canPreviewAttachments, // enforced
-        .canUseHardwareKeys
+        .canUseHardwareKeys,    // enforced
+        .canKeepMasterKeyOnDatabaseTimeout // enforced
     ]
     
     /// Can unlock any added database (otherwise only one, with olders modification date)
@@ -27,6 +28,9 @@ public enum PremiumFeature: Int {
     /// Can open databases protected with hardware keys
     case canUseHardwareKeys = 4
     
+    /// Can keep stored master keys on database timeout
+    case canKeepMasterKeyOnDatabaseTimeout = 5
+    
     /// Defines whether this premium feature may be used with given premium status.
     ///
     /// - Parameter status: status to check availability against
@@ -40,6 +44,8 @@ public enum PremiumFeature: Int {
         case .canPreviewAttachments:
             return status != .freeHeavyUse
         case .canUseHardwareKeys:
+            return status == .subscribed || status == .lapsed
+        case .canKeepMasterKeyOnDatabaseTimeout:
             return status == .subscribed || status == .lapsed
         }
     }

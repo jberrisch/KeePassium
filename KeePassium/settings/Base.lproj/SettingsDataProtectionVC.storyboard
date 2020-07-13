@@ -148,30 +148,42 @@
                                                     </constraints>
                                                 </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="749" text="Clear Master Keys on Timeout" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gTm-F6-EDQ">
-                                                    <rect key="frame" x="61" y="11" width="186" height="22"/>
+                                                    <rect key="frame" x="61" y="11" width="158.5" height="21.5"/>
                                                     <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
                                                     <color key="textColor" name="PrimaryText"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="sSh-Tr-5oQ">
-                                                    <rect key="frame" x="255" y="10" width="51" height="24"/>
-                                                    <connections>
-                                                        <action selector="didToggleLockDatabasesOnTimeoutSwitch:" destination="IZZ-aM-g2i" eventType="valueChanged" id="Dpb-dM-Hve"/>
-                                                    </connections>
-                                                </switch>
+                                                <stackView opaque="NO" contentMode="scaleToFill" alignment="center" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="Tol-4N-vjf">
+                                                    <rect key="frame" x="227.5" y="10" width="76.5" height="23.5"/>
+                                                    <subviews>
+                                                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" verticalCompressionResistancePriority="751" image="premium-feature-badge" translatesAutoresizingMaskIntoConstraints="NO" id="8yB-X8-xqJ">
+                                                            <rect key="frame" x="0.0" y="0.0" width="23.5" height="23.5"/>
+                                                            <constraints>
+                                                                <constraint firstAttribute="width" secondItem="8yB-X8-xqJ" secondAttribute="height" multiplier="1:1" id="kfC-it-kzc"/>
+                                                                <constraint firstAttribute="width" constant="29" id="nn3-2K-EDk"/>
+                                                            </constraints>
+                                                        </imageView>
+                                                        <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" horizontalCompressionResistancePriority="751" verticalCompressionResistancePriority="751" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="sSh-Tr-5oQ">
+                                                            <rect key="frame" x="27.5" y="0.0" width="51" height="23.5"/>
+                                                            <connections>
+                                                                <action selector="didToggleLockDatabasesOnTimeoutSwitch:" destination="IZZ-aM-g2i" eventType="valueChanged" id="00J-7H-JZU"/>
+                                                            </connections>
+                                                        </switch>
+                                                    </subviews>
+                                                </stackView>
                                             </subviews>
                                             <constraints>
                                                 <constraint firstItem="gTm-F6-EDQ" firstAttribute="leading" secondItem="0Tb-sh-39n" secondAttribute="trailing" constant="16" id="9lF-ay-5JF"/>
-                                                <constraint firstItem="sSh-Tr-5oQ" firstAttribute="centerY" secondItem="WV2-IR-7yU" secondAttribute="centerY" priority="750" id="WpB-n9-ypL"/>
-                                                <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="sSh-Tr-5oQ" secondAttribute="bottom" constant="10" id="Y6T-I7-LuV"/>
+                                                <constraint firstItem="Tol-4N-vjf" firstAttribute="leading" secondItem="gTm-F6-EDQ" secondAttribute="trailing" constant="8" id="KYO-nu-hbm"/>
+                                                <constraint firstItem="Tol-4N-vjf" firstAttribute="top" relation="greaterThanOrEqual" secondItem="WV2-IR-7yU" secondAttribute="top" constant="10" id="WC5-tF-xA2"/>
                                                 <constraint firstItem="0Tb-sh-39n" firstAttribute="leading" secondItem="WV2-IR-7yU" secondAttribute="leadingMargin" id="YjH-Gw-0Gy"/>
                                                 <constraint firstAttribute="bottomMargin" relation="greaterThanOrEqual" secondItem="gTm-F6-EDQ" secondAttribute="bottom" id="eTU-Tr-g0u"/>
                                                 <constraint firstItem="gTm-F6-EDQ" firstAttribute="centerY" secondItem="WV2-IR-7yU" secondAttribute="centerY" priority="250" id="ftQ-1q-2Cm"/>
-                                                <constraint firstItem="sSh-Tr-5oQ" firstAttribute="leading" secondItem="gTm-F6-EDQ" secondAttribute="trailing" constant="8" id="gTE-4K-bny"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="Tol-4N-vjf" secondAttribute="trailing" id="hkf-ug-PZe"/>
+                                                <constraint firstItem="Tol-4N-vjf" firstAttribute="centerY" secondItem="WV2-IR-7yU" secondAttribute="centerY" priority="250" id="ias-vZ-B7x"/>
+                                                <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="Tol-4N-vjf" secondAttribute="bottom" constant="10" id="ih0-2k-lFP"/>
                                                 <constraint firstItem="0Tb-sh-39n" firstAttribute="centerY" secondItem="WV2-IR-7yU" secondAttribute="centerY" id="kZJ-pm-Pyh"/>
                                                 <constraint firstItem="gTm-F6-EDQ" firstAttribute="top" relation="greaterThanOrEqual" secondItem="WV2-IR-7yU" secondAttribute="topMargin" id="lVS-O6-Pkp"/>
-                                                <constraint firstItem="sSh-Tr-5oQ" firstAttribute="top" relation="greaterThanOrEqual" secondItem="WV2-IR-7yU" secondAttribute="top" constant="10" id="vlk-Pv-Jsq"/>
-                                                <constraint firstItem="sSh-Tr-5oQ" firstAttribute="trailing" secondItem="WV2-IR-7yU" secondAttribute="trailingMargin" id="y9X-Cu-Hv8"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
@@ -396,10 +408,11 @@
                     <connections>
                         <outlet property="clearKeyFileAssociationsButton" destination="3uV-Zs-RRo" id="AaL-yl-h39"/>
                         <outlet property="clearMasterKeysButton" destination="e1v-nv-Mst" id="uRo-08-UjQ"/>
-                        <outlet property="clearMasterKeysOnTimeoutSwitch" destination="sSh-Tr-5oQ" id="ZBy-jl-I9Q"/>
                         <outlet property="clipboardTimeoutCell" destination="pl7-TW-G1h" id="kdi-rO-dBh"/>
                         <outlet property="databaseTimeoutCell" destination="7gS-TC-EzJ" id="3Ue-ZN-LSr"/>
                         <outlet property="hideProtectedFieldsSwitch" destination="JCE-bC-bHe" id="P1i-9e-mLQ"/>
+                        <outlet property="lockDatabaseOnTimeoutPremiumBadge" destination="8yB-X8-xqJ" id="ZNY-Xy-3a2"/>
+                        <outlet property="lockDatabaseOnTimeoutSwitch" destination="sSh-Tr-5oQ" id="t5k-4w-FGE"/>
                         <outlet property="rememberMasterKeysSwitch" destination="xIS-oe-VeS" id="3aO-D6-Lhz"/>
                         <outlet property="rememberUsedKeyFiles" destination="p4I-y6-xzA" id="Yx9-zT-Cc0"/>
                         <outlet property="universalClipboardSwitch" destination="16U-9b-Jx7" id="fJg-kL-Mgl"/>
@@ -411,6 +424,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="premium-feature-badge" width="25" height="25"/>
         <image name="settings-clipboard-timeout-listitem" width="29" height="29"/>
         <image name="settings-clipboard-universal-listitem" width="29" height="29"/>
         <image name="settings-database-timeout-listitem" width="29" height="29"/>

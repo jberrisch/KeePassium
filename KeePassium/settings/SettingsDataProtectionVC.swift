@@ -18,7 +18,8 @@ class SettingsDataProtectionVC: UITableViewController, Refreshable {
     @IBOutlet weak var clearKeyFileAssociationsButton: UIButton!
     
     @IBOutlet weak var databaseTimeoutCell: UITableViewCell!
-    @IBOutlet weak var clearMasterKeysOnTimeoutSwitch: UISwitch!
+    @IBOutlet weak var lockDatabaseOnTimeoutSwitch: UISwitch!
+    @IBOutlet weak var lockDatabaseOnTimeoutPremiumBadge: UIImageView!
     
     @IBOutlet weak var clipboardTimeoutCell: UITableViewCell!
     @IBOutlet weak var universalClipboardSwitch: UISwitch!
@@ -59,7 +60,8 @@ class SettingsDataProtectionVC: UITableViewController, Refreshable {
         universalClipboardSwitch.isOn = settings.isUniversalClipboardEnabled
         hideProtectedFieldsSwitch.isOn = settings.isHideProtectedFields
         databaseTimeoutCell.detailTextLabel?.text = settings.premiumDatabaseLockTimeout.shortTitle
-        clearMasterKeysOnTimeoutSwitch.isOn = settings.isLockDatabasesOnTimeout
+        lockDatabaseOnTimeoutSwitch.isOn = settings.premiumIsLockDatabasesOnTimeout
+        lockDatabaseOnTimeoutPremiumBadge.isHidden = PremiumManager.shared.isAvailable(feature: .canKeepMasterKeyOnDatabaseTimeout)
         clipboardTimeoutCell.detailTextLabel?.text = settings.clipboardTimeout.shortTitle
     }
     
@@ -115,7 +117,13 @@ class SettingsDataProtectionVC: UITableViewController, Refreshable {
     }
     
     @IBAction func didToggleLockDatabasesOnTimeoutSwitch(_ sender: UISwitch) {
-        Settings.current.isLockDatabasesOnTimeout = sender.isOn
+        premiumUpgradeHelper.performActionOrOfferUpgrade(
+            .canKeepMasterKeyOnDatabaseTimeout,
+            in: self,
+            actionHandler: { [sender] in
+                Settings.current.isLockDatabasesOnTimeout = sender.isOn
+            }
+        )
         refresh()
     }
     

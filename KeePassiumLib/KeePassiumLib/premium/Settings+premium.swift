@@ -40,6 +40,16 @@ public extension Settings {
         return isKeepKeyFileAssociations
     }
     
+    var premiumIsLockDatabasesOnTimeout: Bool {
+        let actualValue = Settings.current.isLockDatabasesOnTimeout
+        if PremiumManager.shared.isAvailable(feature: .canKeepMasterKeyOnDatabaseTimeout) {
+            return actualValue
+        } else {
+            // Force locking in free version, otherwise DB timeout limit would be meaningless.
+            return true
+        }
+    }
+    
     /// Checks whether given timeout value is available for the given premium status.
     func isAvailable(timeout: Settings.DatabaseLockTimeout, for status: PremiumManager.Status) -> Bool {
         switch status {
