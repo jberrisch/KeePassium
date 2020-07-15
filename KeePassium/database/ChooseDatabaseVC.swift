@@ -162,7 +162,7 @@ class ChooseDatabaseVC: UITableViewController, DynamicFileList, Refreshable {
         let canAutoSelectDatabase = isTwoPaneMode || Settings.current.isAutoUnlockStartupDatabase
         
         guard let startDatabase = Settings.current.startupDatabase,
-            let selRow = databaseRefs.index(of: startDatabase),
+            let selRow = databaseRefs.firstIndex(of: startDatabase),
             canAutoSelectDatabase else
         {
             tableView.selectRow(at: nil, animated: true, scrollPosition: .none)

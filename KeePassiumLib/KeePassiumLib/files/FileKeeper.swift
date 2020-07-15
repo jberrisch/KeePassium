@@ -288,7 +288,7 @@ public class FileKeeper {
     public func removeExternalReference(_ urlRef: URLReference, fileType: FileType) {
         Diag.debug("Removing URL reference [fileType: \(fileType)]")
         var refs = getStoredReferences(fileType: fileType, forExternalFiles: true)
-        if let index = refs.index(of: urlRef) {
+        if let index = refs.firstIndex(of: urlRef) {
             refs.remove(at: index)
             storeReferences(refs, fileType: fileType, forExternalFiles: true)
             FileKeeperNotifier.notifyFileRemoved(urlRef: urlRef, fileType: fileType)

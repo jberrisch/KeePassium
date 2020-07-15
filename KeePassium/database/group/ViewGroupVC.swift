@@ -991,7 +991,7 @@ extension ViewGroupVC: EditEntryFieldsDelegate {
         
         // show the created/edited entry
         if !splitVC.isCollapsed,
-            let entryIndex = entriesSorted.index(where: { $0.value === entry })
+            let entryIndex = entriesSorted.firstIndex(where: { $0.value === entry })
         {
             let indexPath = IndexPath(row: groupsSorted.count + entryIndex, section: 0)
             handleItemSelection(indexPath: indexPath)
