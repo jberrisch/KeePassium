@@ -111,6 +111,12 @@ public class PremiumManager: NSObject {
 
     // MARK: - Subscription status
     
+    /// Whether a free trial is available or has already been used.
+    public private(set) var isTrialAvailable: Bool = true
+    
+    /// Perpetual fallback date, according to the subscription history.
+    public private(set) var fallbackDate: Date? = nil
+    
     public enum Status {
         /// The user just launched the app recently
         case initialGracePeriod
@@ -272,6 +278,17 @@ public class PremiumManager: NSObject {
         }
     }
     
+    // MARK: - Receipt parsing
+    
+    public func reloadReceipt(withLogging: Bool=false) {
+        // Don't care about receipts in prepaid version
+        guard BusinessModel.type == .freemium else { return }
+        let receiptAnalyzer = ReceiptAnalyzer()
+        receiptAnalyzer.loadReceipt()
+        self.isTrialAvailable = !receiptAnalyzer.containsTrial
+        self.fallbackDate = receiptAnalyzer.fallbackDate
+    }
+    
     // MARK: - Premium feature availability
     
     /// True iff given `feature` is available for the current status.
@@ -332,6 +349,7 @@ public class PremiumManager: NSObject {
     // MARK: - In-app purchase transactions
     
     public func startObservingTransactions() {
+        reloadReceipt()
         SKPaymentQueue.default().add(self)
     }
     
@@ -391,6 +409,7 @@ extension PremiumManager: SKPaymentTransactionObserver {
     {
         // Called whenever some payment update happens:
         // subscription made/renewed/cancelled; single purchase confirmed.
+        reloadReceipt()
         for transaction in transactions {
             switch transaction.transactionState {
             case .purchased:
@@ -423,6 +442,7 @@ extension PremiumManager: SKPaymentTransactionObserver {
     }
 
     public func paymentQueueRestoreCompletedTransactionsFinished(_ queue: SKPaymentQueue) {
+        ReceiptAnalyzer.logPurchaseHistory()
         Diag.debug("Finished restoring purchases")
         delegate?.purchaseRestoringFinished(in: self)
     }
