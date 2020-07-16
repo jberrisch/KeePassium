@@ -25,35 +25,32 @@ extension SKProduct {
         return formatter.string(from: price) ?? String(format: "%.2f", price)
     }
     
-    /// Number of days in the trial period (if any).)
-    var trialDays: Int? {
-        guard #available(iOS 11.2, *),
-            let period = introductoryPrice?.subscriptionPeriod else { return nil }
-        switch period.unit {
-        case .day:
-            return period.numberOfUnits
-        case .week:
-            return 7 * period.numberOfUnits
-        case .month:
-            return 31 * period.numberOfUnits
-        case .year:
-            return 365 * period.numberOfUnits
-        }
-    }
-    
     /// Returns string describing the duration of the trial period (if any).
     /// For example: "90 days".
     var localizedTrialDuration: String? {
-        guard let trialDays = self.trialDays else { return nil }
-        
+        guard #available(iOS 11.2, *),
+            let period = introductoryPrice?.subscriptionPeriod else { return nil }
+
         var dateComponents = DateComponents()
-        dateComponents.setValue(trialDays, for: .day)
-        
         let timeFormatter = DateComponentsFormatter()
-        timeFormatter.allowedUnits = [.day]
+        switch period.unit {
+        case .day:
+            dateComponents.setValue(period.numberOfUnits, for: .day)
+            timeFormatter.allowedUnits = [.day]
+        case .week:
+            dateComponents.setValue(7 * period.numberOfUnits, for: .day)
+            timeFormatter.allowedUnits = [.day]
+        case .month:
+            dateComponents.setValue(period.numberOfUnits, for: .month)
+            timeFormatter.allowedUnits = [.month]
+        case .year:
+            dateComponents.setValue(period.numberOfUnits, for: .year)
+            timeFormatter.allowedUnits = [.year]
+        }
+        
         timeFormatter.unitsStyle = .full
         timeFormatter.maximumUnitCount = 1
-        timeFormatter.formattingContext = .middleOfSentence
+        timeFormatter.formattingContext = .beginningOfSentence // as in LString.trialConditionsTemplate
         timeFormatter.zeroFormattingBehavior = .dropAll
         return timeFormatter.string(from: dateComponents)
     }
