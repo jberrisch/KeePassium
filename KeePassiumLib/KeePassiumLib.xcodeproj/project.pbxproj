@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -134,6 +134,7 @@
 		75F4ACF321774A6400B22D8B /* Clipboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75F4ACF121774A6300B22D8B /* Clipboard.swift */; };
 		75F4ACF421774A6400B22D8B /* URL+extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75F4ACF221774A6300B22D8B /* URL+extensions.swift */; };
 		75F594B8221BDC51001729FD /* SettingsMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75F594B7221BDC51001729FD /* SettingsMigrator.swift */; };
+		75F74AB824BF496F0071281E /* TPInAppReceipt in Frameworks */ = {isa = PBXBuildFile; productRef = 75F74AB724BF496F0071281E /* TPInAppReceipt */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -287,6 +288,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				75F74AB824BF496F0071281E /* TPInAppReceipt in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -665,6 +667,9 @@
 			dependencies = (
 			);
 			name = KeePassiumLib;
+			packageProductDependencies = (
+				75F74AB724BF496F0071281E /* TPInAppReceipt */,
+			);
 			productName = KeePassiumLib;
 			productReference = 75D0C76A2174AF1F00C64C93 /* KeePassiumLib.framework */;
 			productType = "com.apple.product-type.framework";
@@ -705,6 +710,9 @@
 				ja,
 			);
 			mainGroup = 75D0C7602174AF1F00C64C93;
+			packageReferences = (
+				75F74AB624BF496F0071281E /* XCRemoteSwiftPackageReference "TPInAppReceipt" */,
+			);
 			productRefGroup = 75D0C76B2174AF1F00C64C93 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -1091,6 +1099,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		75F74AB624BF496F0071281E /* XCRemoteSwiftPackageReference "TPInAppReceipt" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/tikhop/TPInAppReceipt";
+			requirement = {
+				kind = exactVersion;
+				version = 2.6.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		75F74AB724BF496F0071281E /* TPInAppReceipt */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 75F74AB624BF496F0071281E /* XCRemoteSwiftPackageReference "TPInAppReceipt" */;
+			productName = TPInAppReceipt;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 75D0C7612174AF1F00C64C93 /* Project object */;
 }
