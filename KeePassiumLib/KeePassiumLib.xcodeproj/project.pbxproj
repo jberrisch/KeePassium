@@ -135,6 +135,7 @@
 		75F4ACF421774A6400B22D8B /* URL+extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75F4ACF221774A6300B22D8B /* URL+extensions.swift */; };
 		75F594B8221BDC51001729FD /* SettingsMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75F594B7221BDC51001729FD /* SettingsMigrator.swift */; };
 		75F74AB824BF496F0071281E /* TPInAppReceipt in Frameworks */ = {isa = PBXBuildFile; productRef = 75F74AB724BF496F0071281E /* TPInAppReceipt */; };
+		75F74ABC24C0EF370071281E /* IARError+description.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75F74ABB24C0EF370071281E /* IARError+description.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -279,6 +280,7 @@
 		75F4ACF121774A6300B22D8B /* Clipboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Clipboard.swift; sourceTree = "<group>"; };
 		75F4ACF221774A6300B22D8B /* URL+extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+extensions.swift"; sourceTree = "<group>"; };
 		75F594B7221BDC51001729FD /* SettingsMigrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsMigrator.swift; sourceTree = "<group>"; };
+		75F74ABB24C0EF370071281E /* IARError+description.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IARError+description.swift"; sourceTree = "<group>"; };
 		75FDEF1D233ABE7800F17C26 /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/Localizable.strings; sourceTree = "<group>"; };
 		75FDEF49233ABED700F17C26 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Localizable.strings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -329,6 +331,7 @@
 				7538167D22B15FC7000FA4BD /* Settings+premium.swift */,
 				75384B9822CCB76800157598 /* UsageMonitor.swift */,
 				759896422341CED300DF39AA /* BusinessModel.swift */,
+				75F74ABB24C0EF370071281E /* IARError+description.swift */,
 			);
 			path = premium;
 			sourceTree = "<group>";
@@ -866,6 +869,7 @@
 				75D09C5D2174F81900F7DEF2 /* Element.swift in Sources */,
 				75EA2D1721B2FB4000826FC6 /* Diag.swift in Sources */,
 				75D09C5F2174F81900F7DEF2 /* Document.swift in Sources */,
+				75F74ABC24C0EF370071281E /* IARError+description.swift in Sources */,
 				75D09C372174F77000F7DEF2 /* KeyHelper.swift in Sources */,
 				75C01F03247554EA0099698C /* FileAccessError.swift in Sources */,
 				75A26770228DAC440097C693 /* PremiumManager.swift in Sources */,
