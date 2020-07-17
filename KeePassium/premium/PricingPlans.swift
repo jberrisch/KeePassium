@@ -113,8 +113,6 @@ class PricingPlanFactory {
             return nil
         }
         
-        let isTrialAvailable = PremiumManager.shared.isTrialAvailable
-        
         switch iapProduct {
         case .betaForever:
             return nil

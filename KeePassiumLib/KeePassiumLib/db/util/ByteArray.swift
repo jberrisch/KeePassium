@@ -147,7 +147,7 @@ public class ByteArray: Eraseable, Codable, CustomDebugStringConvertible {
         return sha512cache! // safe to unwrap
     }
     
-    public var asData: Data { return Data(bytes: self.bytes) }
+    public var asData: Data { return Data(self.bytes) }
     
     subscript (index: Int) -> UInt8 {
         get { return bytes[index] }
@@ -165,11 +165,7 @@ public class ByteArray: Eraseable, Codable, CustomDebugStringConvertible {
         bytes = []
     }
     public init(data: Data) {
-        let bytes = data.withUnsafeBytes{ (pointer: UnsafePointer<UInt8>) -> [UInt8] in
-            let buffer = UnsafeBufferPointer(start: pointer, count: data.count)
-            return Array<UInt8>(buffer)
-        }
-        self.bytes = bytes
+        self.bytes = Array(data)
     }
     public init(bytes: [UInt8]) {
         self.bytes = [UInt8](bytes)
@@ -336,7 +332,7 @@ public class ByteArray: Eraseable, Codable, CustomDebugStringConvertible {
 
     
     public func base64EncodedString() -> String {
-        return Data(bytes: bytes).base64EncodedString()
+        return Data(bytes).base64EncodedString()
     }
     
     /// Tries to convert byte array into a string
@@ -346,7 +342,7 @@ public class ByteArray: Eraseable, Codable, CustomDebugStringConvertible {
     }
     
     public func asInputStream() -> ByteArray.InputStream {
-        return ByteArray.InputStream(data: Data(bytes: self.bytes))
+        return ByteArray.InputStream(data: Data(self.bytes))
     }
     public static func makeOutputStream() -> ByteArray.OutputStream {
         return ByteArray.OutputStream()
@@ -354,12 +350,12 @@ public class ByteArray: Eraseable, Codable, CustomDebugStringConvertible {
     
     /// - Throws: `GzipError`
     public func gunzipped() throws -> ByteArray {
-        return try ByteArray(data: Data(bytes: self.bytes).gunzipped())
+        return try ByteArray(data: Data(self.bytes).gunzipped())
     }
 
     /// - Throws: `GzipError`
     public func gzipped() throws -> ByteArray {
-        return try ByteArray(data: Data(bytes: self.bytes).gzipped(level: .bestCompression))
+        return try ByteArray(data: Data(self.bytes).gzipped(level: .bestCompression))
     }
     
     /// Checks if data consists only of given byte value.

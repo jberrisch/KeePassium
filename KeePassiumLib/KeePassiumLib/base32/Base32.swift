@@ -44,13 +44,17 @@ public func base32HexEncode(_ data: Data) -> String {
 
 public func base32DecodeToData(_ string: String) -> Data? {
     return base32decode(string, alphabetDecodeTable).flatMap {
-        Data(bytes: UnsafePointer<UInt8>($0), count: $0.count)
+        $0.withUnsafeBufferPointer {
+            Data(bytes: $0.baseAddress!, count: $0.count)
+        }
     }
 }
 
 public func base32HexDecodeToData(_ string: String) -> Data? {
     return base32decode(string, extendedHexAlphabetDecodeTable).flatMap {
-        Data(bytes: UnsafePointer<UInt8>($0), count: $0.count)
+        $0.withUnsafeBufferPointer {
+            Data(bytes: $0.baseAddress!, count: $0.count)
+        }
     }
 }
 
