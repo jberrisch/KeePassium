@@ -200,6 +200,7 @@ class DatabaseCreatorCoordinator: NSObject {
         let fileKeeper = FileKeeper.shared
         fileKeeper.addFile(
             url: finalURL,
+            fileType: .database,
             mode: .openInPlace,
             success: { [weak self] (addedRef) in
                 guard let _self = self else { return }

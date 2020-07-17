@@ -356,7 +356,7 @@ extension ChooseKeyFileVC: UIDocumentPickerDelegate {
         }
         
         let fileKeeper = FileKeeper.shared
-        fileKeeper.prepareToAddFile(url: url, mode: .import)
+        fileKeeper.prepareToAddFile(url: url, fileType: .keyFile, mode: .import)
         fileKeeper.processPendingOperations(
             success: {
                 [weak self] (addedRef) in

@@ -658,7 +658,7 @@ extension MainCoordinator: UIDocumentPickerDelegate {
             return
         }
 
-        FileKeeper.shared.prepareToAddFile(url: url, mode: .openInPlace)
+        FileKeeper.shared.prepareToAddFile(url: url, fileType: .keyFile, mode: .openInPlace)
         FileKeeper.shared.processPendingOperations(
             success: { [weak self] (urlRef) in
                 self?.refreshFileList()
