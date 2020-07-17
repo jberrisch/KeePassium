@@ -397,6 +397,17 @@ public class FileKeeper {
 
         Diag.debug("Will process pending file operations")
 
+        // ensure that handlers are called on the main queue
+        let mainQueueSuccessHandler: (URLReference)->Void = { (urlRef) in
+            DispatchQueue.main.async {
+                successHandler?(urlRef)
+            }
+        }
+        let mainQueueErrorHandler: (FileKeeperError)->Void = { (error) in
+            DispatchQueue.main.async {
+                errorHandler?(error)
+            }
+        }
         guard sourceURL.isFileURL else {
             Diag.error("Tried to import a non-file URL: \(sourceURL.redacted)")
             let messageNotAFileURL = NSLocalizedString(
@@ -407,11 +418,11 @@ public class FileKeeper {
             switch openMode {
             case .import:
                 let importError = FileKeeperError.importError(reason: messageNotAFileURL)
-                errorHandler?(importError)
+                mainQueueErrorHandler(importError)
                 return
             case .openInPlace:
                 let openError = FileKeeperError.openError(reason: messageNotAFileURL)
-                errorHandler?(openError)
+                mainQueueErrorHandler(openError)
                 return
             }
         }
@@ -433,23 +444,23 @@ public class FileKeeper {
             processExternalFile(
                 url: sourceURL,
                 fileType: fileType,
-                success: successHandler,
-                error: errorHandler)
+                success: mainQueueSuccessHandler,
+                error: mainQueueErrorHandler)
         case .internalDocuments, .internalBackup:
             // we already have the file: open in place
             processInternalFile(
                 url: sourceURL,
                 fileType: fileType,
                 location: location,
-                success: successHandler,
-                error: errorHandler)
+                success: mainQueueSuccessHandler,
+                error: mainQueueErrorHandler)
         case .internalInbox:
             processInboxFile(
                 url: sourceURL,
                 fileType: fileType,
                 location: location,
-                success: successHandler,
-                error: errorHandler)
+                success: mainQueueSuccessHandler,
+                error: mainQueueErrorHandler)
         }
     }
     
