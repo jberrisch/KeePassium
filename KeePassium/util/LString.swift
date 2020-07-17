@@ -17,6 +17,11 @@ public enum LString {
         value: "OK",
         comment: "Action/button: generic OK"
     )
+    public static let actionContinue = NSLocalizedString(
+        "[Generic] Continue",
+        value: "Continue",
+        comment: "Action/button to proceed with the action"
+    )
     public static let actionCancel = NSLocalizedString(
         "[Generic] Cancel",
         value: "Cancel",
@@ -226,13 +231,17 @@ public enum LString {
         comment: "Message to confirm removal of database file from the app. (This keeps the file, but removes its reference from the app.)"
     )
 
-    // Database creation
+    // Database editing/creation
     public static let titleCreateDatabase = NSLocalizedString(
         "[Database/Create/title] Create Database",
         value: "Create Database",
         comment: "Title of a form for creating a database"
     )
-
+    public static let warningNonDatabaseExtension = NSLocalizedString(
+        "[Database/Add] Selected file \"%@\" does not look like a database.",
+        value: "Selected file \"%@\" does not look like a database.",
+        comment: "Warning when trying to add a random file as a database. [fileName: String]")
+    
     // Group editing/creation
     public static let actionCreateGroup = NSLocalizedString(
         "[Group/Create/action] Create Group",

@@ -662,32 +662,19 @@ extension ChooseDatabaseVC: UIDocumentPickerDelegate {
         didPickDocumentsAt urls: [URL])
     {
         guard let url = urls.first else { return }
-        guard FileType.isDatabaseFile(url: url) else {
-            let fileName = url.lastPathComponent
-            let errorMessage = String.localizedStringWithFormat(
-                NSLocalizedString(
-                    "[Database/Add] Selected file \"%@\" does not look like a database.",
-                    value: "Selected file \"%@\" does not look like a database.",
-                    comment: "Warning when trying to add a random file as a database. [fileName: String]"),
-                fileName)
-            let errorAlert = UIAlertController.make(
-                title: LString.titleWarning,
-                message: errorMessage,
-                cancelButtonTitle: LString.actionOK)
-            present(errorAlert, animated: true, completion: nil)
-            return
+        FileAddingHelper.ensureDatabaseFile(url: url, parent: self) { [weak self] (url) in
+            guard let self = self else { return }
+            switch controller.documentPickerMode {
+            case .open:
+                FileKeeper.shared.prepareToAddFile(url: url, fileType: .database, mode: .openInPlace)
+            case .import:
+                FileKeeper.shared.prepareToAddFile(url: url, fileType: .database, mode: .import)
+            default:
+                assertionFailure("Unexpected document picker mode")
+            }
+            self.processPendingFileOperations()
+            self.navigationController?.popToViewController(self, animated: true) // dismiss eventual WelcomeVC
         }
-        
-        switch controller.documentPickerMode {
-        case .open:
-            FileKeeper.shared.prepareToAddFile(url: url, mode: .openInPlace)
-        case .import:
-            FileKeeper.shared.prepareToAddFile(url: url, mode: .import)
-        default:
-            assertionFailure("Unexpected document picker mode")
-        }
-        processPendingFileOperations()
-        navigationController?.popToViewController(self, animated: true) // dismiss eventual WelcomeVC
     }
 }
 
