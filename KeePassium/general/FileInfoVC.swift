@@ -175,13 +175,21 @@ class FileInfoVC: UITableViewController {
         change: [NSKeyValueChangeKey : Any]?,
         context: UnsafeMutableRawPointer?)
     {
-        // adjust popover height to fit table content
-        var preferredSize = tableView.contentSize
+        // Adjust popover height to fit table content.
+        // Use max() to avoid shrinking while refreshing the table.
+        var preferredSize = CGSize(
+            width: max(tableView.contentSize.width, self.preferredContentSize.width),
+            height: max(tableView.contentSize.height, self.preferredContentSize.height)
+        )
         if #available(iOS 13, *) {
             // on iOS 13, the table becomes too wide, so we limit it.
             preferredSize.width = 400
         }
-        self.preferredContentSize = preferredSize
+        
+        // Wrapped in main to ensure sizing animation (otherwise it jumps)
+        DispatchQueue.main.async { [self] in
+            self.preferredContentSize = preferredSize
+        }
     }
 
     func setupButtons() {
