@@ -22,7 +22,6 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
     @IBOutlet private weak var databaseIconImage: UIImageView!
     @IBOutlet weak var masterKeyKnownLabel: UILabel!
     @IBOutlet weak var lockDatabaseButton: UIButton!
-    @IBOutlet weak var getPremiumButton: UIButton!
     @IBOutlet weak var announcementButton: UIButton!
     
     public var databaseRef: URLReference! {
@@ -54,12 +53,6 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
         keyFileField.delegate = self
         
         fileKeeperNotifications = FileKeeperNotifications(observer: self)
-        // listen for
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(refreshPremiumStatus),
-            name: PremiumManager.statusUpdateNotification,
-            object: nil)
 
         // make background image
         view.backgroundColor = UIColor(patternImage: UIImage(asset: .backgroundPattern))
@@ -97,7 +90,6 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        refreshPremiumStatus()
         refresh()
         if isMovingToParent && canAutoUnlock() {
             // prepare UI for auto-unlocking
@@ -189,18 +181,6 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
         }
         refreshNews()
         refreshInputMode()
-    }
-    
-    @objc private func refreshPremiumStatus() {
-        switch PremiumManager.shared.status {
-        case .initialGracePeriod,
-             .freeLightUse,
-             .freeHeavyUse:
-            getPremiumButton.isHidden = false
-        case .subscribed,
-             .lapsed:
-            getPremiumButton.isHidden = true
-        }
     }
     
     /// Switch the UI depending on whether the master key is already known.
@@ -434,14 +414,6 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
             $0.clearMasterKey()
         }
         refreshInputMode()
-    }
-    
-    private var premiumCoordinator: PremiumCoordinator?
-    @IBAction func didPressUpgradeToPremium(_ sender: Any) {
-        assert(premiumCoordinator == nil)
-        premiumCoordinator = PremiumCoordinator(presentingViewController: self)
-        premiumCoordinator?.delegate = self
-        premiumCoordinator?.start()
     }
     
     // MARK: - DB unlocking
@@ -705,17 +677,5 @@ extension UnlockDatabaseVC: FileKeeperObserver {
                 self?.showErrorAlert(error)
             }
         )
-    }
-}
-
-// MARK: - PremiumCoordinatorDelegate
-extension UnlockDatabaseVC: PremiumCoordinatorDelegate {
-    func didUpgradeToPremium(in premiumCoordinator: PremiumCoordinator) {
-        refresh()
-    }
-    
-    func didFinish(_ premiumCoordinator: PremiumCoordinator) {
-        // it has already removed its modal VC
-        self.premiumCoordinator = nil
     }
 }
