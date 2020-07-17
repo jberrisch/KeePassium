@@ -33,6 +33,23 @@ class FileInfoCell: UITableViewCell {
     }
 }
 
+protocol FileInfoSwitchCellDelegate: class {
+    func didToggleSwitch(in cell: FileInfoSwitchCell, theSwitch: UISwitch)
+}
+class FileInfoSwitchCell: UITableViewCell {
+    static let storyboardID = "SwitchCell"
+    
+    @IBOutlet weak var titleLabel: UILabel!
+    @IBOutlet weak var iconView: UIImageView!
+    @IBOutlet weak var theSwitch: UISwitch!
+    
+    weak var delegate: FileInfoSwitchCellDelegate?
+    
+    @IBAction func didToggleSwitch(_ sender: UISwitch) {
+        delegate?.didToggleSwitch(in: self, theSwitch: sender)
+    }
+}
+
 class FileInfoVC: UITableViewController {
     @IBOutlet weak var exportButton: UIButton!
     @IBOutlet weak var deleteButton: UIButton!
@@ -49,6 +66,14 @@ class FileInfoVC: UITableViewController {
     private var fields = [(String, String)]()
     private var urlRef: URLReference!
     private var fileType: FileType!
+    private var isExcludedFromBackup: Bool? // nil if not available
+    private var isShowExcludeFromBackupSwitch: Bool {
+        // Show the switch only for local files. For external file providers,
+        // it is not reliable — and does not make much sense anyway.
+        let isLocalFile = urlRef.location.isInternal ||
+            (urlRef.fileProvider != nil && urlRef.fileProvider == .localStorage)
+        return isLocalFile && isExcludedFromBackup != nil
+    }
 
     private var dismissablePopoverDelegate = DismissablePopover()
     
@@ -178,13 +203,14 @@ class FileInfoVC: UITableViewController {
             self.refreshFixedFields()
             switch result {
             case .success(let fileInfo):
-                self.addFields(from: fileInfo)
+                self.updateDynamicFields(from: fileInfo)
             case .failure(let accessError):
                 self.fields.append((
                     FieldTitle.error,
                     accessError.localizedDescription
                 ))
             }
+            
             self.tableView.reloadSections([0], with: .fade) // like reloadData, but animated
             if let refreshControl = self.tableView.refreshControl, refreshControl.isRefreshing {
                 refreshControl.endRefreshing()
@@ -211,7 +237,7 @@ class FileInfoVC: UITableViewController {
         return urlRef.location.description
     }
     
-    private func addFields(from fileInfo: FileInfo) {
+    private func updateDynamicFields(from fileInfo: FileInfo) {
         // skip file name - it is handled separately in refreshFileNameField()
         if let fileSize = fileInfo.fileSize {
             fields.append((
@@ -237,6 +263,7 @@ class FileInfoVC: UITableViewController {
                     timeStyle: .medium)
             ))
         }
+        self.isExcludedFromBackup = fileInfo.isExcludedFromBackup
     }
     
     // MARK: - Table view data source
@@ -246,7 +273,11 @@ class FileInfoVC: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return fields.count
+        if isShowExcludeFromBackupSwitch {
+            return fields.count + 1
+        } else {
+            return fields.count
+        }
     }
     
     override func tableView(
@@ -254,15 +285,27 @@ class FileInfoVC: UITableViewController {
         cellForRowAt indexPath: IndexPath
         ) -> UITableViewCell
     {
-        let cell = tableView.dequeueReusableCell(
-            withIdentifier: FileInfoCell.storyboardID,
-            for: indexPath)
-            as! FileInfoCell
-        
         let fieldIndex = indexPath.row
-        cell.name = fields[fieldIndex].0
-        cell.value = fields[fieldIndex].1
-        return cell
+        if fieldIndex < fields.count {
+            let cell = tableView.dequeueReusableCell(
+                withIdentifier: FileInfoCell.storyboardID,
+                for: indexPath)
+                as! FileInfoCell
+            
+            cell.name = fields[fieldIndex].0
+            cell.value = fields[fieldIndex].1
+            return cell
+        } else {
+            assert(isExcludedFromBackup != nil)
+            let cell = tableView.dequeueReusableCell(
+                withIdentifier: FileInfoSwitchCell.storyboardID,
+                for: indexPath)
+                as! FileInfoSwitchCell
+            cell.delegate = self
+            cell.titleLabel.text = LString.titleExcludeFromBackup
+            cell.theSwitch.isOn = isExcludedFromBackup ?? cell.theSwitch.isOn
+            return cell
+        }
     }
 
     // MARK: - Actions
@@ -289,5 +332,27 @@ class FileInfoVC: UITableViewController {
                 }
             }
         )
+    }
+}
+
+extension FileInfoVC: FileInfoSwitchCellDelegate {
+    func didToggleSwitch(in cell: FileInfoSwitchCell, theSwitch: UISwitch) {
+        urlRef.resolveAsync(timeout: 1.0) {[weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .success(var url):
+                let isExcluded = theSwitch.isOn
+                guard url.setExcludedFromBackup(isExcluded) else {
+                    Diag.error("Failed to change file attributes.")
+                    self.showErrorAlert(LString.errorFailedToChangeFileAttributes)
+                    return
+                }
+                Diag.info("File is \(isExcluded ? "" : "not ")excluded from iTunes/iCloud backup")
+            case .failure(let error):
+                Diag.error(error.localizedDescription)
+                self.showErrorAlert(error)
+            }
+            self.refresh()
+        }
     }
 }

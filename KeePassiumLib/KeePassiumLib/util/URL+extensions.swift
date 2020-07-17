@@ -49,6 +49,32 @@ public extension URL {
         return res?.isDirectory ?? false
     }
     
+    /// Whether the file is marked as excluded from iTunes/iCloud backup
+    var isExcludedFromBackup: Bool? {
+        let res = try? resourceValues(forKeys: [.isExcludedFromBackupKey])
+        return res?.isExcludedFromBackup
+    }
+    
+    /// Changes the "excluded from backup" attribute.
+    /// - Returns: `true` if successful, `false` in case of error
+    @discardableResult
+    mutating func setExcludedFromBackup(_ isExcluded: Bool) -> Bool {
+        var values = URLResourceValues()
+        values.isExcludedFromBackup = isExcluded
+        do {
+            try setResourceValues(values)
+            // Verify that the change was actually applied
+            if isExcludedFromBackup != nil && isExcludedFromBackup! == isExcluded {
+                return true
+            }
+            Diag.warning("Failed to change backup attribute: the modification did not last.")
+            return false
+        } catch {
+            Diag.warning("Failed to change backup attribute [reason: \(error.localizedDescription)]")
+            return false
+        }
+    }
+    
     /// Same URL with last component name replaced with "_redacted_"
     var redacted: URL {
         let isDirectory = self.isDirectory

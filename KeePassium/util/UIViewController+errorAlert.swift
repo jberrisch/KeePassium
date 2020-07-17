@@ -12,9 +12,14 @@ extension UIViewController {
     
     /// Shows a generic alert about the given error.
     func showErrorAlert(_ error: Error, title: String?=nil) {
+        showErrorAlert(error.localizedDescription)
+    }
+    
+    /// Shows a generic alert with the given error message
+    func showErrorAlert(_ message: String, title: String?=nil) {
         let alert = UIAlertController.make(
             title: title ?? LString.titleError,
-            message: error.localizedDescription)
+            message: message)
         present(alert, animated: true, completion: nil)
     }
 }

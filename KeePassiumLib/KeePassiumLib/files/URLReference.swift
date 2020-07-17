@@ -14,6 +14,7 @@ public struct FileInfo {
     public var fileSize: Int64?
     public var creationDate: Date?
     public var modificationDate: Date?
+    public var isExcludedFromBackup: Bool?
 }
 
 /// Represents a URL as a URL bookmark. Useful for handling external (cloud-based) files.
@@ -477,7 +478,8 @@ public class URLReference:
                 fileName: url.lastPathComponent,
                 fileSize: url.fileSize,
                 creationDate: url.fileCreationDate,
-                modificationDate: url.fileModificationDate)
+                modificationDate: url.fileModificationDate,
+                isExcludedFromBackup: url.isExcludedFromBackup)
             self.cachedInfo = latestInfo
             DispatchQueue.main.async {
                 self.error = nil

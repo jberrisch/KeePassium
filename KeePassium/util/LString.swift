@@ -312,6 +312,19 @@ public enum LString {
 //        comment: "Title of a list with attached files")
 //
     
+    // File info
+    
+    public static let titleExcludeFromBackup = NSLocalizedString(
+        "[FileInfo/isExcludedFromBackup/title]",
+        value: "Exclude From iCloud/iTunes Backup",
+        comment: "Title of a setting: is the file exluded from iCloud/iTunes backup. For example: `Exclude From Backup: <Yes>`"
+    )
+    public static let errorFailedToChangeFileAttributes = NSLocalizedString(
+        "[FileInfo/Error/failed to change attributes]",
+        value: "Failed to update file attributes.",
+        comment: "Error message shown when the user tries to change file attributes (such as creation/modification date, backup flag, etc)"
+    )
+    
     // App Lock
     public static let titleTouchID  = NSLocalizedString(
         "[AppLock/Biometric/Hint] Unlock KeePassium",
