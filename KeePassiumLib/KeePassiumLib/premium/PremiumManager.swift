@@ -429,6 +429,10 @@ extension PremiumManager: SKPaymentTransactionObserver {
                 // nothing to do, wait for further updates
                 delegate?.purchaseDeferred(in: self)
                 break
+            @unknown default:
+                // Just log and ignore, rely on already known states
+                Diag.warning("Unknown transaction state")
+                assertionFailure()
             }
         }
     }

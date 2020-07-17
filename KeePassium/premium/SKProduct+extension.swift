@@ -46,6 +46,9 @@ extension SKProduct {
         case .year:
             dateComponents.setValue(period.numberOfUnits, for: .year)
             timeFormatter.allowedUnits = [.year]
+        @unknown default:
+            assertionFailure()
+            return nil // let's gracefully pretend there is no trial
         }
         
         timeFormatter.unitsStyle = .full
