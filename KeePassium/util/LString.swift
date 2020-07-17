@@ -319,6 +319,12 @@ public enum LString {
         value: "Exclude From iCloud/iTunes Backup",
         comment: "Title of a setting: is the file exluded from iCloud/iTunes backup. For example: `Exclude From Backup: <Yes>`"
     )
+    public static let titleBackupSettings = NSLocalizedString(
+        "[FileInfo/Backup/header]",
+        value: "Backup",
+        comment: "Section header: file backup settings"
+    )
+
     public static let errorFailedToChangeFileAttributes = NSLocalizedString(
         "[FileInfo/Error/failed to change attributes]",
         value: "Failed to update file attributes.",

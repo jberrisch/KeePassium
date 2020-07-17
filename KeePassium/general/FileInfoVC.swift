@@ -204,7 +204,8 @@ class FileInfoVC: UITableViewController {
     func refresh() {
         refreshFixedFields()
         tableView.reloadData()
-        
+        let oldSectionCount = tableView.numberOfSections
+
         urlRef.refreshInfo { [weak self] result in
             guard let self = self else { return }
             self.fields.removeAll(keepingCapacity: true)
@@ -219,10 +220,25 @@ class FileInfoVC: UITableViewController {
                 ))
             }
             
-            self.tableView.reloadSections([0], with: .fade) // like reloadData, but animated
-            if let refreshControl = self.tableView.refreshControl, refreshControl.isRefreshing {
+            let newSectionCount = self.numberOfSections(in: self.tableView)
+            if newSectionCount > oldSectionCount {
+                self.tableView.performBatchUpdates({
+                    self.tableView.reloadSections([0], with: .fade)
+                    self.tableView.insertSections([1], with: .fade)
+                }, completion: nil)
+            } else if newSectionCount < oldSectionCount {
+                self.tableView.performBatchUpdates({
+                    self.tableView.deleteSections([1], with: .fade)
+                    self.tableView.reloadSections([0], with: .automatic)
+                }, completion: nil)
+            } else {
+                let sections = IndexSet(integersIn: 0..<newSectionCount)
+                self.tableView.reloadSections(sections, with: .none)
+            }
+            
+            if let refreshControl = self.refreshControl, refreshControl.isRefreshing {
                 refreshControl.endRefreshing()
-                self.tableView.refreshControl = nil
+                self.refreshControl = nil // disable manual refresh
             }
         }
     }
@@ -277,24 +293,61 @@ class FileInfoVC: UITableViewController {
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+        if isShowExcludeFromBackupSwitch {
+            return 2
+        } else {
+            return 1
+        }
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if isShowExcludeFromBackupSwitch {
-            return fields.count + 1
-        } else {
+        switch section {
+        case 0:
             return fields.count
+        case 1:
+            return isShowExcludeFromBackupSwitch ? 1 : 0
+        default:
+            assertionFailure()
+            return 0
         }
     }
     
+    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        if section == 0 {
+            return 0.1
+        } else {
+            return super.tableView(tableView, heightForHeaderInSection: section)
+        }
+    }
+    
+    override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        if section == 0 && tableView.numberOfSections == 1 {
+            // remove footer between file info and export/delete buttons
+            return 0.1
+        }
+        if section == 1 {
+            return 0.1
+        }
+        return super.tableView(tableView, heightForHeaderInSection: section)
+    }
+    
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        switch section {
+        case 0:
+            return nil
+        case 1:
+            return LString.titleBackupSettings
+        default:
+            return super.tableView(tableView, titleForHeaderInSection: section)
+        }
+    }
     override func tableView(
         _ tableView: UITableView,
         cellForRowAt indexPath: IndexPath
         ) -> UITableViewCell
     {
-        let fieldIndex = indexPath.row
-        if fieldIndex < fields.count {
+        if indexPath.section == 0 {
+            let fieldIndex = indexPath.row
             let cell = tableView.dequeueReusableCell(
                 withIdentifier: FileInfoCell.storyboardID,
                 for: indexPath)
@@ -345,17 +398,20 @@ class FileInfoVC: UITableViewController {
 
 extension FileInfoVC: FileInfoSwitchCellDelegate {
     func didToggleSwitch(in cell: FileInfoSwitchCell, theSwitch: UISwitch) {
+        setExcludedFromBackup(theSwitch.isOn)
+    }
+    
+    private func setExcludedFromBackup(_ isExcluded: Bool) {
         urlRef.resolveAsync(timeout: 1.0) {[weak self] result in
             guard let self = self else { return }
             switch result {
             case .success(var url):
-                let isExcluded = theSwitch.isOn
-                guard url.setExcludedFromBackup(isExcluded) else {
+                if url.setExcludedFromBackup(isExcluded) {
+                    Diag.info("File is \(isExcluded ? "" : "not ")excluded from iTunes/iCloud backup")
+                } else {
                     Diag.error("Failed to change file attributes.")
                     self.showErrorAlert(LString.errorFailedToChangeFileAttributes)
-                    return
                 }
-                Diag.info("File is \(isExcluded ? "" : "not ")excluded from iTunes/iCloud backup")
             case .failure(let error):
                 Diag.error(error.localizedDescription)
                 self.showErrorAlert(error)
