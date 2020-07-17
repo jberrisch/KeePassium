@@ -140,12 +140,7 @@ open class ViewGroupVC: UITableViewController, Refreshable {
                 DatabaseManager.shared.closeDatabase(clearStoredKey: false, ignoreErrors: false) {
                     [weak self] (error) in
                     if let error = error {
-                        let errorAlert = UIAlertController.make(
-                            title: LString.titleError,
-                            message: error.localizedDescription,
-                            cancelButtonTitle: LString.actionDismiss)
-                        self?.navigationController?
-                            .present(errorAlert, animated: true, completion: nil)
+                        self?.navigationController?.showErrorAlert(error)
                     } else {
                         Diag.debug("Database locked on leaving the root group")
                     }
@@ -212,11 +207,7 @@ open class ViewGroupVC: UITableViewController, Refreshable {
                 DatabaseManager.shared.closeDatabase(clearStoredKey: true, ignoreErrors: false) {
                     [weak self] (error) in
                     if let error = error {
-                        let errorAlert = UIAlertController.make(
-                            title: LString.titleError,
-                            message: error.localizedDescription,
-                            cancelButtonTitle: LString.actionDismiss)
-                        self?.present(errorAlert, animated: true, completion: nil)
+                        self?.showErrorAlert(error)
                     } else {
                         Diag.debug("Database locked from a loading warning")
                     }
@@ -854,11 +845,7 @@ open class ViewGroupVC: UITableViewController, Refreshable {
             DatabaseManager.shared.closeDatabase(clearStoredKey: true, ignoreErrors: false) {
                 [weak self] (error) in
                 if let error = error {
-                    let errorAlert = UIAlertController.make(
-                        title: LString.titleError,
-                        message: error.localizedDescription,
-                        cancelButtonTitle: LString.actionDismiss)
-                    self?.present(errorAlert, animated: true, completion: nil)
+                    self?.showErrorAlert(error)
                 } else {
                     Diag.debug("Database locked on user request")
                 }

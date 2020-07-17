@@ -87,6 +87,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 // So defer the operation until there is UI.
                 FileKeeper.shared.prepareToAddFile(
                     url: inputURL,
+                    fileType: nil, // unknown, to be recognized
                     mode: isOpenInPlace ? .openInPlace : .import)
             }
         }

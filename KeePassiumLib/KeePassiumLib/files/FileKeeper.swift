@@ -111,6 +111,8 @@ public class FileKeeper {
     private var urlToOpen: URL?
     /// How `urlToOpen` should be treated.
     private var openMode: OpenMode = .openInPlace
+    /// Type of incoming file, if known
+    private var pendingFileType: FileType?
     /// Ensures thread safety of delayed file operations
     private var pendingOperationGroup = DispatchGroup()
     
@@ -352,16 +354,18 @@ public class FileKeeper {
     ///
     /// - Parameters:
     ///   - url: file to add
+    ///   - fileType: user override of the file type (`nil` for automatic recognition)
     ///   - mode: whether to import the file or open in place
     ///   - successHandler: called after the file has been added
     ///   - errorHandler: called in case of error
     public func addFile(
         url: URL,
+        fileType: FileType?,
         mode: OpenMode,
         success successHandler: ((URLReference)->Void)?,
         error errorHandler: ((FileKeeperError)->Void)?)
     {
-        prepareToAddFile(url: url, mode: mode, notify: false)
+        prepareToAddFile(url: url, fileType: fileType, mode: mode, notify: false)
         processPendingOperations(success: successHandler, error: errorHandler)
     }
     
@@ -369,14 +373,16 @@ public class FileKeeper {
     ///
     /// - Parameters:
     ///   - url: URL of the file to add
+    ///   - fileType: type of the file to add (`nil` for auto recognition)
     ///   - mode: whether to import the file or open in place
     ///   - notify: if true (default), notifies observers about pending file operation
-    public func prepareToAddFile(url: URL, mode: OpenMode, notify: Bool=true) {
+    public func prepareToAddFile(url: URL, fileType: FileType?, mode: OpenMode, notify: Bool=true) {
         Diag.debug("Preparing to add file [mode: \(mode)]")
         let origURL = url
         let actualURL = origURL.resolvingSymlinksInPath()
         print("\n originURL: \(origURL) \n actualURL: \(actualURL) \n")
         self.urlToOpen = origURL
+        self.pendingFileType = fileType
         self.openMode = mode
         if notify {
             FileKeeperNotifier.notifyPendingFileOperation()
@@ -395,8 +401,22 @@ public class FileKeeper {
         guard let sourceURL = urlToOpen else { return }
         urlToOpen = nil
 
+        let fileType = pendingFileType ?? FileType(for: sourceURL)
+        pendingFileType = nil
+
         Diag.debug("Will process pending file operations")
 
+        // ensure that handlers are called on the main queue
+        let mainQueueSuccessHandler: (URLReference)->Void = { (urlRef) in
+            DispatchQueue.main.async {
+                successHandler?(urlRef)
+            }
+        }
+        let mainQueueErrorHandler: (FileKeeperError)->Void = { (error) in
+            DispatchQueue.main.async {
+                errorHandler?(error)
+            }
+        }
         guard sourceURL.isFileURL else {
             Diag.error("Tried to import a non-file URL: \(sourceURL.redacted)")
             let messageNotAFileURL = NSLocalizedString(
@@ -407,11 +427,11 @@ public class FileKeeper {
             switch openMode {
             case .import:
                 let importError = FileKeeperError.importError(reason: messageNotAFileURL)
-                errorHandler?(importError)
+                mainQueueErrorHandler(importError)
                 return
             case .openInPlace:
                 let openError = FileKeeperError.openError(reason: messageNotAFileURL)
-                errorHandler?(openError)
+                mainQueueErrorHandler(openError)
                 return
             }
         }
@@ -425,7 +445,6 @@ public class FileKeeper {
         //    /Backup: open in place
         //    /Documents: open in place
         
-        let fileType = FileType(for: sourceURL)
         let location = getLocation(for: sourceURL)
         switch location {
         case .external:
@@ -433,23 +452,23 @@ public class FileKeeper {
             processExternalFile(
                 url: sourceURL,
                 fileType: fileType,
-                success: successHandler,
-                error: errorHandler)
+                success: mainQueueSuccessHandler,
+                error: mainQueueErrorHandler)
         case .internalDocuments, .internalBackup:
             // we already have the file: open in place
             processInternalFile(
                 url: sourceURL,
                 fileType: fileType,
                 location: location,
-                success: successHandler,
-                error: errorHandler)
+                success: mainQueueSuccessHandler,
+                error: mainQueueErrorHandler)
         case .internalInbox:
             processInboxFile(
                 url: sourceURL,
                 fileType: fileType,
                 location: location,
-                success: successHandler,
-                error: errorHandler)
+                success: mainQueueSuccessHandler,
+                error: mainQueueErrorHandler)
         }
     }
     

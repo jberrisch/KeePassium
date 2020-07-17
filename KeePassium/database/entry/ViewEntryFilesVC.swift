@@ -453,11 +453,7 @@ extension ViewEntryFilesVC: UIDocumentPickerDelegate {
             case .failure(let fileAccessError):
                 Diag.error("Failed to open source file [message: \(fileAccessError.localizedDescription)]")
                 self.progressViewHost?.hideProgressView() // won't need it anymore
-                let alert = UIAlertController.make(
-                    title: LString.titleError,
-                    message: fileAccessError.localizedDescription,
-                    cancelButtonTitle: LString.actionDismiss)
-                self.present(alert, animated: true, completion: nil)
+                self.showErrorAlert(fileAccessError)
             }
         }
     }
