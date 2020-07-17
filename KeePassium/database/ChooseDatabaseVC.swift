@@ -460,10 +460,7 @@ class ChooseDatabaseVC: UITableViewController, DynamicFileList, Refreshable {
             refresh()
         } catch {
             Diag.error("Failed to delete database file [reason: \(error.localizedDescription)]")
-            let errorAlert = UIAlertController.make(
-                title: LString.titleError,
-                message: error.localizedDescription)
-            present(errorAlert, animated: true, completion: nil)
+            showErrorAlert(error)
         }
     }
     
@@ -479,13 +476,8 @@ class ChooseDatabaseVC: UITableViewController, DynamicFileList, Refreshable {
     private func processPendingFileOperations() {
         FileKeeper.shared.processPendingOperations(
             success: nil,
-            error: {
-                [weak self] (error) in
-                guard let _self = self else { return }
-                let alert = UIAlertController.make(
-                    title: LString.titleError,
-                    message: error.localizedDescription)
-                _self.present(alert, animated: true, completion: nil)
+            error: { [weak self] (error) in
+                self?.showErrorAlert(error)
             }
         )
     }
@@ -755,10 +747,7 @@ extension ChooseDatabaseVC: PasscodeInputDelegate {
                 self?.tableView.reloadData()
             } catch {
                 Diag.error(error.localizedDescription)
-                let alert = UIAlertController.make(
-                    title: LString.titleKeychainError,
-                    message: error.localizedDescription)
-                self?.present(alert, animated: true, completion: nil)
+                self?.showErrorAlert(error, title: LString.titleKeychainError)
             }
         }
     }

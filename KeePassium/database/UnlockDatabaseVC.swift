@@ -701,13 +701,8 @@ extension UnlockDatabaseVC: FileKeeperObserver {
     private func processPendingFileOperations() {
         FileKeeper.shared.processPendingOperations(
             success: nil,
-            error: {
-                [weak self] (error) in
-                guard let _self = self else { return }
-                let alert = UIAlertController.make(
-                    title: LString.titleError,
-                    message: error.localizedDescription)
-                _self.present(alert, animated: true, completion: nil)
+            error: { [weak self] (error) in
+                self?.showErrorAlert(error)
             }
         )
     }

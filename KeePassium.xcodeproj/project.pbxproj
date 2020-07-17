@@ -87,6 +87,10 @@
 		753F924B22905621005E496F /* PremiumUpgradeHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 753F924A22905621005E496F /* PremiumUpgradeHelper.swift */; };
 		753F924E2290705D005E496F /* SKProduct+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 753F924D2290705D005E496F /* SKProduct+extension.swift */; };
 		753F924F2290705D005E496F /* SKProduct+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 753F924D2290705D005E496F /* SKProduct+extension.swift */; };
+		753FE83524C1A9A400063FBB /* UIViewController+errorAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 753FE83424C1A9A400063FBB /* UIViewController+errorAlert.swift */; };
+		753FE83624C1A9A400063FBB /* UIViewController+errorAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 753FE83424C1A9A400063FBB /* UIViewController+errorAlert.swift */; };
+		753FE83724C1A9A400063FBB /* UIViewController+errorAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 753FE83424C1A9A400063FBB /* UIViewController+errorAlert.swift */; };
+		753FE83824C1A9A400063FBB /* UIViewController+errorAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 753FE83424C1A9A400063FBB /* UIViewController+errorAlert.swift */; };
 		7542D2422129640F00C8A926 /* String+extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7542D2412129640F00C8A926 /* String+extensions.swift */; };
 		7546FBC120BFB8DD00C5D834 /* WelcomeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7546FBC020BFB8DD00C5D834 /* WelcomeVC.swift */; };
 		7546FBC320BFC03700C5D834 /* RootNavigationVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7546FBC220BFC03700C5D834 /* RootNavigationVC.swift */; };
@@ -670,6 +674,7 @@
 		753A3EE920D3776D00A1CF70 /* Refreshable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Refreshable.swift; sourceTree = "<group>"; };
 		753F924A22905621005E496F /* PremiumUpgradeHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumUpgradeHelper.swift; sourceTree = "<group>"; };
 		753F924D2290705D005E496F /* SKProduct+extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SKProduct+extension.swift"; sourceTree = "<group>"; };
+		753FE83424C1A9A400063FBB /* UIViewController+errorAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+errorAlert.swift"; sourceTree = "<group>"; };
 		7542D2412129640F00C8A926 /* String+extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+extensions.swift"; sourceTree = "<group>"; };
 		7546FBC020BFB8DD00C5D834 /* WelcomeVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeVC.swift; sourceTree = "<group>"; };
 		7546FBC220BFC03700C5D834 /* RootNavigationVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootNavigationVC.swift; sourceTree = "<group>"; };
@@ -1429,6 +1434,7 @@
 				755E9C4C20BE5DC200FD7C7A /* UIImage+extensions.swift */,
 				7578487C22C02A9100BBEF9A /* UITableViewCell+demoEditActions.swift */,
 				75C3801A217A0B76006F74C2 /* UIViewController+storyboard.swift */,
+				753FE83424C1A9A400063FBB /* UIViewController+errorAlert.swift */,
 				7542D2412129640F00C8A926 /* String+extensions.swift */,
 				7523F71C21C98D620025C706 /* SupportEmailComposer.swift */,
 				75CD364021537A310018AF46 /* AppStoreHelper.swift */,
@@ -2056,6 +2062,7 @@
 				75CFBE2D21C2FE340029A80A /* UIView+extension.swift in Sources */,
 				7537FEBF249D7B950028A653 /* Settings+extensions.swift in Sources */,
 				753507A123783729003B65C9 /* HapticFeedback.swift in Sources */,
+				753FE83624C1A9A400063FBB /* UIViewController+errorAlert.swift in Sources */,
 				75779865223023D3006671BD /* ProgressViewHost.swift in Sources */,
 				75B24DB821C3C594003C9486 /* ProgressOverlay.swift in Sources */,
 				757ADC5523A5180600D708D2 /* DismissableNavigationController.swift in Sources */,
@@ -2147,6 +2154,7 @@
 				7546FBC320BFC03700C5D834 /* RootNavigationVC.swift in Sources */,
 				75480503238E51AF0068C863 /* PopoverAnchor.swift in Sources */,
 				75EA64182098FC0500DDB941 /* ChooseDatabaseVC.swift in Sources */,
+				753FE83524C1A9A400063FBB /* UIViewController+errorAlert.swift in Sources */,
 				75DDB5E4228BF88C0018A50F /* FileInfoReloader.swift in Sources */,
 				75C94C5F20B4BAB0004FA29D /* ViewEntryFilesVC.swift in Sources */,
 				7542D2422129640F00C8A926 /* String+extensions.swift in Sources */,
@@ -2265,6 +2273,7 @@
 				75B38C27233E5B7C006BDEFC /* RootNavigationVC.swift in Sources */,
 				75480505238E51AF0068C863 /* PopoverAnchor.swift in Sources */,
 				75B38C28233E5B7C006BDEFC /* ChooseDatabaseVC.swift in Sources */,
+				753FE83724C1A9A400063FBB /* UIViewController+errorAlert.swift in Sources */,
 				75B38C29233E5B7C006BDEFC /* FileInfoReloader.swift in Sources */,
 				75B38C2A233E5B7C006BDEFC /* ViewEntryFilesVC.swift in Sources */,
 				75B38C2B233E5B7C006BDEFC /* String+extensions.swift in Sources */,
@@ -2358,6 +2367,7 @@
 				75D7DF9A233E5E310029AD87 /* UIView+extension.swift in Sources */,
 				7537FEC1249D7B950028A653 /* Settings+extensions.swift in Sources */,
 				753507A323783729003B65C9 /* HapticFeedback.swift in Sources */,
+				753FE83824C1A9A400063FBB /* UIViewController+errorAlert.swift in Sources */,
 				75D7DF9B233E5E310029AD87 /* ProgressViewHost.swift in Sources */,
 				75D7DF9E233E5E310029AD87 /* ProgressOverlay.swift in Sources */,
 				757ADC5723A5180600D708D2 /* DismissableNavigationController.swift in Sources */,

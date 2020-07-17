@@ -664,10 +664,7 @@ extension MainCoordinator: UIDocumentPickerDelegate {
                 self?.refreshFileList()
             },
             error: { [weak self] (error) in
-                let alert = UIAlertController.make(
-                    title: LString.titleError,
-                    message: error.localizedDescription)
-                self?.navigationController.present(alert, animated: true, completion: nil)
+                self?.navigationController.showErrorAlert(error)
             }
         )
     }
@@ -737,11 +734,7 @@ extension MainCoordinator: EntryFinderDelegate {
             ignoreErrors: false,
             completion: { [weak self] (error) in
                 if let error = error {
-                    let errorAlert = UIAlertController.make(
-                        title: LString.titleError,
-                        message: error.localizedDescription,
-                        cancelButtonTitle: LString.actionDismiss)
-                    self?.navigationController.present(errorAlert, animated: true, completion: nil)
+                    self?.navigationController.showErrorAlert(error)
                 } else {
                     // closed ok
                     self?.navigationController.popToRootViewController(animated: true)
@@ -884,10 +877,7 @@ extension MainCoordinator: PasscodeInputDelegate {
             }
         } catch {
             Diag.error(error.localizedDescription)
-            let alert = UIAlertController.make(
-                title: LString.titleKeychainError,
-                message: error.localizedDescription)
-            sender.present(alert, animated: true, completion: nil)
+            sender.showErrorAlert(error, title: LString.titleKeychainError)
         }
     }
     

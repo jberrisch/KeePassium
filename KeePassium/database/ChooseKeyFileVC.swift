@@ -309,10 +309,7 @@ class ChooseKeyFileVC: UITableViewController, Refreshable {
             DatabaseSettingsManager.shared.removeAllAssociations(of: urlRef)
             refresh()
         } catch {
-            let errorAlert = UIAlertController.make(
-                title: LString.titleError,
-                message: error.localizedDescription)
-            present(errorAlert, animated: true, completion: nil)
+            showErrorAlert(error)
         }
     }
 }
@@ -364,11 +361,7 @@ extension ChooseKeyFileVC: UIDocumentPickerDelegate {
             },
             error: {
                 [weak self] (error) in
-                guard let _self = self else { return }
-                let alert = UIAlertController.make(
-                    title: LString.titleFileImportError,
-                    message: error.localizedDescription)
-                _self.present(alert, animated: true, completion: nil)
+                self?.showErrorAlert(error, title: LString.titleFileImportError)
             }
         )
     }
@@ -395,13 +388,8 @@ extension ChooseKeyFileVC: FileKeeperObserver {
     private func processPendingFileOperations() {
         FileKeeper.shared.processPendingOperations(
             success: nil,
-            error: {
-                [weak self] (error) in
-                guard let _self = self else { return }
-                let alert = UIAlertController.make(
-                    title: LString.titleError,
-                    message: error.localizedDescription)
-                _self.present(alert, animated: true, completion: nil)
+            error: { [weak self] (error) in
+                self?.showErrorAlert(error)
             }
         )
     }

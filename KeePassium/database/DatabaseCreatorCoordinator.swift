@@ -277,11 +277,7 @@ extension DatabaseCreatorCoordinator: DatabaseManagerObserver {
                 if let error = error {
                     // there was a problem closing/saving the DB
                     self?.databaseCreatorVC.hideProgressView()
-                    let errorAlert = UIAlertController.make(
-                        title: LString.titleError,
-                        message: error.localizedDescription,
-                        cancelButtonTitle: LString.actionDismiss)
-                    self?.navigationController.present(errorAlert, animated: true, completion: nil)
+                    self?.navigationController.showErrorAlert(error)
                 } else {
                     // all good, choose the saving location
                     DispatchQueue.main.async { [weak self] in
