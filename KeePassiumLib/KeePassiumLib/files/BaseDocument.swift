@@ -20,10 +20,13 @@ public class BaseDocument: UIDocument, Synchronizable {
     public var hasError: Bool { return error != nil }
     public internal(set) var fileProvider: FileProvider?
     
-    private let backgroundQueue = DispatchQueue(
-        label: "com.keepassium.Document",
-        qos: .default,
-        attributes: [.concurrent])
+    fileprivate static let backgroundQueue: OperationQueue = {
+        let queue = OperationQueue()
+        queue.name = "com.keepassium.Document"
+        queue.qualityOfService = .default
+        queue.maxConcurrentOperationCount = 8
+        return queue
+    }()
     
     public convenience init(fileURL url: URL, fileProvider: FileProvider?) {
         self.init(fileURL: url)
@@ -46,7 +49,7 @@ public class BaseDocument: UIDocument, Synchronizable {
     public func open(withTimeout timeout: TimeInterval, _ callback: @escaping OpenCallback) {
         execute(
             withTimeout: BaseDocument.timeout,
-            on: backgroundQueue,
+            on: BaseDocument.backgroundQueue,
             slowAsyncOperation: {
                 [weak self] (_ notifyAndCheckIfCanProceed: @escaping ()->Bool) -> () in
                 // `superOpen()` might take forever

@@ -9,14 +9,17 @@
 import Foundation
 
 class FileCoordinator: NSFileCoordinator, Synchronizable {
-    /// Dispatch queue for asynchronous URLReference operations
-    fileprivate let backgroundQueue = DispatchQueue(
-        label: "com.keepassium.FileCoordinator",
-        qos: .default,
-        attributes: [.concurrent])
+    /// Queue for asynchronous URLReference operations
+    fileprivate static let backgroundQueue: OperationQueue = {
+        let queue = OperationQueue()
+        queue.name = "com.keepassium.FileCoordinator"
+        queue.qualityOfService = .default
+        queue.maxConcurrentOperationCount = 8
+        return queue
+    }()
     
     /// Queue for coordinated reads
-    fileprivate static let operationQueue = OperationQueue()
+    fileprivate static let coordinationQueue = OperationQueue()
     
     typealias ReadingCallback = (FileAccessError?) -> ()
     
@@ -29,13 +32,13 @@ class FileCoordinator: NSFileCoordinator, Synchronizable {
     {
         execute(
             withTimeout: timeout,
-            on: backgroundQueue,
+            on: FileCoordinator.backgroundQueue,
             slowAsyncOperation: {
                 [weak self] (_ notifyAndCheckIfCanProceed: @escaping ()->Bool) -> () in
                 // `coordinate()` might take forever
                 self?.coordinate(
                     with: [.readingIntent(with: url, options: options)],
-                    queue: FileCoordinator.operationQueue)
+                    queue: FileCoordinator.coordinationQueue)
                 {
                     (error) in
                     // Notify the timeout trigger that we've done with the slow part.
