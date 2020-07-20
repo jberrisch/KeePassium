@@ -38,6 +38,7 @@ KeePassium is a commercial open source app. The "commercial" part gives you a we
 * Easy switching between multiple databases
 * And more:
 	- Viewing TOTP codes (both RFC-6238 and Steam TOTP)
+	- YubiKey challenge-response support
 	- File attachments
 	- Custom fields
 	- Custom icons
@@ -130,7 +131,7 @@ To avoid backdoors in third-party code, it has been checked by the main develope
 
 KeePassium Password Manager
 
-Copyright ©2018–2019 [Andrei Popleteev](http://popleteev.com).
+Copyright ©2018–2020 [Andrei Popleteev](http://popleteev.com).
 
 KeePassium is a commercial open-source app, available under the  [GPLv3 license](https://choosealicense.com/licenses/gpl-3.0/). Our intention is to provide the maximal possible transparency: you can personally audit the code and build your own binary. 
 
