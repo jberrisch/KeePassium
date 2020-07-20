@@ -118,6 +118,7 @@ The project would not be the same without some third-party components:
 	- [Argon2](https://github.com/P-H-C/phc-winner-argon2) by Daniel Dinu, Dmitry Khovratovich, Jean-Philippe Aumasson, and Samuel Neves (CC0 license)
 	- [ChaCha20 & Salsa20](https://cr.yp.to/salsa20.html) implementation by D. J. Bernstein (public domain)
 	- [Twofish](http://www.cartotype.com/downloads/twofish/twofish.cpp) implementation by Niels Ferguson (custom very permissive license).
+	- [Yubico Mobile iOS SDK](https://github.com/Yubico/yubikit-ios) by Yubico AB (Apache 2.0 license)
 	- [TPInAppReceipt](https://github.com/tikhop/TPInAppReceipt) by Pavel Tikhonenko (MIT license)
 	- [GzipSwift](https://github.com/1024jp/GzipSwift) by 1024jp (MIT license)
 	- [Base32 for Swift](https://github.com/norio-nomura/Base32) by Norio Nomura (MIT license)
