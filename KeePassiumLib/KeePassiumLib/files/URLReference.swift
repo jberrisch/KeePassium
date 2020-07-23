@@ -141,12 +141,6 @@ public class URLReference:
     /// A unique identifier of the serving file provider.
     public private(set) var fileProvider: FileProvider?
     
-    /// Coordinator for static methods (like `create`)
-    fileprivate static let staticFileCoordinator = FileCoordinator()
-    
-    /// Coordinator for instance methods
-    fileprivate let fileCoordinator = FileCoordinator()
-    
     /// Dispatch queue for asynchronous URLReference operations
     fileprivate let backgroundQueue = DispatchQueue(
         label: "com.keepassium.URLReference",
@@ -247,44 +241,34 @@ public class URLReference:
         completion callback: @escaping CreateCallback)
     {
         let isAccessed = url.startAccessingSecurityScopedResource()
-        
-        // Stage 1: try to simply create
-        if tryCreate(for: url, location: location, callbackOnError: false, callback: callback) {
-            print("URL bookmarked on stage 1")
+        defer {
             if isAccessed {
                 url.stopAccessingSecurityScopedResource()
             }
+        }
+
+        // Stage 1: try to simply create
+        if tryCreate(for: url, location: location, callbackOnError: false, callback: callback) {
+            print("URL bookmarked on stage 1")
             return
         }
-        
+
         // Stage 2: try to create after accessing the document
-        let readingIntentOptions: NSFileCoordinator.ReadingOptions = [
-            .withoutChanges, // don't force other processes to save the file first
-            .resolvesSymbolicLink // if sym link, resolve the real target URL first
-            // .immediatelyAvailableMetadataOnly - causes "File does not exist" with some providers
-        ]
-        staticFileCoordinator.coordinateReading(
-            at: url,
-            fileProvider: nil, // unknown yet
-            options: readingIntentOptions,
-            timeout: URLReference.defaultTimeout)
-        {
-            // Note: don't attempt to read the contents,
-            // it won't work due to .immediatelyAvailableMetadataOnly above
-            (fileAccessError) in
+        let tmpDoc = BaseDocument(fileURL: url, fileProvider: nil)
+        tmpDoc.open(withTimeout: URLReference.defaultTimeout) { (result) in
             defer {
-                if isAccessed {
-                    url.stopAccessingSecurityScopedResource()
-                }
+                tmpDoc.close(completionHandler: nil)
             }
-            guard fileAccessError == nil else {
+            switch result {
+            case .success(_):
+                // The file is fetched & secure-scope-accessed, let's try to bookmark it again.
+                // (Last attempt, calls the callback in any case.)
+                tryCreate(for: url, location: location, callbackOnError: true, callback: callback)
+            case .failure(let fileAccessError):
                 DispatchQueue.main.async {
-                    callback(.failure(fileAccessError!))
+                    callback(.failure(fileAccessError))
                 }
-                return
             }
-            // calls the callback in any case
-            tryCreate(for: url, location: location, callbackOnError: true, callback: callback)
         }
     }
     
@@ -447,43 +431,57 @@ public class URLReference:
         // without secruity scoping, won't get file attributes
         let isAccessed = url.startAccessingSecurityScopedResource()
         
-        // Access the document to ensure we fetch the latest metadata
-        let readingIntentOptions: NSFileCoordinator.ReadingOptions = [
-            // ensure any pending saves are completed first --> so, no .withoutChanges
-            // OK to download the latest metadata --> so, no .immediatelyAvailableMetadataOnly
-            .resolvesSymbolicLink // if sym link, resolve the real target URL first
-        ]
-        fileCoordinator.coordinateReading(
-            at: url,
-            fileProvider: fileProvider,
-            options: readingIntentOptions,
-            timeout: URLReference.defaultTimeout)
-        {
-            (fileAccessError) in // strong self
+        // Using a temporary UIDocument to fetch&coordinate access to the file.
+        // A more lightweight NSFileCoordinator solution causes
+        // frequent freezes with GDrive, for yet-unknown reasons...
+        let tmpDoc = BaseDocument(fileURL: url, fileProvider: fileProvider)
+        tmpDoc.open(withTimeout: URLReference.defaultTimeout) { [self] (result) in
             defer {
                 if isAccessed {
                     url.stopAccessingSecurityScopedResource()
                 }
+                tmpDoc.close(completionHandler: nil)
             }
-
             self.registerInfoRefreshRequest(.completed)
-            guard fileAccessError == nil else {
+            switch result {
+            case .failure(let fileAccessError):
                 DispatchQueue.main.async { // strong self
                     self.error = fileAccessError
-                    callback(.failure(fileAccessError!))
+                    callback(.failure(fileAccessError))
                 }
-                return
-            }
-            let latestInfo = FileInfo(
-                fileName: url.lastPathComponent,
-                fileSize: url.fileSize,
-                creationDate: url.fileCreationDate,
-                modificationDate: url.fileModificationDate,
-                isExcludedFromBackup: url.isExcludedFromBackup)
-            self.cachedInfo = latestInfo
-            DispatchQueue.main.async {
-                self.error = nil
-                callback(.success(latestInfo))
+            case .success(_):
+                // Read document file attributes
+                let attributeKeys: Set<URLResourceKey> = [
+                    .fileSizeKey,
+                    .creationDateKey,
+                    .contentModificationDateKey,
+                    .isExcludedFromBackupKey,
+                    .ubiquitousItemDownloadingStatusKey,
+                ]
+                let attributes: URLResourceValues
+                do {
+                    attributes = try url.resourceValues(forKeys: attributeKeys)
+                } catch {
+                    Diag.error("Failed to get file info [reason: \(error.localizedDescription)]")
+                    let fileAccessError = FileAccessError.systemError(error)
+                    DispatchQueue.main.async { // strong self
+                        self.error = fileAccessError
+                        callback(.failure(fileAccessError))
+                    }
+                    return
+                }
+
+                let latestInfo = FileInfo(
+                    fileName: url.lastPathComponent,
+                    fileSize: Int64(attributes.fileSize ?? -1),
+                    creationDate: attributes.creationDate,
+                    modificationDate: attributes.contentModificationDate,
+                    isExcludedFromBackup: attributes.isExcludedFromBackup ?? false)
+                self.cachedInfo = latestInfo
+                DispatchQueue.main.async {
+                    self.error = nil
+                    callback(.success(latestInfo))
+                }
             }
         }
     }
