@@ -38,6 +38,9 @@ class PremiumCoordinator: NSObject {
 
         navigationController.modalPresentationStyle = .pageSheet
         navigationController.presentationController?.delegate = self
+        if #available(iOS 13, *) {
+            navigationController.isModalInPresentation = true
+        }
 
         planPicker.delegate = self
     }
