@@ -36,7 +36,7 @@ class PremiumCoordinator: NSObject {
         navigationController = UINavigationController(rootViewController: planPicker)
         super.init()
 
-        navigationController.modalPresentationStyle = .formSheet
+        navigationController.modalPresentationStyle = .pageSheet
         navigationController.presentationController?.delegate = self
 
         planPicker.delegate = self
