@@ -151,6 +151,22 @@
 		756B15D124C19C1E004A75B6 /* FileAddingHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 756B15CE24C19C1E004A75B6 /* FileAddingHelper.swift */; };
 		756B15D224C19C1E004A75B6 /* FileAddingHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 756B15CE24C19C1E004A75B6 /* FileAddingHelper.swift */; };
 		756FF64420BAB20300FF890B /* UIColor+namedColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 756FF64320BAB20300FF890B /* UIColor+namedColors.swift */; };
+		7572664B24CB15530099B6E1 /* HelpViewerCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7572664A24CB15530099B6E1 /* HelpViewerCoordinator.swift */; };
+		7572664C24CB15530099B6E1 /* HelpViewerCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7572664A24CB15530099B6E1 /* HelpViewerCoordinator.swift */; };
+		7572664D24CB15530099B6E1 /* HelpViewerCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7572664A24CB15530099B6E1 /* HelpViewerCoordinator.swift */; };
+		7572664E24CB15530099B6E1 /* HelpViewerCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7572664A24CB15530099B6E1 /* HelpViewerCoordinator.swift */; };
+		7572665024CB17410099B6E1 /* HelpViewerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7572664F24CB17410099B6E1 /* HelpViewerVC.swift */; };
+		7572665124CB17410099B6E1 /* HelpViewerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7572664F24CB17410099B6E1 /* HelpViewerVC.swift */; };
+		7572665224CB17410099B6E1 /* HelpViewerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7572664F24CB17410099B6E1 /* HelpViewerVC.swift */; };
+		7572665324CB17410099B6E1 /* HelpViewerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7572664F24CB17410099B6E1 /* HelpViewerVC.swift */; };
+		7572665524CB18520099B6E1 /* HelpViewerVC.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7572665424CB18520099B6E1 /* HelpViewerVC.storyboard */; };
+		7572665624CB18520099B6E1 /* HelpViewerVC.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7572665424CB18520099B6E1 /* HelpViewerVC.storyboard */; };
+		7572665724CB18520099B6E1 /* HelpViewerVC.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7572665424CB18520099B6E1 /* HelpViewerVC.storyboard */; };
+		7572665824CB18520099B6E1 /* HelpViewerVC.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7572665424CB18520099B6E1 /* HelpViewerVC.storyboard */; };
+		7572665A24CB1B500099B6E1 /* HelpArticle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7572665924CB1B500099B6E1 /* HelpArticle.swift */; };
+		7572665B24CB1B500099B6E1 /* HelpArticle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7572665924CB1B500099B6E1 /* HelpArticle.swift */; };
+		7572665C24CB1B500099B6E1 /* HelpArticle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7572665924CB1B500099B6E1 /* HelpArticle.swift */; };
+		7572665D24CB1B500099B6E1 /* HelpArticle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7572665924CB1B500099B6E1 /* HelpArticle.swift */; };
 		7573FD8B2321664F00DCDA5A /* MultilineButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7573FD8A2321664F00DCDA5A /* MultilineButton.swift */; };
 		7573FD8C2321664F00DCDA5A /* MultilineButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7573FD8A2321664F00DCDA5A /* MultilineButton.swift */; };
 		7575B24722D846B900B84B3F /* SearchHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75B24DD421C523AE003C9486 /* SearchHelper.swift */; };
@@ -904,6 +920,10 @@
 		756B245E243F74E000AA121A /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/SettingsBackupTimeoutPickerVC.strings; sourceTree = "<group>"; };
 		756D15602129AFB60052C728 /* KeePassium.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = KeePassium.entitlements; sourceTree = "<group>"; };
 		756FF64320BAB20300FF890B /* UIColor+namedColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+namedColors.swift"; sourceTree = "<group>"; };
+		7572664A24CB15530099B6E1 /* HelpViewerCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpViewerCoordinator.swift; sourceTree = "<group>"; };
+		7572664F24CB17410099B6E1 /* HelpViewerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpViewerVC.swift; sourceTree = "<group>"; };
+		7572665424CB18520099B6E1 /* HelpViewerVC.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = HelpViewerVC.storyboard; sourceTree = "<group>"; };
+		7572665924CB1B500099B6E1 /* HelpArticle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpArticle.swift; sourceTree = "<group>"; };
 		7573FD8A2321664F00DCDA5A /* MultilineButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultilineButton.swift; sourceTree = "<group>"; };
 		7575B24822D8476300B84B3F /* SearchHelper+extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SearchHelper+extensions.swift"; sourceTree = "<group>"; };
 		75779863223023D3006671BD /* ProgressViewHost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressViewHost.swift; sourceTree = "<group>"; };
@@ -1786,6 +1806,7 @@
 		758BF0D920D21EE500897C83 /* general */ = {
 			isa = PBXGroup;
 			children = (
+				7590798224CB1400008F34EC /* help */,
 				75679AD022FD963200372301 /* news */,
 				7579A06224F0728F00C98F24 /* changelog */,
 				759BCEAF2144E6E7002FC18B /* RootSplitVC.swift */,
@@ -1810,6 +1831,17 @@
 				75802630222EBC3800F4525F /* ProgressVC.storyboard */,
 			);
 			path = general;
+			sourceTree = "<group>";
+		};
+		7590798224CB1400008F34EC /* help */ = {
+			isa = PBXGroup;
+			children = (
+				7572664A24CB15530099B6E1 /* HelpViewerCoordinator.swift */,
+				7572664F24CB17410099B6E1 /* HelpViewerVC.swift */,
+				7572665424CB18520099B6E1 /* HelpViewerVC.storyboard */,
+				7572665924CB1B500099B6E1 /* HelpArticle.swift */,
+			);
+			path = help;
 			sourceTree = "<group>";
 		};
 		75AD9FB3212EE35300F49C23 /* views */ = {
@@ -2080,6 +2112,7 @@
 				751E0D2C2309AFE90088BB10 /* FirstSetupVC.storyboard in Resources */,
 				751E0D382309B0120088BB10 /* KeyFileChooserVC.storyboard in Resources */,
 				751E0D262309AFBA0088BB10 /* FileInfoVC.storyboard in Resources */,
+				7572665624CB18520099B6E1 /* HelpViewerVC.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2156,6 +2189,7 @@
 				758FC12924CEF72000BAD35C /* appicon-atom-blue_iPhoneApp_60@2x.png in Resources */,
 				751E0D252309AFBA0088BB10 /* FileInfoVC.storyboard in Resources */,
 				75C38045217A3204006F74C2 /* PlaceholderVC.storyboard in Resources */,
+				7572665524CB18520099B6E1 /* HelpViewerVC.storyboard in Resources */,
 				758FC12D24CEF72000BAD35C /* appicon-info_iPadApp_76@2x.png in Resources */,
 				75ED429D2313A3EF003DE72E /* SettingsDatabaseTimeoutVC.storyboard in Resources */,
 				758FC17B24CEF72000BAD35C /* appicon-atom-black_iPhoneApp_60@3x.png in Resources */,
@@ -2249,6 +2283,7 @@
 				758FC12A24CEF72000BAD35C /* appicon-atom-blue_iPhoneApp_60@2x.png in Resources */,
 				75B38C6F233E5B7C006BDEFC /* FileInfoVC.storyboard in Resources */,
 				75B38C70233E5B7C006BDEFC /* PlaceholderVC.storyboard in Resources */,
+				7572665724CB18520099B6E1 /* HelpViewerVC.storyboard in Resources */,
 				758FC12E24CEF72000BAD35C /* appicon-info_iPadApp_76@2x.png in Resources */,
 				75B38C71233E5B7C006BDEFC /* SettingsDatabaseTimeoutVC.storyboard in Resources */,
 				758FC17C24CEF72000BAD35C /* appicon-atom-black_iPhoneApp_60@3x.png in Resources */,
@@ -2289,6 +2324,7 @@
 				75D7DFB8233E5E310029AD87 /* FirstSetupVC.storyboard in Resources */,
 				75D7DFB9233E5E310029AD87 /* KeyFileChooserVC.storyboard in Resources */,
 				75D7DFBA233E5E310029AD87 /* FileInfoVC.storyboard in Resources */,
+				7572665824CB18520099B6E1 /* HelpViewerVC.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2348,6 +2384,7 @@
 				7532A24D21C5A035005DF56F /* KeyFileChooserVC.swift in Sources */,
 				750CFBCB21BA9ACD00E62B09 /* CredentialProviderViewController.swift in Sources */,
 				75A5312423C0D35500900ED1 /* NavigationRouter.swift in Sources */,
+				7572665124CB17410099B6E1 /* HelpViewerVC.swift in Sources */,
 				757FB3CF21F9C51C00F016FA /* UITextView+border.swift in Sources */,
 				75CBAB9F21C1671F00B8AFE2 /* MainCoordinator.swift in Sources */,
 				759BC62D2487FE5200E88111 /* URLReference+extensions.swift in Sources */,
@@ -2376,6 +2413,7 @@
 				759894BD24620D33006B6709 /* FileDestructionHelper.swift in Sources */,
 				757FB3CC21F9B4AF00F016FA /* ProtectedTextField.swift in Sources */,
 				75BFB1402481553D0017B980 /* DynamicFileList.swift in Sources */,
+				7572664C24CB15530099B6E1 /* HelpViewerCoordinator.swift in Sources */,
 				750CFBDB21BAD7FF00E62B09 /* UIAlertController+extensions.swift in Sources */,
 				75CBAB9D21C166D600B8AFE2 /* Coordinator.swift in Sources */,
 				75CFBE2D21C2FE340029A80A /* UIView+extension.swift in Sources */,
@@ -2392,6 +2430,7 @@
 				750CFC0721BAD98B00E62B09 /* LString.swift in Sources */,
 				75BFB1472481D19B0017B980 /* FileProvider+extensions.swift in Sources */,
 				75151D3423268AB300F3C411 /* UILabel+strikethrough.swift in Sources */,
+				7572665B24CB1B500099B6E1 /* HelpArticle.swift in Sources */,
 				757ADC5123A5180600D708D2 /* DismissablePopover.swift in Sources */,
 				75A2677E22904E0D0097C693 /* PremiumFeature+extension.swift in Sources */,
 				750CFBDA21BAD7FF00E62B09 /* KeyboardLayoutConstraint.swift in Sources */,
@@ -2438,6 +2477,7 @@
 				759BCEB02144E6E8002FC18B /* RootSplitVC.swift in Sources */,
 				759992F024B6140D006CC379 /* LString+premium.swift in Sources */,
 				758BADB224B5408F00CC9265 /* PricingPlanCollectionCell.swift in Sources */,
+				7572665024CB17410099B6E1 /* HelpViewerVC.swift in Sources */,
 				7550D22B215CC99100360E0C /* ChangeMasterKeyVC.swift in Sources */,
 				7599637022E112E50004BC85 /* Attachment+extensions.swift in Sources */,
 				758FC18D24CF254000BAD35C /* AppIcon.swift in Sources */,
@@ -2463,6 +2503,7 @@
 				75D1674A21464333005E33C3 /* AboutVC.swift in Sources */,
 				750C683220D767F6001A6AA0 /* EditEntryVC.swift in Sources */,
 				75151D3323268AB300F3C411 /* UILabel+strikethrough.swift in Sources */,
+				7572664B24CB15530099B6E1 /* HelpViewerCoordinator.swift in Sources */,
 				755E9C4D20BE5DC200FD7C7A /* UIImage+extensions.swift in Sources */,
 				75F5CACD20BD18320056C969 /* UIView+extension.swift in Sources */,
 				7523F71D21C98D620025C706 /* SupportEmailComposer.swift in Sources */,
@@ -2516,6 +2557,7 @@
 				757ADC4523A1047600D708D2 /* HardwareKeyPicker.swift in Sources */,
 				75C94C5B20B4B8C2004FA29D /* ViewEntryVC.swift in Sources */,
 				7578487D22C02A9100BBEF9A /* UITableViewCell+demoEditActions.swift in Sources */,
+				7572665A24CB1B500099B6E1 /* HelpArticle.swift in Sources */,
 				75779864223023D3006671BD /* ProgressViewHost.swift in Sources */,
 				758BADB524B5EAFF00CC9265 /* GradientSeparatorView.swift in Sources */,
 				7596771E20FB36BD00E54827 /* SettingsAppTimeoutVC.swift in Sources */,
@@ -2563,6 +2605,7 @@
 				75B38C06233E5B7C006BDEFC /* RootSplitVC.swift in Sources */,
 				759992F124B6140D006CC379 /* LString+premium.swift in Sources */,
 				758BADB324B5408F00CC9265 /* PricingPlanCollectionCell.swift in Sources */,
+				7572665224CB17410099B6E1 /* HelpViewerVC.swift in Sources */,
 				75B38C07233E5B7C006BDEFC /* ChangeMasterKeyVC.swift in Sources */,
 				75B38C08233E5B7C006BDEFC /* Attachment+extensions.swift in Sources */,
 				758FC18E24CF254000BAD35C /* AppIcon.swift in Sources */,
@@ -2588,6 +2631,7 @@
 				75B38C19233E5B7C006BDEFC /* AboutVC.swift in Sources */,
 				75B38C1A233E5B7C006BDEFC /* EditEntryVC.swift in Sources */,
 				75B38C1B233E5B7C006BDEFC /* UILabel+strikethrough.swift in Sources */,
+				7572664D24CB15530099B6E1 /* HelpViewerCoordinator.swift in Sources */,
 				75B38C1C233E5B7C006BDEFC /* UIImage+extensions.swift in Sources */,
 				75B38C1D233E5B7C006BDEFC /* UIView+extension.swift in Sources */,
 				75B38C1E233E5B7C006BDEFC /* SupportEmailComposer.swift in Sources */,
@@ -2641,6 +2685,7 @@
 				757ADC4723A1047600D708D2 /* HardwareKeyPicker.swift in Sources */,
 				75B38C46233E5B7C006BDEFC /* ViewEntryVC.swift in Sources */,
 				75B38C47233E5B7C006BDEFC /* UITableViewCell+demoEditActions.swift in Sources */,
+				7572665C24CB1B500099B6E1 /* HelpArticle.swift in Sources */,
 				75B38C48233E5B7C006BDEFC /* ProgressViewHost.swift in Sources */,
 				758BADB724B5EAFF00CC9265 /* GradientSeparatorView.swift in Sources */,
 				75B38C49233E5B7C006BDEFC /* SettingsAppTimeoutVC.swift in Sources */,
@@ -2665,6 +2710,7 @@
 				75D7DF80233E5E310029AD87 /* KeyFileChooserVC.swift in Sources */,
 				75D7DF81233E5E310029AD87 /* CredentialProviderViewController.swift in Sources */,
 				75A5312623C0D35500900ED1 /* NavigationRouter.swift in Sources */,
+				7572665324CB17410099B6E1 /* HelpViewerVC.swift in Sources */,
 				75D7DF82233E5E310029AD87 /* UITextView+border.swift in Sources */,
 				75D7DF83233E5E310029AD87 /* MainCoordinator.swift in Sources */,
 				759BC62F2487FE5200E88111 /* URLReference+extensions.swift in Sources */,
@@ -2693,6 +2739,7 @@
 				759894BF24620D33006B6709 /* FileDestructionHelper.swift in Sources */,
 				75D7DF97233E5E310029AD87 /* ProtectedTextField.swift in Sources */,
 				75BFB1422481553D0017B980 /* DynamicFileList.swift in Sources */,
+				7572664E24CB15530099B6E1 /* HelpViewerCoordinator.swift in Sources */,
 				75D7DF98233E5E310029AD87 /* UIAlertController+extensions.swift in Sources */,
 				75D7DF99233E5E310029AD87 /* Coordinator.swift in Sources */,
 				75D7DF9A233E5E310029AD87 /* UIView+extension.swift in Sources */,
@@ -2709,6 +2756,7 @@
 				75D7DFA2233E5E310029AD87 /* LString.swift in Sources */,
 				75BFB1492481D19B0017B980 /* FileProvider+extensions.swift in Sources */,
 				75D7DFA3233E5E310029AD87 /* UILabel+strikethrough.swift in Sources */,
+				7572665D24CB1B500099B6E1 /* HelpArticle.swift in Sources */,
 				757ADC5323A5180600D708D2 /* DismissablePopover.swift in Sources */,
 				75D7DFA4233E5E310029AD87 /* PremiumFeature+extension.swift in Sources */,
 				75D7DFA5233E5E310029AD87 /* KeyboardLayoutConstraint.swift in Sources */,
