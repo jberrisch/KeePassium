@@ -28,6 +28,12 @@
 		7514CC9F22D5D14B00A0D7A4 /* LongPressAwareNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7514CC9E22D5D14B00A0D7A4 /* LongPressAwareNavigationController.swift */; };
 		75151D3323268AB300F3C411 /* UILabel+strikethrough.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75151D3223268AB300F3C411 /* UILabel+strikethrough.swift */; };
 		75151D3423268AB300F3C411 /* UILabel+strikethrough.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75151D3223268AB300F3C411 /* UILabel+strikethrough.swift */; };
+		751A564F24CCD3C0001227D6 /* AppIconPicker.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 751A564E24CCD3C0001227D6 /* AppIconPicker.storyboard */; };
+		751A565024CCD3C0001227D6 /* AppIconPicker.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 751A564E24CCD3C0001227D6 /* AppIconPicker.storyboard */; };
+		751A565224CCD3CD001227D6 /* AppIconPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 751A565124CCD3CD001227D6 /* AppIconPicker.swift */; };
+		751A565324CCD3CD001227D6 /* AppIconPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 751A565124CCD3CD001227D6 /* AppIconPicker.swift */; };
+		751A565524CCD3FF001227D6 /* AppIconSwitcherCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 751A565424CCD3FF001227D6 /* AppIconSwitcherCoordinator.swift */; };
+		751A565624CCD3FF001227D6 /* AppIconSwitcherCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 751A565424CCD3FF001227D6 /* AppIconSwitcherCoordinator.swift */; };
 		751BE253211C395D0071050A /* ViewDiagnosticsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 751BE252211C395D0071050A /* ViewDiagnosticsVC.swift */; };
 		751E0CE62309AE5D0088BB10 /* SettingsDataProtectionVC.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 751E0CE82309AE5D0088BB10 /* SettingsDataProtectionVC.storyboard */; };
 		751E0CE92309AE860088BB10 /* SettingsFileSortingVC.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 751E0CEB2309AE860088BB10 /* SettingsFileSortingVC.storyboard */; };
@@ -573,6 +579,9 @@
 		751146E5233F9E2900443BCD /* KeePassiumLib.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = KeePassiumLib.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7514CC9E22D5D14B00A0D7A4 /* LongPressAwareNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LongPressAwareNavigationController.swift; sourceTree = "<group>"; };
 		75151D3223268AB300F3C411 /* UILabel+strikethrough.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UILabel+strikethrough.swift"; sourceTree = "<group>"; };
+		751A564E24CCD3C0001227D6 /* AppIconPicker.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = AppIconPicker.storyboard; sourceTree = "<group>"; };
+		751A565124CCD3CD001227D6 /* AppIconPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIconPicker.swift; sourceTree = "<group>"; };
+		751A565424CCD3FF001227D6 /* AppIconSwitcherCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIconSwitcherCoordinator.swift; sourceTree = "<group>"; };
 		751B99AE2315B4EF002AA609 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/DatabaseChooserVC.strings; sourceTree = "<group>"; };
 		751B99B22315B56D002AA609 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/DatabaseUnlockerVC.strings; sourceTree = "<group>"; };
 		751B99B62315B736002AA609 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/EntryFinderVC.strings; sourceTree = "<group>"; };
@@ -1323,6 +1332,23 @@
 			path = "KeePassium AutoFill";
 			sourceTree = "<group>";
 		};
+		751A564D24CCD375001227D6 /* appearance */ = {
+			isa = PBXGroup;
+			children = (
+				751A564E24CCD3C0001227D6 /* AppIconPicker.storyboard */,
+				751A565124CCD3CD001227D6 /* AppIconPicker.swift */,
+				751A565424CCD3FF001227D6 /* AppIconSwitcherCoordinator.swift */,
+			);
+			path = appearance;
+			sourceTree = "<group>";
+		};
+		751A565724CCE0F8001227D6 /* app-icons */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = "app-icons";
+			sourceTree = "<group>";
+		};
 		7533032523C52AB600F38CC7 /* relocation */ = {
 			isa = PBXGroup;
 			children = (
@@ -1353,6 +1379,7 @@
 		7546FBC420C1024200C5D834 /* settings */ = {
 			isa = PBXGroup;
 			children = (
+				751A564D24CCD375001227D6 /* appearance */,
 				75065A3122C41B2200958243 /* autoFill */,
 				75C3800F217A0497006F74C2 /* appLock */,
 				7578488722C16D7D00BBEF9A /* backup */,
@@ -1399,6 +1426,7 @@
 		754BF07D2082A6BD00E3A292 /* KeePassium */ = {
 			isa = PBXGroup;
 			children = (
+				751A565724CCE0F8001227D6 /* app-icons */,
 				758BF0D920D21EE500897C83 /* general */,
 				757ADC4323A1045C00D708D2 /* challenge-response */,
 				756FF64720BAB56A00FF890B /* database */,
@@ -1879,6 +1907,7 @@
 				751E0D012309AF1B0088BB10 /* EditEntryVC.storyboard in Resources */,
 				751E0D192309AF620088BB10 /* ChangeMasterKeyVC.storyboard in Resources */,
 				751E0D072309AF250088BB10 /* ViewEntryVC.storyboard in Resources */,
+				751A564F24CCD3C0001227D6 /* AppIconPicker.storyboard in Resources */,
 				751E0D1F2309AF6B0088BB10 /* DatabaseCreatorVC.storyboard in Resources */,
 				755E7D9C232008300010E199 /* InfoPlist.strings in Resources */,
 				755B863823054FC700E9FC83 /* WelcomeVC.storyboard in Resources */,
@@ -1929,6 +1958,7 @@
 				75B38C5E233E5B7C006BDEFC /* EditEntryVC.storyboard in Resources */,
 				75B38C5F233E5B7C006BDEFC /* ChangeMasterKeyVC.storyboard in Resources */,
 				75B38C60233E5B7C006BDEFC /* ViewEntryVC.storyboard in Resources */,
+				751A565024CCD3C0001227D6 /* AppIconPicker.storyboard in Resources */,
 				75B38C61233E5B7C006BDEFC /* DatabaseCreatorVC.storyboard in Resources */,
 				75B38C62233E5B7C006BDEFC /* InfoPlist.strings in Resources */,
 				75B38C64233E5B7C006BDEFC /* WelcomeVC.storyboard in Resources */,
@@ -2095,10 +2125,12 @@
 			files = (
 				75679ACE22FD897000372301 /* NewsCenter.swift in Sources */,
 				758BF0DD20D220B300897C83 /* WatchdogAwareTextField.swift in Sources */,
+				751A565224CCD3CD001227D6 /* AppIconPicker.swift in Sources */,
 				754BF07F2082A6BD00E3A292 /* AppDelegate.swift in Sources */,
 				7584B3F120DD908A0086C094 /* UITextView+border.swift in Sources */,
 				752BB12520F089B30070FAC0 /* SettingsItemListVC.swift in Sources */,
 				752ED68D2235547D00C20D3E /* SettingsDataProtectionVC.swift in Sources */,
+				751A565524CCD3FF001227D6 /* AppIconSwitcherCoordinator.swift in Sources */,
 				751BE253211C395D0071050A /* ViewDiagnosticsVC.swift in Sources */,
 				759894B724620AF6006B6709 /* FileExportHelper.swift in Sources */,
 				75E4CA5D232C455D00EB6805 /* UserNameHelper.swift in Sources */,
@@ -2215,10 +2247,12 @@
 			files = (
 				75B38BF3233E5B7C006BDEFC /* NewsCenter.swift in Sources */,
 				75B38BF4233E5B7C006BDEFC /* WatchdogAwareTextField.swift in Sources */,
+				751A565324CCD3CD001227D6 /* AppIconPicker.swift in Sources */,
 				75B38BF5233E5B7C006BDEFC /* AppDelegate.swift in Sources */,
 				75B38BF6233E5B7C006BDEFC /* UITextView+border.swift in Sources */,
 				75B38BF7233E5B7C006BDEFC /* SettingsItemListVC.swift in Sources */,
 				75B38BF8233E5B7C006BDEFC /* SettingsDataProtectionVC.swift in Sources */,
+				751A565624CCD3FF001227D6 /* AppIconSwitcherCoordinator.swift in Sources */,
 				75B38BF9233E5B7C006BDEFC /* ViewDiagnosticsVC.swift in Sources */,
 				759894B924620AF6006B6709 /* FileExportHelper.swift in Sources */,
 				75B38BFA233E5B7C006BDEFC /* UserNameHelper.swift in Sources */,
