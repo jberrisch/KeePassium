@@ -33,11 +33,13 @@ class AppIconSwitcherCoordinator: Coordinator {
 // MARK: AppIconPickerDelegate
 extension AppIconSwitcherCoordinator: AppIconPickerDelegate {
     func didSelectIcon(_ icon: AppIcon, in appIconPicker: AppIconPicker) {
-        UIApplication.shared.setAlternateIconName(icon.assetName) { error in
+        let isSupports = UIApplication.shared.supportsAlternateIcons
+        Diag.info("Supports alternate app icons: \(isSupports)")
+        UIApplication.shared.setAlternateIconName(icon.key) { error in
             if let error = error {
                 Diag.error("Failed to switch app icon [message: \(error.localizedDescription)")
             } else {
-                Diag.info("App icon switched successfully")
+                Diag.info("App icon switched to \(icon.key ?? "default")")
             }
         }
     }

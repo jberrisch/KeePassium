@@ -9,18 +9,67 @@
 import KeePassiumLib
 
 struct AppIcon {
+    // Human-readable name
     let name: String
-    let assetName: String?
+    // Key name in Info.plist
+    let key: String?
+    // Key name in assets catalogue
+    let asset: String
 }
 extension AppIcon {
-    static let all: [AppIcon]  = [AppIcon.defaultFree, AppIcon.defaultPro]
+    static let all: [AppIcon]  = [
+        AppIcon.classicFree,
+        AppIcon.atomWhite, AppIcon.atomBlue, AppIcon.atomBlack,
+        AppIcon.elementBlue, AppIcon.elementBlack,
+        AppIcon.asteriskBlue,
+        AppIcon.calc, AppIcon.info, AppIcon.keepass
+    ]
     
-    static let defaultFree = AppIcon(
-        name: "KeePassium", // don't localize
-        assetName: nil)
-    static let defaultPro = AppIcon(
-        name: "KeePassium Pro", // don't localize
-        assetName: "app-icon-pro")
+    static let classicFree = AppIcon(
+        name: "KeePassium Classic", // don't localize
+        key: "appicon-classic-free",
+        asset: "appicon-classic-free-listitem")
+    static let classicPro = AppIcon(
+        name: "KeePassium Pro Classic", // don't localize
+        key: "appicon-classic-pro",
+        asset: "appicon-classic-pro-listitem")
+
+    static let asteriskBlue = AppIcon(
+        name: "Asterisk Blue",
+        key: "appicon-asterisk-blue",
+        asset: "appicon-asterisk-blue-listitem")
+    static let atomBlack = AppIcon(
+        name: "Atom Black",
+        key: "appicon-atom-black",
+        asset: "appicon-atom-black-listitem")
+    static let atomBlue = AppIcon(
+        name: "Atom Blue",
+        key: "appicon-atom-blue",
+        asset: "appicon-atom-blue-listitem")
+    static let atomWhite = AppIcon(
+        name: "Atom White",
+        key: "appicon-atom-white",
+        asset: "appicon-atom-white-listitem")
+    static let calc = AppIcon(
+        name: "Calculator",
+        key: "appicon-calc",
+        asset: "appicon-calc-listitem")
+    static let elementBlue = AppIcon(
+        name: "Element Blue",
+        key: "appicon-element-blue",
+        asset: "appicon-element-blue-listitem")
+    static let elementBlack = AppIcon(
+        name: "Element Black",
+        key: "appicon-element-black",
+        asset: "appicon-element-black-listitem")
+    static let info = AppIcon(
+        name: "Info",
+        key: "appicon-info",
+        asset: "appicon-info-listitem")
+    static let keepass = AppIcon(
+        name: "KeePass",
+        key: "appicon-keepass",
+        asset: "appicon-keepass-listitem")
 }
 
 // MARK: -
@@ -53,9 +102,15 @@ class AppIconPicker: UITableViewController {
             for: indexPath
         )
         let appIcon = AppIcon.all[indexPath.row]
-//        cell.imageView?.image = UIImage(named: appIcon.assetName)
+        cell.imageView?.image = UIImage(named: appIcon.asset)
         cell.textLabel?.text = appIcon.name
+        let isCurrent = (UIApplication.shared.alternateIconName == appIcon.key)
+        cell.accessoryType = isCurrent ? .checkmark : .none
         return cell
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
     }
     
     // MARK: Action handlers
@@ -64,5 +119,6 @@ class AppIconPicker: UITableViewController {
         tableView.deselectRow(at: indexPath, animated: true)
         let selectedIcon = AppIcon.all[indexPath.row]
         delegate?.didSelectIcon(selectedIcon, in: self)
+        tableView.reloadData()
     }
 }
