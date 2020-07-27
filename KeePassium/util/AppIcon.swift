@@ -19,9 +19,7 @@ struct AppIcon: Equatable {
 extension AppIcon {
     static let allCustom: [AppIcon]  = [
         AppIcon.atomWhite, AppIcon.atomBlue, AppIcon.atomBlack,
-        AppIcon.elementBlue, AppIcon.elementBlack,
-        AppIcon.asteriskBlue,
-        AppIcon.calc, AppIcon.info, AppIcon.keepass
+        AppIcon.calc, AppIcon.keepass, AppIcon.info, 
     ]
     
     static let classicFree = AppIcon(
@@ -33,10 +31,6 @@ extension AppIcon {
         key: "appicon-classic-pro",
         asset: "appicon-classic-pro-listitem")
     
-    static let asteriskBlue = AppIcon(
-        name: "Asterisk Blue",
-        key: "appicon-asterisk-blue",
-        asset: "appicon-asterisk-blue-listitem")
     static let atomBlack = AppIcon(
         name: "Atom Black",
         key: "appicon-atom-black",
@@ -53,14 +47,6 @@ extension AppIcon {
         name: "Calculator",
         key: "appicon-calc",
         asset: "appicon-calc-listitem")
-    static let elementBlue = AppIcon(
-        name: "Element Blue",
-        key: "appicon-element-blue",
-        asset: "appicon-element-blue-listitem")
-    static let elementBlack = AppIcon(
-        name: "Element Black",
-        key: "appicon-element-black",
-        asset: "appicon-element-black-listitem")
     static let info = AppIcon(
         name: "Info",
         key: "appicon-info",
