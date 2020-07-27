@@ -19,6 +19,7 @@ class SettingsVC: UITableViewController, Refreshable {
     
     @IBOutlet weak var searchCell: UITableViewCell!
     @IBOutlet weak var autoUnlockStartupDatabaseSwitch: UISwitch!
+    @IBOutlet weak var appIconCell: UITableViewCell!
     @IBOutlet weak var diagnosticLogCell: UITableViewCell!
     @IBOutlet weak var contactSupportCell: UITableViewCell!
     @IBOutlet weak var rateTheAppCell: UITableViewCell!
@@ -50,6 +51,7 @@ class SettingsVC: UITableViewController, Refreshable {
         if let popover = navVC.popoverPresentationController {
             popover.barButtonItem = barButtonSource
         }
+        navVC.presentationController?.delegate = vc
         return navVC
     }
 
@@ -88,8 +90,18 @@ class SettingsVC: UITableViewController, Refreshable {
         super.viewWillDisappear(animated)
     }
     
+    deinit {
+        // TODO: this should be managed automatically once 
+        appIconSwitcherCoordinator = nil
+        premiumCoordinator = nil
+    }
+    
     func dismissPopover(animated: Bool) {
-        navigationController?.dismiss(animated: animated, completion: nil)
+        self.dismiss(animated: animated) { [self] in //strong self, keep it alive until we're done
+            // TODO: this should be managed automatically once
+            self.appIconSwitcherCoordinator = nil
+            self.premiumCoordinator = nil
+        }
     }
     
     func refresh() {
@@ -191,6 +203,8 @@ class SettingsVC: UITableViewController, Refreshable {
         case searchCell:
             let searchSettingsVC = SettingsSearchVC.instantiateFromStoryboard()
             show(searchSettingsVC, sender: self)
+        case appIconCell:
+            showAppIconSettings()
         case dataBackupCell:
             let dataBackupSettingsVC = SettingsBackupVC.instantiateFromStoryboard()
             show(dataBackupSettingsVC, sender: self)
@@ -251,6 +265,23 @@ class SettingsVC: UITableViewController, Refreshable {
     
     @IBAction func didToggleAutoUnlockStartupDatabase(_ sender: UISwitch) {
         Settings.current.isAutoUnlockStartupDatabase = sender.isOn
+    }
+    
+    // MARK: - Subsettings pages
+    
+    var appIconSwitcherCoordinator: AppIconSwitcherCoordinator?
+    private func showAppIconSettings() {
+        assert(appIconSwitcherCoordinator == nil)
+        
+        guard let navigationController = navigationController else {
+            fatalError()
+        }
+        let router = NavigationRouter(navigationController)
+        appIconSwitcherCoordinator = AppIconSwitcherCoordinator(router: router)
+        appIconSwitcherCoordinator!.dismissHandler = { [weak self] (coordinator) in
+            self?.appIconSwitcherCoordinator = nil
+        }
+        appIconSwitcherCoordinator!.start()
     }
     
     // MARK: - Premium-related actions
@@ -429,6 +460,14 @@ extension SettingsVC: SettingsObserver {
 extension SettingsVC: PremiumCoordinatorDelegate {
     func didFinish(_ premiumCoordinator: PremiumCoordinator) {
         self.premiumCoordinator = nil
+    }
+}
+
+// MARK: - UIAdaptivePresentationControllerDelegate
+ 
+extension SettingsVC: UIAdaptivePresentationControllerDelegate {
+    func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+        dismissPopover(animated: false)
     }
 }
 
