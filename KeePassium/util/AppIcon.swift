@@ -16,7 +16,13 @@ struct AppIcon: Equatable {
     // Key name in assets catalogue
     let asset: String
 }
+
 extension AppIcon {
+    private static let all: [AppIcon]  = [
+        AppIcon.classicFree, AppIcon.classicPro,
+        AppIcon.atomWhite, AppIcon.atomBlue, AppIcon.atomBlack,
+        AppIcon.calc, AppIcon.keepass, AppIcon.info,
+    ]
     static let allCustom: [AppIcon]  = [
         AppIcon.atomWhite, AppIcon.atomBlue, AppIcon.atomBlack,
         AppIcon.calc, AppIcon.keepass, AppIcon.info, 
@@ -58,5 +64,20 @@ extension AppIcon {
     
     public static func isPremium(_ icon: AppIcon) -> Bool {
         return icon != classicFree
+    }
+    
+    /// Returns a listitem-sized image of the current app icon
+    public static var current: UIImage? {
+        if let key = UIApplication.shared.alternateIconName,
+            let icon = AppIcon.all.first(where: { $0.key == key })
+        {
+            return UIImage(named: icon.asset)
+        }
+        switch BusinessModel.type {
+        case .freemium:
+            return UIImage(named: AppIcon.classicFree.asset)
+        case .prepaid:
+            return UIImage(named: AppIcon.classicPro.asset)
+        }
     }
 }
