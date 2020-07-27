@@ -51,6 +51,7 @@ class SettingsVC: UITableViewController, Refreshable {
         if let popover = navVC.popoverPresentationController {
             popover.barButtonItem = barButtonSource
         }
+        navVC.presentationController?.delegate = vc
         return navVC
     }
 
@@ -89,8 +90,18 @@ class SettingsVC: UITableViewController, Refreshable {
         super.viewWillDisappear(animated)
     }
     
+    deinit {
+        // TODO: this should be managed automatically once 
+        appIconSwitcherCoordinator = nil
+        premiumCoordinator = nil
+    }
+    
     func dismissPopover(animated: Bool) {
-        navigationController?.dismiss(animated: animated, completion: nil)
+        self.dismiss(animated: animated) { [self] in //strong self, keep it alive until we're done
+            // TODO: this should be managed automatically once
+            self.appIconSwitcherCoordinator = nil
+            self.premiumCoordinator = nil
+        }
     }
     
     func refresh() {
@@ -449,6 +460,14 @@ extension SettingsVC: SettingsObserver {
 extension SettingsVC: PremiumCoordinatorDelegate {
     func didFinish(_ premiumCoordinator: PremiumCoordinator) {
         self.premiumCoordinator = nil
+    }
+}
+
+// MARK: - UIAdaptivePresentationControllerDelegate
+ 
+extension SettingsVC: UIAdaptivePresentationControllerDelegate {
+    func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+        dismissPopover(animated: false)
     }
 }
 
