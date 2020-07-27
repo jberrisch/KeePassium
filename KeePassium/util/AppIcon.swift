@@ -8,7 +8,7 @@
 
 import KeePassiumLib
 
-struct AppIcon {
+struct AppIcon: Equatable {
     // Human-readable name. Don't localize because the name does not matter.
     let name: String
     // Key name in Info.plist
@@ -69,4 +69,8 @@ extension AppIcon {
         name: "KeePass",
         key: "appicon-keepass",
         asset: "appicon-keepass-listitem")
+    
+    public static func isPremium(_ icon: AppIcon) -> Bool {
+        return icon != classicFree
+    }
 }

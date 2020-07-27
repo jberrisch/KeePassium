@@ -9,12 +9,18 @@
 import KeePassiumLib
 
 protocol AppIconPickerDelegate: class {
-    func didSelectIcon(_ icon: AppIcon, in appIconPicker: AppIconPicker)
+    func didSelectIcon(_ appIcon: AppIcon, in appIconPicker: AppIconPicker)
 }
 
-class AppIconPicker: UITableViewController {
-    static let cellID = "IconCell"
+class AppIconPickerCell: UITableViewCell {
+    static let storyboardID = "AppIconPickerCell"
+    
+    @IBOutlet weak var iconView: UIImageView!
+    @IBOutlet weak var titleLabel: UILabel!
+    @IBOutlet weak var premiumBadge: UIImageView!
+}
 
+class AppIconPicker: UITableViewController, Refreshable {
     weak var delegate: AppIconPickerDelegate?
     
     private let appIcons: [AppIcon] = {
@@ -25,6 +31,10 @@ class AppIconPicker: UITableViewController {
             return [AppIcon.classicPro, AppIcon.classicFree] + AppIcon.allCustom
         }
     }()
+    
+    func refresh() {
+        tableView.reloadData()
+    }
     
     // MARK: Data source
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -41,12 +51,14 @@ class AppIconPicker: UITableViewController {
         -> UITableViewCell
     {
         let cell = tableView.dequeueReusableCell(
-            withIdentifier: AppIconPicker.cellID,
-            for: indexPath
-        )
+            withIdentifier: AppIconPickerCell.storyboardID,
+            for: indexPath)
+            as! AppIconPickerCell
         let appIcon = appIcons[indexPath.row]
-        cell.imageView?.image = UIImage(named: appIcon.asset)
-        cell.textLabel?.text = appIcon.name
+        cell.iconView?.image = UIImage(named: appIcon.asset)
+        cell.titleLabel?.text = appIcon.name
+        cell.premiumBadge.isHidden = !isRequiresPurchase(appIcon)
+        
         let isCurrent = (UIApplication.shared.alternateIconName == appIcon.key)
         cell.accessoryType = isCurrent ? .checkmark : .none
         return cell
@@ -54,6 +66,15 @@ class AppIconPicker: UITableViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+    }
+    
+    // MARK: Premium filter
+    
+    private func isRequiresPurchase(_ appIcon: AppIcon) -> Bool {
+        guard AppIcon.isPremium(appIcon) else {
+            return false
+        }
+        return !PremiumManager.shared.isAvailable(feature: .canChangeAppIcon)
     }
     
     // MARK: Action handlers

@@ -16,6 +16,7 @@ class AppIconSwitcherCoordinator: Coordinator {
     
     private let router: NavigationRouter
     private let picker: AppIconPicker
+    private let premiumUpgradeHelper = PremiumUpgradeHelper()
     
     init(router: NavigationRouter) {
         self.router = router
@@ -27,20 +28,40 @@ class AppIconSwitcherCoordinator: Coordinator {
         router.push(picker, animated: true, onPop: { [self] (viewController) in // strong self
             self.dismissHandler?(self)
         })
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(refreshPremiumStatus),
+            name: PremiumManager.statusUpdateNotification,
+            object: nil)
+    }
+    
+    @objc private func refreshPremiumStatus() {
+        picker.refresh()
     }
 }
 
 // MARK: AppIconPickerDelegate
 extension AppIconSwitcherCoordinator: AppIconPickerDelegate {
-    func didSelectIcon(_ icon: AppIcon, in appIconPicker: AppIconPicker) {
-        let isSupports = UIApplication.shared.supportsAlternateIcons
-        Diag.info("Supports alternate app icons: \(isSupports)")
-        UIApplication.shared.setAlternateIconName(icon.key) { error in
+    func didSelectIcon(_ appIcon: AppIcon, in appIconPicker: AppIconPicker) {
+        assert(UIApplication.shared.supportsAlternateIcons)
+        if AppIcon.isPremium(appIcon) {
+            premiumUpgradeHelper.performActionOrOfferUpgrade(.canChangeAppIcon, in: picker) {
+                [weak self] in
+                self?.setAppIcon(appIcon)
+            }
+        } else {
+            setAppIcon(appIcon)
+        }
+    }
+    
+    private func setAppIcon(_ appIcon: AppIcon) {
+        UIApplication.shared.setAlternateIconName(appIcon.key) { [weak self] error in
             if let error = error {
                 Diag.error("Failed to switch app icon [message: \(error.localizedDescription)")
             } else {
-                Diag.info("App icon switched to \(icon.key ?? "default")")
+                Diag.info("App icon switched to \(appIcon.key ?? "default")")
             }
+            self?.picker.refresh()
         }
     }
 }
