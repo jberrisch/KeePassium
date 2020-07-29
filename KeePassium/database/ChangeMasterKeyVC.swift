@@ -169,7 +169,12 @@ extension ChangeMasterKeyVC: UITextFieldDelegate {
         case passwordField:
             repeatPasswordField.becomeFirstResponder()
         case repeatPasswordField:
-            didPressSaveChanges(self)
+            if repeatPasswordField.isValid {
+                didPressSaveChanges(self)
+            } else {
+                repeatPasswordField.shake()
+                passwordMismatchImage.shake()
+            }
         default:
             break
         }
