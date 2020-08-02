@@ -575,42 +575,41 @@ public class DatabaseManager {
 // MARK: - Progress observer
 
 /// Helper class to keep track of Progress KVO notifications.
-fileprivate class ProgressObserver: NSObject {
+fileprivate class ProgressObserver {
     internal let progress: ProgressEx
-    private var isObserving = false
+    private var progressFractionKVO: NSKeyValueObservation?
+    private var progressDescriptionKVO: NSKeyValueObservation?
     
     init(progress: ProgressEx) {
         self.progress = progress
-        super.init()
-    }
-    
-    deinit {
-        assert(!isObserving, "Did not stop observing")
     }
     
     func startObservingProgress() {
-        assert(!isObserving)
-        progress.addObserver(self, forKeyPath: "fractionCompleted", options: .new, context: nil)
-        progress.addObserver(self, forKeyPath: "localizedDescription", options: .new, context: nil)
-        isObserving = true
+        assert(progressFractionKVO == nil && progressDescriptionKVO == nil)
+        progressFractionKVO = progress.observe(
+            \.fractionCompleted,
+            options: [.new],
+            changeHandler: {
+                [weak self] (progress, _) in
+                self?.progressDidChange(progress: progress)
+            }
+        )
+        progressDescriptionKVO = progress.observe(
+            \.localizedDescription,
+            options: [.new],
+            changeHandler: {
+                [weak self] (progress, _) in
+                self?.progressDidChange(progress: progress)
+            }
+        )
     }
     
     func stopObservingProgress() {
-        assert(isObserving)
-        progress.removeObserver(self, forKeyPath: "fractionCompleted")
-        progress.removeObserver(self, forKeyPath: "localizedDescription")
-        isObserving = false
-    }
-    
-    override func observeValue(
-        forKeyPath keyPath: String?,
-        of object: Any?,
-        change: [NSKeyValueChangeKey : Any]?,
-        context: UnsafeMutableRawPointer?)
-    {
-        if object is ProgressEx {
-            progressDidChange(progress: progress)
-        }
+        assert(progressFractionKVO != nil && progressDescriptionKVO != nil)
+        progressFractionKVO?.invalidate()
+        progressDescriptionKVO?.invalidate()
+        progressFractionKVO = nil
+        progressDescriptionKVO = nil
     }
     
     func progressDidChange(progress: ProgressEx) {
@@ -956,6 +955,7 @@ fileprivate class DatabaseSaver: ProgressObserver {
     
     private let dbDoc: DatabaseDocument
     private let dbRef: URLReference
+    private var progressKVO: NSKeyValueObservation?
     private unowned var notifier: DatabaseManager
     private let completion: CompletionHandler
 
