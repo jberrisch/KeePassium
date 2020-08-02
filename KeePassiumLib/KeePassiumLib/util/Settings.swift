@@ -116,6 +116,9 @@ public class Settings {
         case passwordGeneratorIncludeDigits
         case passwordGeneratorIncludeLookAlike
         case passcodeKeyboardType
+        
+        // UI overrides
+        case hideAppLockSetupReminder
     }
 
     /// Notification constants
@@ -1313,6 +1316,8 @@ public class Settings {
         }
     }
 
+    // MARK: - UI overrides
+    
     /// Whether to play tactile/haptic feedback
     public var isHapticFeedbackEnabled: Bool {
         get {
@@ -1328,7 +1333,23 @@ public class Settings {
                 key: .hapticFeedbackEnabled)
         }
     }
-    
+
+    /// Whether the AppLock setup reminder was explicitly hidden by the user
+    public var isHideAppLockSetupReminder: Bool {
+        get {
+            let stored = UserDefaults.appGroupShared
+                .object(forKey: Keys.hideAppLockSetupReminder.rawValue)
+                as? Bool
+            return stored ?? false
+        }
+        set {
+            updateAndNotify(
+                oldValue: isHideAppLockSetupReminder,
+                newValue: newValue,
+                key: .hideAppLockSetupReminder)
+        }
+    }
+
     // MARK: - Password generator
     
     /// Password generator: length of generated passwords

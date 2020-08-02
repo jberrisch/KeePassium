@@ -10,12 +10,25 @@ import UIKit
 import KeePassiumLib
 
 // Custom cell class for the "App Lock Setup" cell
+
+protocol AppLockSetupCellDelegate: class {
+    func didPressEnableAppLock(in cell: AppLockSetupCell)
+    func didPressClose(in cell: AppLockSetupCell)
+}
+
 class AppLockSetupCell: UITableViewCell {
-    var buttonHandler: (() -> Void)?
-    @IBAction func didPressButton(_ sender: Any) {
-        buttonHandler?()
+    weak var delegate: AppLockSetupCellDelegate?
+    
+    @IBAction func didPressEnableAppLock(_ sender: Any) {
+        delegate?.didPressEnableAppLock(in: self)
+    }
+    
+    @IBAction func didPressClose(_ sender: UIButton) {
+        delegate?.didPressClose(in: self)
     }
 }
+
+// MARK: -
 
 class ChooseDatabaseVC: UITableViewController, DynamicFileList, Refreshable {
     
@@ -236,6 +249,9 @@ class ChooseDatabaseVC: UITableViewController, DynamicFileList, Refreshable {
     // MARK: -
     private func shouldShowAppLockSetup() -> Bool {
         let settings = Settings.current
+        if settings.isHideAppLockSetupReminder {
+            return false
+        }
         let isDataVulnerable = settings.isRememberDatabaseKey && !settings.isAppLockEnabled
         return isDataVulnerable
     }
@@ -540,9 +556,7 @@ class ChooseDatabaseVC: UITableViewController, DynamicFileList, Refreshable {
             let cell = tableView
                 .dequeueReusableCell(withIdentifier: cellType.rawValue, for: indexPath)
                 as! AppLockSetupCell
-            cell.buttonHandler = { [weak self] in
-                self?.didPressAppLockSetup()
-            }
+            cell.delegate = self
             return cell
         }
     }
@@ -737,5 +751,16 @@ extension ChooseDatabaseVC: PasscodeInputDelegate {
                 self?.showErrorAlert(error, title: LString.titleKeychainError)
             }
         }
+    }
+}
+
+extension ChooseDatabaseVC: AppLockSetupCellDelegate {
+    func didPressClose(in cell: AppLockSetupCell) {
+        Settings.current.isHideAppLockSetupReminder = true
+        tableView.reloadSections([0], with: .automatic)
+    }
+    
+    func didPressEnableAppLock(in cell: AppLockSetupCell) {
+        didPressAppLockSetup()
     }
 }
