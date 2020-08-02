@@ -404,13 +404,14 @@ public class Settings {
     /// Allowed age of backup files
     public enum BackupKeepingDuration: Int {
         public static let allValues: [BackupKeepingDuration] = [
-            .forever, _1year, _6months, _4weeks, _1week, _1day, _4hours, _1hour
+            .forever, _1year, _6months, _2months, _4weeks, _1week, _1day, _4hours, _1hour
         ]
         case _1hour = 3600
         case _4hours = 14400
         case _1day = 86400
         case _1week = 604_800
         case _4weeks = 2_419_200
+        case _2months = 5_270_400
         case _6months = 15_552_000
         case _1year = 31_536_000
         case forever
@@ -1246,7 +1247,7 @@ public class Settings {
             {
                 return timeout
             }
-            return BackupKeepingDuration.forever
+            return BackupKeepingDuration._2months
         }
         set {
             let oldValue = backupKeepingDuration
