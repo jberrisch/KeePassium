@@ -42,48 +42,31 @@ public class BaseDocument: UIDocument, Synchronizable {
         self.open(withTimeout: BaseDocument.timeout, callback)
     }
     
-    /// Attempts to open the document within the specified timeout.
-    /// - Parameters:
-    ///   - timeout: timeout for the operation.
-    ///   - callback: called once the document opens or fails to open (due to an error or timeout)
     public func open(withTimeout timeout: TimeInterval, _ callback: @escaping OpenCallback) {
-        execute(
-            withTimeout: BaseDocument.timeout,
-            on: BaseDocument.backgroundQueue,
-            slowAsyncOperation: {
-                [weak self] (_ notifyAndCheckIfCanProceed: @escaping ()->Bool) -> () in
-                // `superOpen()` might take forever
-                self?.superOpen {
-                    [weak self] (success) in
-                    guard let self = self else { return }
-
-                    // Notify the timeout trigger that we've done with the slow part.
-                    // It returns `false` if timeout has already happened.
-                    guard notifyAndCheckIfCanProceed() else {
-                        // already timed out -> close the document, we won't need it
-                        self.close(completionHandler: nil)
-                        return
-                    }
-                    if let error = self.error {
-                        callback(.failure(error))
-                    } else {
-                        callback(.success(self.data))
-                    }
+        BaseDocument.backgroundQueue.addOperation {
+            let semaphore = DispatchSemaphore(value: 0)
+            
+            var hasTimedOut = false
+            // super.open might take forever
+            super.open { [self] (success) in
+                semaphore.signal()
+                if hasTimedOut {
+                    // already timed out -> close the document, we won't need it
+                    self.close(completionHandler: nil)
                 }
-                
-            }, onSuccess: {
-                // Yay, we've opened the document before the timeout!
-                // Nothing else to do, everything will be done in the callback above.
-            }, onTimeout: {
-                self.error = .timeout(fileProvider: self.fileProvider)
-                callback(.failure(.timeout(fileProvider: self.fileProvider)))
             }
-        )
-    }
-
-    // Workaround for `super.` being unavailable in a callback.
-    private func superOpen(_ callback: @escaping (_ success: Bool)->()) {
-        super.open(completionHandler: callback)
+            if semaphore.wait(timeout: .now() + timeout) == .timedOut {
+                hasTimedOut = true
+                callback(.failure(.timeout(fileProvider: self.fileProvider)))
+                return
+            }
+            
+            if let error = self.error {
+                callback(.failure(error))
+            } else {
+                callback(.success(self.data))
+            }
+        }
     }
     
     override public func contents(forType typeName: String) throws -> Any {
