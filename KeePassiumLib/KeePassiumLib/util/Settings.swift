@@ -1221,7 +1221,16 @@ public class Settings {
     }
     
     // MARK: - Backup
-    
+
+    /// Whether to create a backup copy every time the database is loaded.
+    public var isBackupDatabaseOnLoad: Bool {
+        get {
+            // Might make it configurable separately in the future.
+            // But for now let's just mirror the on-save setting.
+            return isBackupDatabaseOnSave
+        }
+    }
+
     /// Whether to create a backup copy everytime database is saved.
     public var isBackupDatabaseOnSave: Bool {
         get {

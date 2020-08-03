@@ -773,13 +773,21 @@ public class FileKeeper {
     
     // MARK: - Database backup
     
+    enum BackupMode {
+        /// Saving/updating the latest backup copy
+        case latest
+        /// Saving a timestamped copy for history
+        case timestamped
+    }
+    
     /// Saves `contents` in a timestamped file in local Documents/Backup folder.
     ///
     /// - Parameters:
     ///     - nameTemplate: template file name (e.g. "filename.ext")
+    ///     - mode: the kind of backup to be made
     ///     - contents: bytes to store
     /// - Throws: nothing, any errors are silently ignored.
-    func makeBackup(nameTemplate: String, contents: ByteArray) {
+    func makeBackup(nameTemplate: String, mode: BackupMode, contents: ByteArray) {
         guard !contents.isEmpty else {
             Diag.info("No data to backup.")
             return
@@ -788,7 +796,30 @@ public class FileKeeper {
             .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return }
         guard let nameTemplateURL = URL(string: encodedNameTemplate) else { return }
         
-        deleteExpiredBackupFiles()
+        let timestamp: Date
+        let fileNameSuffix: String
+        switch mode {
+        case .latest:
+            timestamp = Date.now
+            fileNameSuffix = "latest"
+        case .timestamped:
+            // We deduct one second from the timestamp to ensure
+            // correct timing order of backup vs. original files
+            timestamp = Date.now - 1.0
+            let dateFormatter = DateFormatter()
+            dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+            dateFormatter.dateFormat = "yyyy-MM-dd_HHmmss"
+            fileNameSuffix = dateFormatter.string(from: timestamp)
+        }
+        
+        let baseFileName = nameTemplateURL
+            .deletingPathExtension()
+            .absoluteString
+            .removingPercentEncoding  // should be OK, but if failed - fallback to
+            ?? nameTemplate           // original template, even with extension
+        let backupFileURL = backupDirURL
+            .appendingPathComponent(baseFileName + "_" + fileNameSuffix, isDirectory: false)
+            .appendingPathExtension(nameTemplateURL.pathExtension)
         
         let fileManager = FileManager.default
         do {
@@ -796,31 +827,21 @@ public class FileKeeper {
                 at: backupDirURL,
                 withIntermediateDirectories: true,
                 attributes: nil)
-
-            // We deduct one second from the timestamp to ensure
-            // correct timing order of backup vs. original files
-            let timestamp = Date.now - 1.0
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd_HHmmss"
-            let timestampStr = dateFormatter.string(from: timestamp)
-
-            let baseFileName = nameTemplateURL
-                .deletingPathExtension()
-                .absoluteString
-                .removingPercentEncoding  // should be OK, but if failed - fallback to
-                ?? nameTemplate           // original template, even with extension
-            let baseFileExt = nameTemplateURL.pathExtension
-            let backupFileURL = backupDirURL
-                .appendingPathComponent(baseFileName + "_" + timestampStr, isDirectory: false)
-                .appendingPathExtension(baseFileExt)
-            try contents.asData.write(to: backupFileURL, options: .atomic)
             
-            // set file timestamps
+            try contents.asData.write(to: backupFileURL, options: .atomic)
             try fileManager.setAttributes(
                 [FileAttributeKey.creationDate: timestamp,
                  FileAttributeKey.modificationDate: timestamp],
                 ofItemAtPath: backupFileURL.path)
-            Diag.info("Backup copy created OK")
+
+            switch mode {
+            case .latest:
+                // don't change timestamps
+                Diag.info("Latest backup updated OK")
+            case .timestamped:
+                // set file timestamps
+                Diag.info("Backup copy created OK")
+            }
         } catch {
             Diag.warning("Failed to make backup copy [error: \(error.localizedDescription)]")
             // no further action, simply return

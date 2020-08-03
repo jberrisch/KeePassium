@@ -851,6 +851,20 @@ fileprivate class DatabaseLoader: ProgressObserver {
         onCompositeKeyComponentsProcessed(dbDoc: dbDoc, compositeKey: compositeKey)
     }
     
+    private func shouldUpdateBackup(for dbRef: URLReference) -> Bool {
+        guard Settings.current.isBackupDatabaseOnLoad else {
+            return false
+        }
+        // Update latest backup only for actual user DBs,
+        // ignore temporary and internal files
+        switch dbRef.location {
+        case .external, .internalDocuments:
+            return true
+        case .internalBackup, .internalInbox:
+            return false
+        }
+    }
+    
     func onCompositeKeyComponentsProcessed(dbDoc: DatabaseDocument, compositeKey: CompositeKey) {
         assert(compositeKey.state >= .processedComponents)
         guard let db = dbDoc.database else { fatalError() }
@@ -867,6 +881,18 @@ fileprivate class DatabaseLoader: ProgressObserver {
                 warnings: warnings)
                 // throws DatabaseError, ProgressInterruption
             Diag.info("Database loaded OK")
+            
+            if shouldUpdateBackup(for: dbRef) {
+                Diag.debug("Updating latest backup")
+                progress.status = LString.Progress.makingDatabaseBackup
+                // At this stage, the DB should have a resolved URL
+                assert(dbRef.url != nil)
+                FileKeeper.shared.makeBackup(
+                    nameTemplate: dbRef.url?.lastPathComponent ?? "Backup",
+                    mode: .latest,
+                    contents: dbDoc.data)
+            }
+            
             progress.completedUnitCount = ProgressSteps.all
             progress.localizedDescription = LString.Progress.done
             completion(dbRef, dbDoc)
@@ -1020,11 +1046,12 @@ fileprivate class DatabaseSaver: ProgressObserver {
                 progress.completedUnitCount = ProgressSteps.willMakeBackup
                 progress.status = LString.Progress.makingDatabaseBackup
                 
-                // The at this stage, the DB should have a resolved URL
+                // At this stage, the DB should have a resolved URL
                 assert(dbRef.url != nil)
                 let nameTemplate = dbRef.url?.lastPathComponent ?? "Backup"
                 FileKeeper.shared.makeBackup(
                     nameTemplate: nameTemplate,
+                    mode: .timestamped,
                     contents: dbDoc.data)
             }
 
@@ -1045,6 +1072,7 @@ fileprivate class DatabaseSaver: ProgressObserver {
                     self.progress.status = LString.Progress.done
                     self.progress.completedUnitCount = ProgressSteps.didWriteDatabase
                     Diag.info("Database saved OK")
+                    self.updateLatestBackup(with: outData)
                     self.stopObservingProgress()
                     self.notifier.notifyDatabaseDidSave(database: self.dbRef)
                     self.completion(self.dbRef, self.dbDoc)
@@ -1110,5 +1138,22 @@ fileprivate class DatabaseSaver: ProgressObserver {
             completion(dbRef, dbDoc)
             endBackgroundTask()
         }
+    }
+    
+    /// Updates the -latest backup with the new data.
+    private func updateLatestBackup(with data: ByteArray) {
+        guard Settings.current.isBackupDatabaseOnSave else {
+            return
+        }
+
+        Diag.debug("Updating latest backup")
+        progress.status = LString.Progress.makingDatabaseBackup
+        
+        assert(dbRef.url != nil)
+        let nameTemplate = dbRef.url?.lastPathComponent ?? "Backup"
+        FileKeeper.shared.makeBackup(
+            nameTemplate: nameTemplate,
+            mode: .latest,
+            contents: data)
     }
 }
