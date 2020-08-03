@@ -20,11 +20,11 @@ struct AppIcon: Equatable {
 extension AppIcon {
     private static let all: [AppIcon]  = [
         AppIcon.classicFree, AppIcon.classicPro,
-        AppIcon.atomWhite, AppIcon.atomBlue, AppIcon.atomBlack,
+        AppIcon.atomBlue, AppIcon.atomWhite, AppIcon.atomBlack,
         AppIcon.calc, AppIcon.keepass, AppIcon.info,
     ]
     static let allCustom: [AppIcon]  = [
-        AppIcon.atomWhite, AppIcon.atomBlue, AppIcon.atomBlack,
+        AppIcon.atomBlue, AppIcon.atomWhite, AppIcon.atomBlack,
         AppIcon.calc, AppIcon.keepass, AppIcon.info, 
     ]
     
@@ -63,7 +63,8 @@ extension AppIcon {
         asset: "appicon-keepass-listitem")
     
     public static func isPremium(_ icon: AppIcon) -> Bool {
-        return icon != classicFree
+        let isFree = (icon == classicFree) || (icon == atomBlue)
+        return !isFree
     }
     
     /// Returns a listitem-sized image of the current app icon
@@ -75,9 +76,9 @@ extension AppIcon {
         }
         switch BusinessModel.type {
         case .freemium:
-            return UIImage(named: AppIcon.classicFree.asset)
+            return UIImage(named: AppIcon.atomBlue.asset)
         case .prepaid:
-            return UIImage(named: AppIcon.classicPro.asset)
+            return UIImage(named: AppIcon.atomBlack.asset)
         }
     }
 }
