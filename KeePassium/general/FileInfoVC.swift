@@ -250,15 +250,23 @@ class FileInfoVC: UITableViewController {
             fields.append(("", ""))
         }
         fields[0] = ((FieldTitle.fileName, urlRef.visibleFileName))
-        fields[1] = ((FieldTitle.fileLocation, getFileLocationValue()))
+        fields[1] = ((FieldTitle.fileLocation, getFileLocationDescription()))
     }
     
     /// Human-readable file location
-    private func getFileLocationValue() -> String {
-        if let fileProvider = urlRef.fileProvider {
-            return fileProvider.localizedName
+    private func getFileLocationDescription() -> String {
+        guard let fileProvider = urlRef.fileProvider else {
+            return urlRef.location.description
         }
-        return urlRef.location.description
+        
+        switch urlRef.location {
+        case .external:
+            // For external, we only have the file provider
+            return fileProvider.localizedName
+        case .internalDocuments, .internalBackup, .internalInbox:
+            // For internal we have "On My iDevice" and more details
+            return urlRef.location.description
+        }
     }
     
     private func updateDynamicFields(from fileInfo: FileInfo) {
