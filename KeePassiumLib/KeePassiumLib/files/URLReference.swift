@@ -444,45 +444,59 @@ public class URLReference:
             }
             self.registerInfoRefreshRequest(.completed)
             switch result {
+            case .success(_):
+                self.readFileInfo(url: url, completion: callback)
             case .failure(let fileAccessError):
                 DispatchQueue.main.async { // strong self
                     self.error = fileAccessError
                     callback(.failure(fileAccessError))
                 }
-            case .success(_):
-                // Read document file attributes
-                let attributeKeys: Set<URLResourceKey> = [
-                    .fileSizeKey,
-                    .creationDateKey,
-                    .contentModificationDateKey,
-                    .isExcludedFromBackupKey,
-                    .ubiquitousItemDownloadingStatusKey,
-                ]
-                let attributes: URLResourceValues
-                do {
-                    attributes = try url.resourceValues(forKeys: attributeKeys)
-                } catch {
-                    Diag.error("Failed to get file info [reason: \(error.localizedDescription)]")
-                    let fileAccessError = FileAccessError.systemError(error)
-                    DispatchQueue.main.async { // strong self
-                        self.error = fileAccessError
-                        callback(.failure(fileAccessError))
-                    }
-                    return
-                }
-
-                let latestInfo = FileInfo(
-                    fileName: url.lastPathComponent,
-                    fileSize: Int64(attributes.fileSize ?? -1),
-                    creationDate: attributes.creationDate,
-                    modificationDate: attributes.contentModificationDate,
-                    isExcludedFromBackup: attributes.isExcludedFromBackup ?? false)
-                self.cachedInfo = latestInfo
-                DispatchQueue.main.async {
-                    self.error = nil
-                    callback(.success(latestInfo))
-                }
             }
+        }
+    }
+    
+    /// Reads attributes of the given file, updates the `cachedInfo` property,
+    /// and calls the `completion` callback (on the main queue) once done.
+    /// Fetches attributes synchronously, so should be called from a background thread.
+    private func readFileInfo(url: URL, completion callback: @escaping InfoCallback) {
+        assert(!Thread.isMainThread)
+        // Read document file attributes
+        let attributeKeys: Set<URLResourceKey> = [
+            .fileSizeKey,
+            .creationDateKey,
+            .contentModificationDateKey,
+            .isExcludedFromBackupKey,
+            .ubiquitousItemDownloadingStatusKey,
+        ]
+
+        /// The system caches attributes for performance, and we need the actual values, not cached.
+        /// Clearing the cache is a mutating function, so we create a mutable copy of the original const URL.
+        var urlWithFreshAttributes = url
+        urlWithFreshAttributes.removeAllCachedResourceValues()
+        
+        let attributes: URLResourceValues
+        do {
+            attributes = try urlWithFreshAttributes.resourceValues(forKeys: attributeKeys)
+        } catch {
+            Diag.error("Failed to get file info [reason: \(error.localizedDescription)]")
+            let fileAccessError = FileAccessError.systemError(error)
+            DispatchQueue.main.async { // strong self
+                self.error = fileAccessError
+                callback(.failure(fileAccessError))
+            }
+            return
+        }
+        
+        let latestInfo = FileInfo(
+            fileName: urlWithFreshAttributes.lastPathComponent,
+            fileSize: Int64(attributes.fileSize ?? -1),
+            creationDate: attributes.creationDate,
+            modificationDate: attributes.contentModificationDate,
+            isExcludedFromBackup: attributes.isExcludedFromBackup ?? false)
+        self.cachedInfo = latestInfo
+        DispatchQueue.main.async {
+            self.error = nil
+            callback(.success(latestInfo))
         }
     }
     
