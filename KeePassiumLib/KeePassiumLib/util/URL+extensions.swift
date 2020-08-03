@@ -22,27 +22,6 @@ public extension URL {
         return nil
     }
     
-    /// Last modiifcation date of a file URL.
-    var fileModificationDate: Date? {
-        guard let attr = try? FileManager.default
-            .attributesOfItem(atPath: self.path) else { return nil }
-        return attr[FileAttributeKey.modificationDate] as? Date
-    }
-
-    /// Creation date of a file URL.
-    var fileCreationDate: Date? {
-        guard let attr = try? FileManager.default
-            .attributesOfItem(atPath: self.path) else { return nil }
-        return attr[FileAttributeKey.creationDate] as? Date
-    }
-    
-    /// Size of the file at this URL.
-    var fileSize: Int64? {
-        guard let attr = try? FileManager.default
-            .attributesOfItem(atPath: self.path) else { return nil}
-        return attr[FileAttributeKey.size] as? Int64
-    }
-    
     /// True for directories.
     var isDirectory: Bool {
         let res = try? resourceValues(forKeys: [.isDirectoryKey])
