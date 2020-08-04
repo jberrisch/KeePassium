@@ -754,7 +754,6 @@ extension ChooseDatabaseVC: PasscodeInputDelegate {
             [weak self] in
             do {
                 try Keychain.shared.setAppPasscode(passcode)
-                let settings = Settings.current
                 // Automatically turn on biometrics for new users
                 Settings.current.isBiometricAppLockEnabled = true
                 self?.tableView.reloadData()
