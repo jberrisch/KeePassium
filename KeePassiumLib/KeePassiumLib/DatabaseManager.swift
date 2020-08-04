@@ -382,6 +382,17 @@ public class DatabaseManager {
 
     }
     
+    fileprivate static func shouldUpdateLatestBackup(for dbRef: URLReference) -> Bool {
+        // Update latest backup only for actual user DBs,
+        // ignore temporary and internal files
+        switch dbRef.location {
+        case .external, .internalDocuments:
+            return true
+        case .internalBackup, .internalInbox:
+            return false
+        }
+    }
+    
     // MARK: - Observer management
     
     fileprivate struct WeakObserver {
@@ -850,21 +861,7 @@ fileprivate class DatabaseLoader: ProgressObserver {
         compositeKey.setProcessedComponents(passwordData: passwordData, keyFileData: keyFileData)
         onCompositeKeyComponentsProcessed(dbDoc: dbDoc, compositeKey: compositeKey)
     }
-    
-    private func shouldUpdateBackup(for dbRef: URLReference) -> Bool {
-        guard Settings.current.isBackupDatabaseOnLoad else {
-            return false
-        }
-        // Update latest backup only for actual user DBs,
-        // ignore temporary and internal files
-        switch dbRef.location {
-        case .external, .internalDocuments:
-            return true
-        case .internalBackup, .internalInbox:
-            return false
-        }
-    }
-    
+        
     func onCompositeKeyComponentsProcessed(dbDoc: DatabaseDocument, compositeKey: CompositeKey) {
         assert(compositeKey.state >= .processedComponents)
         guard let db = dbDoc.database else { fatalError() }
@@ -882,7 +879,9 @@ fileprivate class DatabaseLoader: ProgressObserver {
                 // throws DatabaseError, ProgressInterruption
             Diag.info("Database loaded OK")
             
-            if shouldUpdateBackup(for: dbRef) {
+            let shouldUpdateBackup = Settings.current.isBackupDatabaseOnLoad
+                    && DatabaseManager.shouldUpdateLatestBackup(for: dbRef)
+            if shouldUpdateBackup {
                 Diag.debug("Updating latest backup")
                 progress.status = LString.Progress.makingDatabaseBackup
                 // At this stage, the DB should have a resolved URL
@@ -1042,7 +1041,6 @@ fileprivate class DatabaseSaver: ProgressObserver {
         do {
             if Settings.current.isBackupDatabaseOnSave {
                 // dbDoc has already been opened, so we backup its old encrypted data.
-                
                 progress.completedUnitCount = ProgressSteps.willMakeBackup
                 progress.status = LString.Progress.makingDatabaseBackup
                 
@@ -1142,10 +1140,12 @@ fileprivate class DatabaseSaver: ProgressObserver {
     
     /// Updates the -latest backup with the new data.
     private func updateLatestBackup(with data: ByteArray) {
-        guard Settings.current.isBackupDatabaseOnSave else {
+        guard Settings.current.isBackupDatabaseOnSave,
+            DatabaseManager.shouldUpdateLatestBackup(for: dbRef) else
+        {
             return
         }
-
+        
         Diag.debug("Updating latest backup")
         progress.status = LString.Progress.makingDatabaseBackup
         
