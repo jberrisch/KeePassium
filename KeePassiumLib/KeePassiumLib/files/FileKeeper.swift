@@ -331,13 +331,18 @@ public class FileKeeper {
     func scanLocalDirectory(_ dirURL: URL, fileType: FileType) -> [URLReference] {
         var refs: [URLReference] = []
         let location = getLocation(for: dirURL)
+        assert(location != .external, "This should be used only on local directories.")
+        
+        /// Backup dir contains only databases, and they might have arbitrary extensions
+        let isIgnoreFileType = (location == .internalBackup)
         do {
             let dirContents = try FileManager.default.contentsOfDirectory(
                 at: dirURL,
                 includingPropertiesForKeys: nil,
                 options: [])
             for url in dirContents {
-                if !url.isDirectory && FileType(for: url) == fileType {
+                let isFileTypeMatch = isIgnoreFileType || FileType(for: url) == fileType
+                if isFileTypeMatch && !url.isDirectory {
                     let urlRef = try URLReference(from: url, location: location)
                     refs.append(urlRef)
                 }
