@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15702" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="vWt-yt-cgE">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16097" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="vWt-yt-cgE">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15704"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -133,6 +133,7 @@
                                         </button>
                                         <button opaque="NO" contentMode="center" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="clip" translatesAutoresizingMaskIntoConstraints="NO" id="zIk-Pe-sKK" userLabel="Close">
                                             <rect key="frame" x="326" y="11" width="33" height="33"/>
+                                            <accessibility key="accessibilityConfiguration" label="Close"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="33" id="8nR-vp-9X4"/>
                                                 <constraint firstAttribute="width" constant="33" id="PJh-kX-40C"/>
@@ -149,7 +150,7 @@
                                         <constraint firstItem="hmv-DA-BgM" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="UIb-k0-Rcp" secondAttribute="leadingMargin" constant="8" id="2hN-xN-2iX"/>
                                         <constraint firstAttribute="trailingMargin" relation="greaterThanOrEqual" secondItem="hmv-DA-BgM" secondAttribute="trailing" constant="8" id="6Mp-nS-hIz"/>
                                         <constraint firstItem="R68-cy-5mz" firstAttribute="centerX" secondItem="UIb-k0-Rcp" secondAttribute="centerX" priority="250" id="9dL-uU-s8T"/>
-                                        <constraint firstItem="zIk-Pe-sKK" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="R68-cy-5mz" secondAttribute="trailing" priority="750" constant="8" id="JxN-al-gJ7"/>
+                                        <constraint firstItem="zIk-Pe-sKK" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="R68-cy-5mz" secondAttribute="trailing" constant="8" id="JxN-al-gJ7"/>
                                         <constraint firstAttribute="trailingMargin" relation="greaterThanOrEqual" secondItem="R68-cy-5mz" secondAttribute="trailing" id="LuD-a8-qgU"/>
                                         <constraint firstAttribute="bottomMargin" secondItem="hmv-DA-BgM" secondAttribute="bottom" constant="4" id="QgL-T9-KvD"/>
                                         <constraint firstItem="hmv-DA-BgM" firstAttribute="top" secondItem="R68-cy-5mz" secondAttribute="bottom" constant="8" id="a27-7X-joZ"/>
@@ -160,6 +161,9 @@
                                         <constraint firstItem="R68-cy-5mz" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="UIb-k0-Rcp" secondAttribute="leadingMargin" id="x10-c8-r1Z"/>
                                     </constraints>
                                 </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="dismissButton" destination="zIk-Pe-sKK" id="dAa-Sh-iAT"/>
+                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>

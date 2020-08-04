@@ -17,7 +17,14 @@ protocol AppLockSetupCellDelegate: class {
 }
 
 class AppLockSetupCell: UITableViewCell {
+    @IBOutlet weak var dismissButton: UIButton!
+
     weak var delegate: AppLockSetupCellDelegate?
+    
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        dismissButton.accessibilityLabel = LString.actionDismiss
+    }
     
     @IBAction func didPressEnableAppLock(_ sender: Any) {
         delegate?.didPressEnableAppLock(in: self)
