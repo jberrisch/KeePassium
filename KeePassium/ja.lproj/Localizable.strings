@@ -176,7 +176,7 @@
 "[FileInfo/Backup/header]" = "バックアップ";
 
 /* Error message shown when the user tries to change file attributes (such as creation/modification date, backup flag, etc) */
-"[FileInfo/Error/failed to change attributes]" = "Failed to update file attributes.";
+"[FileInfo/Error/failed to change attributes]" = "ファイル属性の更新に失敗しました。";
 
 /* Field title */
 "[FileInfo/Field/title] Creation Date" = "作成日";
@@ -197,7 +197,7 @@
 "[FileInfo/Field/valueError] Error" = "エラー";
 
 /* Title of a setting: is the file exluded from iCloud/iTunes backup. For example: `Exclude From Backup: <Yes>` */
-"[FileInfo/isExcludedFromBackup/title]" = "Exclude From iCloud/iTunes Backup";
+"[FileInfo/isExcludedFromBackup/title]" = "iCloud/iTunesのバックアップから除外";
 
 /* Title of the dialog for picking the destination group for move/copy operations */
 "[General/DestinationGroup/title] Choose a Destination" = "保存先を選択";
@@ -209,7 +209,7 @@
 "[Generic] Contact Us" = "お問い合わせ";
 
 /* Action/button to proceed with the action */
-"[Generic] Continue" = "Continue";
+"[Generic] Continue" = "続ける";
 
 /* Action/button to move an item (to another group/folder/etc) */
 "[Generic] Copy" = "コピー";
@@ -323,10 +323,10 @@
 "[Premium/Benefits/AttachmentPreview/title]" = "痕跡を残さず閲覧";
 
 /* Explanation of a premium feature */
-"[Premium/Benefits/CustomAppIcon/details]" = "Make KeePassium look unique, familiar, or disguise it as a calculator — the choice is yours.";
+"[Premium/Benefits/CustomAppIcon/details]" = "KeePassiumの装いを独特にできますし、電卓に偽装させてもいい。お好みで選べます。";
 
 /* Title of a premium feature */
-"[Premium/Benefits/CustomAppIcon/title]" = "Change app icon";
+"[Premium/Benefits/CustomAppIcon/title]" = "アプリのアイコン変更";
 
 /* Explanation of the premium feature */
 "[Premium/Benefits/DatabaseTimeout/details]" = "マスターパスワードの入力にうんざりですか？ もっと長時間データベースが開いたままにできて、ロック解除がワンタッチで可能になります。";
@@ -458,7 +458,7 @@
 "[Premium/usage] App being useful: %@/month, that is around %@/year." = "アプリが役立っています: %1$@/月、約%2$@/年。";
 
 /* Title of a premium feature: ability to change the app icon */
-"[PremiumFeature/CustomAppIcons/title]" = "Custom App Icons";
+"[PremiumFeature/CustomAppIcons/title]" = "アプリのアイコン変更";
 
 /* A generic description of a premium feature */
 "[PremiumFeature/Generic/description]" = "プレミアム機能を見つけました！プレミアム版にアップグレードすると、KeePassiumを最高の状態でお使いいただけます。";

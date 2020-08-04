@@ -26,7 +26,7 @@
 "aqX-J9-IzD.text" = "Dutch translation by Heimen Stoffels (@Vistaus)";
 
 /* Class = "UILabel"; text = "MIT license"; ObjectID = "AWg-lI-BfC"; */
-"AWg-lI-BfC.text" = "MIT-licentie";
+"AWg-lI-BfC.text" = "MIT licentie";
 
 /* Class = "UILabel"; text = "Twofish implementation by Niels Ferguson"; ObjectID = "axY-gm-XNr"; */
 "axY-gm-XNr.text" = "Twovis-implementatie door Niels Ferguson";
@@ -56,7 +56,7 @@
 "hDU-6p-Bzr.text" = "Rijndael-implementatie door Szymon Stefanek";
 
 /* Class = "UILabel"; text = "Apache 2.0 license"; ObjectID = "ht7-pj-Dbb"; */
-"ht7-pj-Dbb.text" = "Apache 2.0 license";
+"ht7-pj-Dbb.text" = "Apache 2.0-licentie";
 
 /* Class = "UILabel"; text = "CC BY 3.0"; ObjectID = "hVm-qH-TAI"; */
 "hVm-qH-TAI.text" = "CC BY 3.0";
@@ -89,7 +89,7 @@
 "o9e-qb-mMw.text" = "CC0-licentie";
 
 /* Class = "UILabel"; text = "TPInAppReceipt by Pavel Tikhonenko"; ObjectID = "OaP-Bl-5vR"; */
-"OaP-Bl-5vR.text" = "TPInAppReceipt by Pavel Tikhonenko";
+"OaP-Bl-5vR.text" = "TPInAppReceipt door Pavel Tikhonenko";
 
 /* Class = "UILabel"; text = "Public domain"; ObjectID = "QV5-N8-NRt"; */
 "QV5-N8-NRt.text" = "Publiek domein";
@@ -134,5 +134,5 @@
 "wYr-Ya-qAP.text" = "Systeeminstellingenpictogram van Vicons Design";
 
 /* Class = "UILabel"; text = "Yubico Mobile iOS SDK by Yubico AB"; ObjectID = "Xee-Y1-Dcw"; */
-"Xee-Y1-Dcw.text" = "Yubico Mobile iOS SDK by Yubico AB";
+"Xee-Y1-Dcw.text" = "Yubico Mobile iOS SDK van Yubico AB";
 
