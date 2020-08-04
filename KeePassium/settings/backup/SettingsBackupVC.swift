@@ -17,6 +17,7 @@ class SettingsBackupVC: UITableViewController {
     @IBOutlet weak var deleteAllBackupsButton: UIButton!
     
     private var settingsNotifications: SettingsNotifications!
+    private var fileKeeperNotifications: FileKeeperNotifications!
     
     static func create() -> SettingsBackupVC {
         let vc = SettingsBackupVC.instantiateFromStoryboard()
@@ -28,15 +29,18 @@ class SettingsBackupVC: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         settingsNotifications = SettingsNotifications(observer: self)
+        fileKeeperNotifications = FileKeeperNotifications(observer: self)
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         settingsNotifications.startObserving()
+        fileKeeperNotifications.startObserving()
         refresh()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
+        fileKeeperNotifications.stopObserving()
         settingsNotifications.stopObserving()
         super.viewWillDisappear(animated)
     }
@@ -115,6 +119,17 @@ class SettingsBackupVC: UITableViewController {
         )
         confirmationAlert.addAction(deleteAction)
         present(confirmationAlert, animated: true, completion: nil)
+    }
+}
+
+// MARK: FileKeeperObserver
+
+extension SettingsBackupVC: FileKeeperObserver {
+    func fileKeeper(didRemoveFile urlRef: URLReference, fileType: FileType) {
+        refresh()
+    }
+    func fileKeeper(didAddFile urlRef: URLReference, fileType: FileType) {
+        refresh()
     }
 }
 
