@@ -154,6 +154,7 @@ public class Keychain {
         // (To avoid locking out early beta users.)
         let dataHash = ByteArray(utf8String: passcode).sha256.asData
         try set(service: .general, account: appPasscodeAccount, data: dataHash) // throws KeychainError
+        Settings.current.notifyAppLockEnabledChanged()
     }
 
     /// Checks if the keychain contains an App Lock passcode.
@@ -181,6 +182,7 @@ public class Keychain {
     /// - Throws: KeychainError
     public func removeAppPasscode() throws {
         try remove(service: .general, account: appPasscodeAccount) // throws KeychainError
+        Settings.current.notifyAppLockEnabledChanged()
     }
     
     // MARK: - Database-key association routines

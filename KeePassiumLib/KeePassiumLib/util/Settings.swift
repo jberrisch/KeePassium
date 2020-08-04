@@ -912,19 +912,17 @@ public class Settings {
     
     // MARK: - AppLock and other timeouts
     
+    /// Returns `true` if there is an AppLock passcode saved in keychain.
     public var isAppLockEnabled: Bool {
         get {
-            let stored = UserDefaults.appGroupShared
-                .object(forKey: Keys.appLockEnabled.rawValue)
-                as? Bool
-            return stored ?? false
+            let hasPasscode = try? Keychain.shared.isAppPasscodeSet() // throws KeychainError
+            return hasPasscode ?? false
         }
-        set {
-            updateAndNotify(
-                oldValue: isAppLockEnabled,
-                newValue: newValue,
-                key: .appLockEnabled)
-        }
+    }
+    
+    /// Notifies settings observers that `isAppLockEnabled` value has changed.
+    internal func notifyAppLockEnabledChanged() {
+        postChangeNotification(changedKey: .appLockEnabled)
     }
     
     /// Whether the user can use TouchID/FaceID to unlock the app

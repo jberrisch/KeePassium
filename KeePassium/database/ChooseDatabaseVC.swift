@@ -727,7 +727,13 @@ extension ChooseDatabaseVC: WelcomeDelegate {
 // MARK: - PasscodeInputDelegate
 extension ChooseDatabaseVC: PasscodeInputDelegate {
     func passcodeInputDidCancel(_ sender: PasscodeInputVC) {
-        Settings.current.isAppLockEnabled = false
+        do {
+            try Keychain.shared.removeAppPasscode() // throws KeychainError
+        } catch {
+            Diag.error(error.localizedDescription)
+            showErrorAlert(error, title: LString.titleKeychainError)
+            return
+        }
         sender.dismiss(animated: true, completion: nil)
         tableView.reloadData()
     }
@@ -742,9 +748,8 @@ extension ChooseDatabaseVC: PasscodeInputDelegate {
             do {
                 try Keychain.shared.setAppPasscode(passcode)
                 let settings = Settings.current
-                settings.isAppLockEnabled = true
                 // Automatically turn on biometrics for new users
-                settings.isBiometricAppLockEnabled = true
+                Settings.current.isBiometricAppLockEnabled = true
                 self?.tableView.reloadData()
             } catch {
                 Diag.error(error.localizedDescription)
