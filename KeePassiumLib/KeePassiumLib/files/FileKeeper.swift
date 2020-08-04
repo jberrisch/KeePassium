@@ -801,7 +801,7 @@ public class FileKeeper {
         switch mode {
         case .latest:
             timestamp = Date.now
-            fileNameSuffix = "latest"
+            fileNameSuffix = ".latest"
         case .timestamped:
             // We deduct one second from the timestamp to ensure
             // correct timing order of backup vs. original files
@@ -809,7 +809,7 @@ public class FileKeeper {
             let dateFormatter = DateFormatter()
             dateFormatter.locale = Locale(identifier: "en_US_POSIX")
             dateFormatter.dateFormat = "yyyy-MM-dd_HHmmss"
-            fileNameSuffix = dateFormatter.string(from: timestamp)
+            fileNameSuffix = "_" + dateFormatter.string(from: timestamp)
         }
         
         let baseFileName = nameTemplateURL
@@ -818,7 +818,7 @@ public class FileKeeper {
             .removingPercentEncoding  // should be OK, but if failed - fallback to
             ?? nameTemplate           // original template, even with extension
         let backupFileURL = backupDirURL
-            .appendingPathComponent(baseFileName + "_" + fileNameSuffix, isDirectory: false)
+            .appendingPathComponent(baseFileName + fileNameSuffix, isDirectory: false)
             .appendingPathExtension(nameTemplateURL.pathExtension)
         
         let fileManager = FileManager.default
