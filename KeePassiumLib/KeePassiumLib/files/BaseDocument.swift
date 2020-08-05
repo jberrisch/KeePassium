@@ -37,11 +37,13 @@ public class BaseDocument: UIDocument, Synchronizable {
     }
     
     /// Attempts to open the document with a default timeout (`BaseDocument.timeout`).
-    /// - Parameter callback: called with the result of opening (either document data or a `FileAccessError`)
+    /// - Parameter callback: called on background queue with the result of opening (either document data or a `FileAccessError`)
     public func open(_ callback: @escaping OpenCallback) {
         self.open(withTimeout: BaseDocument.timeout, callback)
     }
     
+    /// Attempts to open the document with given timeout.
+    /// - Parameter callback: called on a background queue with the operation result
     public func open(withTimeout timeout: TimeInterval, _ callback: @escaping OpenCallback) {
         BaseDocument.backgroundQueue.addOperation {
             let semaphore = DispatchSemaphore(value: 0)

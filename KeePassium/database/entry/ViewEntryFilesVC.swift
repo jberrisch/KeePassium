@@ -445,15 +445,20 @@ extension ViewEntryFilesVC: UIDocumentPickerDelegate {
         
         let doc = BaseDocument(fileURL: url, fileProvider: nil) // FP unknown
         doc.open { [weak self] result in
+            // We are in a background queue
             guard let self = self else { return }
             switch result {
             case .success(let docData):
-                // Keeping the progress view shown, will need it for DB saving
-                self.addAttachment(name: url.lastPathComponent, data: docData)
+                DispatchQueue.main.async { [self] in
+                    // Keeping the progress view shown, will need it for DB saving
+                    self.addAttachment(name: url.lastPathComponent, data: docData)
+                }
             case .failure(let fileAccessError):
                 Diag.error("Failed to open source file [message: \(fileAccessError.localizedDescription)]")
-                self.progressViewHost?.hideProgressView() // won't need it anymore
-                self.showErrorAlert(fileAccessError)
+                DispatchQueue.main.async { [self] in
+                    self.progressViewHost?.hideProgressView() // won't need it anymore
+                    self.showErrorAlert(fileAccessError)
+                }
             }
         }
     }
