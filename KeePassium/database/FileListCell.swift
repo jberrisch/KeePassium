@@ -46,17 +46,17 @@ class FileListCell: UITableViewCell {
     
     var accessoryTapHandler: ((FileListCell)->())? // strong ref
     fileprivate(set) var fileType: FileType!
-    
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        setupCell()
-    }
+
     override func awakeFromNib() {
         super.awakeFromNib()
         setupCell()
     }
     
     private func setupCell() {
+        if #available(iOS 13, *) {
+            // Storyboard's gray style is invisible in dark mode, so use the iOS 13 one
+            spinner.style = .medium
+        }
         let fileInfoButton = FileInfoAccessoryButton()
         accessoryView = fileInfoButton
         fileInfoButton.addTarget(
