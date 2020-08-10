@@ -40,6 +40,9 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
     var isAutoUnlockEnabled = true
     fileprivate var isAutomaticUnlock = false
 
+    /// A kludge to handle multiple calls to viewDidAppear
+    private var isViewAppeared = false
+    
     static func make(databaseRef: URLReference) -> UnlockDatabaseVC {
         let vc = UnlockDatabaseVC.instantiateFromStoryboard()
         vc.databaseRef = databaseRef
@@ -99,6 +102,13 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        guard !isViewAppeared else {
+            Diag.warning("Unbalanced call to viewDidAppear, ignoring")
+            assertionFailure("Unbalanced call to viewDidAppear")
+            return
+        }
+        isViewAppeared = true
+
         fileKeeperNotifications.startObserving()
         NotificationCenter.default.addObserver(
             self,
@@ -143,6 +153,7 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
             object: nil)
         fileKeeperNotifications.stopObserving()
         super.viewWillDisappear(animated)
+        isViewAppeared = false
     }
     
     override func didReceiveMemoryWarning() {
