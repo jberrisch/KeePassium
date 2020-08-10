@@ -34,6 +34,21 @@ public extension URL {
         return res?.isExcludedFromBackup
     }
     
+    /// Whether the file is in a Trash (Recently Deleted) directory
+    var isInTrashDirectory: Bool {
+        do {
+            let fileManager = FileManager.default
+            var relationship = FileManager.URLRelationship.other
+            // Next line seems to always raise "Feature not supported"
+            try fileManager.getRelationship(&relationship, of: .trashDirectory, in: [], toItemAt: self)
+            return relationship == .contains
+        } catch {
+            // Simplistic fallback strategy
+            let isSimpleNameMatch = self.pathComponents.contains(".Trash")
+            return isSimpleNameMatch
+        }
+    }
+    
     /// Changes the "excluded from backup" attribute.
     /// - Returns: `true` if successful, `false` in case of error
     @discardableResult
