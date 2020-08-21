@@ -293,7 +293,7 @@ public class PremiumManager: NSObject {
     
     /// True iff given `feature` is available for the current status.
     public func isAvailable(feature: PremiumFeature) -> Bool {
-        return feature.isAvailable(in: status)
+        return feature.isAvailable(in: status, fallbackDate: fallbackDate)
     }
     
     // MARK: - Grace period management
