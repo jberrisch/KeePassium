@@ -15,8 +15,8 @@ protocol PremiumCoordinatorDelegate: class {
     func didFinish(_ premiumCoordinator: PremiumCoordinator)
 }
 
-class PremiumCoordinator: NSObject {
-    
+class PremiumCoordinator: NSObject, Coordinator {
+    var childCoordinators = [Coordinator]()
     weak var delegate: PremiumCoordinatorDelegate?
     
     /// Parent VC which will present our modal form
@@ -45,7 +45,11 @@ class PremiumCoordinator: NSObject {
         planPicker.delegate = self
     }
     
-    func start(tryRestoringPurchasesFirst: Bool=false) {
+    func start() {
+        self.start(tryRestoringPurchasesFirst: false)
+    }
+
+    func start(tryRestoringPurchasesFirst: Bool) {
         premiumManager.delegate = self
         self.presentingViewController.present(navigationController, animated: true, completion: nil)
         
@@ -61,6 +65,10 @@ class PremiumCoordinator: NSObject {
         } else {
             refreshAvailableProducts()
         }
+    }
+    
+    deinit {
+        childCoordinators.removeAll()
     }
     
     fileprivate func restorePurchases() {
@@ -102,6 +110,7 @@ class PremiumCoordinator: NSObject {
     }
     
     func finish(animated: Bool, completion: (() -> Void)?) {
+        self.childCoordinators.removeAll()
         navigationController.dismiss(animated: animated) { [weak self] in
             guard let self = self else { return }
             self.delegate?.didFinish(self)
@@ -128,6 +137,24 @@ extension PremiumCoordinator: PricingPlanPickerDelegate {
     func didPressRestorePurchases(in viewController: PricingPlanPickerVC) {
         setPurchasing(true)
         restorePurchases()
+    }
+    
+    func didPressPerpetualFallbackInfo(
+        at popoverAnchor: PopoverAnchor,
+        in viewController: PricingPlanPickerVC)
+    {
+        assert(childCoordinators.isEmpty)
+        
+        let router = NavigationRouter.createPopover(at: popoverAnchor)
+        let helpViewerCoordinator = HelpViewerCoordinator(router: router)
+        helpViewerCoordinator.dismissHandler = { [self] (coordinator) in
+            self.childCoordinators.removeLast()
+            assert(self.childCoordinators.isEmpty)
+        }
+        helpViewerCoordinator.article = HelpArticle.perpetualFallbackLicense
+        helpViewerCoordinator.start()
+        childCoordinators.append(helpViewerCoordinator)
+        planPicker.present(router.navigationController, animated: true, completion: nil)
     }
 }
 

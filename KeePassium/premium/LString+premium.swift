@@ -104,10 +104,10 @@ You can manage and cancel your subscriptions by going to your account settings o
         "[Premium/Price Plan/Conditions/future premium features]",
         value: "Future premium features",
         comment: "What's included in a price plan: upcoming premium features (as opposed to `current only`)")
-//    public static let planConditionPerpetualFallback = NSLocalizedString(
-//        "[Premium/Price Plan/Conditions/perpetual fallback]",
-//        value: "Rent-to-own license (Perpetual fallback license)",
-//        comment: "What's included in a price plan. Please leave `perpetual fallback license` in English.")
+    public static let planConditionPerpetualFallback = NSLocalizedString(
+        "[Premium/Price Plan/Conditions/perpetual fallback]",
+        value: "Rent-to-own license (Perpetual fallback license)",
+        comment: "What's included in a price plan. Please leave `perpetual fallback license` in English.")
 
     // MARK: Purchase call for action
     

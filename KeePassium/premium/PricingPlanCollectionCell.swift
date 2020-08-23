@@ -50,7 +50,7 @@ class PricingPlanBenefitCell: UITableViewCell {
 
 protocol PricingPlanCollectionCellDelegate: class {
     func didPressPurchaseButton(in cell: PricingPlanCollectionCell, with pricePlan: PricingPlan)
-    func didPressPerpetualFallbackDetail(in cell: PricingPlanCollectionCell, with pricePlan: PricingPlan)
+    func didPressPerpetualFallbackInfo(in cell: PricingPlanConditionCell, with pricePlan: PricingPlan)
 }
 
 /// Represents one page/tile in the price plan picker
@@ -337,6 +337,6 @@ extension PricingPlanCollectionCell: UITableViewDataSource {
 // MARK: PricingPlanConditionCellDelegate
 extension PricingPlanCollectionCell: PricingPlanConditionCellDelegate {
     func didPressDetailButton(in cell: PricingPlanConditionCell) {
-        delegate?.didPressPerpetualFallbackDetail(in: self, with: pricingPlan)
+        delegate?.didPressPerpetualFallbackInfo(in: cell, with: pricingPlan)
     }
 }
