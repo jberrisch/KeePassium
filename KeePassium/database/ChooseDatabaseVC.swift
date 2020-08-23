@@ -323,17 +323,10 @@ class ChooseDatabaseVC: UITableViewController, DynamicFileList, Refreshable {
         present(settingsVC, animated: true, completion: nil)
     }
     
-    var helpViewerCoordinator: HelpViewerCoordinator?
     @IBAction func didPressHelpButton(_ sender: Any) {
         tableView.selectRow(at: nil, animated: true, scrollPosition: .none)
-        
-        assert(helpViewerCoordinator == nil)
-        let popoverAnchor = PopoverAnchor(barButtonItem: sender as! UIBarButtonItem)
-        helpViewerCoordinator = HelpViewerCoordinator.create(at: popoverAnchor)
-        helpViewerCoordinator!.dismissHandler = { _ in
-            self.helpViewerCoordinator = nil
-        }
-        helpViewerCoordinator!.start(in: self)
+        let aboutVC = AboutVC.make()
+        showDetailViewController(aboutVC, sender: self)
     }
     
     func didPressAppLockSetup() {
