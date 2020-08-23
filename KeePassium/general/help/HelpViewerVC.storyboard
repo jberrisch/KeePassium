@@ -23,7 +23,7 @@
                                         <rect key="frame" x="0.0" y="0.0" width="375" height="52.333333333333336"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" layoutMarginsFollowReadableWidth="YES" text="{Article body}" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Pvc-BY-xlT">
-                                                <rect key="frame" x="8" y="24" width="359" height="20.333333333333329"/>
+                                                <rect key="frame" x="16" y="24" width="343" height="20.333333333333329"/>
                                                 <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
                                                 <color key="textColor" name="PrimaryText"/>
                                                 <nil key="highlightedColor"/>
@@ -35,9 +35,9 @@
                                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                         <constraints>
                                             <constraint firstItem="Pvc-BY-xlT" firstAttribute="top" secondItem="vnb-WM-hir" secondAttribute="topMargin" constant="16" id="KNs-iQ-AQV"/>
-                                            <constraint firstItem="Pvc-BY-xlT" firstAttribute="leading" secondItem="vnb-WM-hir" secondAttribute="leadingMargin" id="dYL-gz-In8"/>
+                                            <constraint firstItem="Pvc-BY-xlT" firstAttribute="leading" secondItem="vnb-WM-hir" secondAttribute="leadingMargin" constant="8" id="dYL-gz-In8"/>
                                             <constraint firstAttribute="bottomMargin" secondItem="Pvc-BY-xlT" secondAttribute="bottom" id="igU-9Q-T7E"/>
-                                            <constraint firstAttribute="trailingMargin" secondItem="Pvc-BY-xlT" secondAttribute="trailing" id="z2j-v3-xq6"/>
+                                            <constraint firstAttribute="trailingMargin" secondItem="Pvc-BY-xlT" secondAttribute="trailing" constant="8" id="z2j-v3-xq6"/>
                                         </constraints>
                                     </view>
                                 </subviews>
