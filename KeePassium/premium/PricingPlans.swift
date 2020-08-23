@@ -19,7 +19,7 @@ struct PricingPlanCondition {
         case allPremiumFeatures
         case upcomingPremiumFeatures
         case currentPremiumFeatures
-//        case perpetualFallback
+        case perpetualFallback
     }
     enum HelpReference {
         case none
@@ -47,8 +47,8 @@ struct PricingPlanCondition {
             return LString.planConditionUpcomingPremiumFeatures
         case .currentPremiumFeatures:
             return LString.planConditionCurrentPremiumFeatures
-//        case .perpetualFallback:
-//            return LString.planConditionPerpetualFallback
+        case .perpetualFallback:
+            return LString.planConditionPerpetualFallback
         }
     }
 }
@@ -251,7 +251,7 @@ class PricingPlanPremiumMonthly: RealPricingPlan {
             PricingPlanCondition(kind: .updatesAndFixes, isIncluded: true, moreInfo: .none),
             PricingPlanCondition(kind: .emailSupport, isIncluded: true, moreInfo: .none),
             PricingPlanCondition(kind: .allPremiumFeatures, isIncluded: true, moreInfo: .none),
-//            PricingPlanCondition(kind: .perpetualFallback, isIncluded: true, moreInfo: .perpetualFallback),
+            PricingPlanCondition(kind: .perpetualFallback, isIncluded: true, moreInfo: .perpetualFallback),
         ]
         self.benefits = [
             PricingPlanBenefit.multipleDatabases,
@@ -278,7 +278,7 @@ class PricingPlanPremiumYearly: RealPricingPlan {
             PricingPlanCondition(kind: .updatesAndFixes, isIncluded: true, moreInfo: .none),
             PricingPlanCondition(kind: .emailSupport, isIncluded: true, moreInfo: .none),
             PricingPlanCondition(kind: .allPremiumFeatures, isIncluded: true, moreInfo: .none),
-//            PricingPlanCondition(kind: .perpetualFallback, isIncluded: true, moreInfo: .perpetualFallback),
+            PricingPlanCondition(kind: .perpetualFallback, isIncluded: true, moreInfo: .perpetualFallback),
         ]
         self.benefits = [
             PricingPlanBenefit.multipleDatabases,
