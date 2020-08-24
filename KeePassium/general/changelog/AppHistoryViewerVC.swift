@@ -14,29 +14,72 @@ class AppHistoryItemCell: UITableViewCell {
     @IBOutlet weak var detailLabel: UILabel!
 }
 
+class AppHistoryFallbackCell: UITableViewCell {
+    fileprivate static let storyboardID = "FallbackCell"
+}
+
 class AppHistoryViewerVC: UITableViewController {
     /// The change log to display
-    var appHistory: AppHistory?
+    var appHistory: AppHistory? {
+        didSet {
+            updateSections()
+        }
+    }
+    
+    enum TableSection {
+        case fallbackSeparator(date: Date)
+        case historySection(section: AppHistory.Section)
+    }
+    
+    private let fallbackDate = PremiumManager.shared.fallbackDate
+    private var sections = [TableSection]()
     
     private let dateFormatter: DateFormatter = {
         let dateFormatter = DateFormatter()
-        dateFormatter.dateStyle = .medium
+        dateFormatter.dateStyle = .long
         dateFormatter.timeStyle = .none
+        dateFormatter.doesRelativeDateFormatting = true
         return dateFormatter
     }()
     
-    override func numberOfSections(in tableView: UITableView) -> Int {
-        guard let appHistory = appHistory else {
-            return 0
+    private func updateSections() {
+        sections.removeAll()
+        defer {
+            tableView.reloadData()
         }
-        return appHistory.sections.count
+        
+        guard let appHistory = appHistory else { return }
+        
+        guard let perpetualFallbackDate = fallbackDate else {
+            // no fallback date, just prepopulate sections with app history
+            sections = appHistory.sections.map { return TableSection.historySection(section: $0) }
+            return
+        }
+        var isFallbackSectionAdded = false
+        for release in appHistory.sections {
+            if !isFallbackSectionAdded && release.releaseDate < perpetualFallbackDate {
+                sections.append(TableSection.fallbackSeparator(date: perpetualFallbackDate))
+                isFallbackSectionAdded = true
+            }
+            sections.append(TableSection.historySection(section: release))
+        }
+    }
+}
+
+// MARK: UITableViewDataSource
+
+extension AppHistoryViewerVC {
+    override func numberOfSections(in tableView: UITableView) -> Int {
+        return sections.count
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        guard let appHistory = appHistory else {
-            return 0
+        switch sections[section] {
+        case .fallbackSeparator:
+            return 1
+        case .historySection(section: let appHistorySection):
+            return appHistorySection.items.count
         }
-        return appHistory.sections[section].items.count
     }
     
     override func tableView(
@@ -44,12 +87,13 @@ class AppHistoryViewerVC: UITableViewController {
         titleForHeaderInSection section: Int)
         -> String?
     {
-        guard let appHistory = appHistory else {
+        switch sections[section] {
+        case .fallbackSeparator:
             return nil
+        case .historySection(section: let sectionInfo):
+            let formattedDate = dateFormatter.string(from: sectionInfo.releaseDate)
+            return "v\(sectionInfo.version) (\(formattedDate))"
         }
-        let sectionInfo = appHistory.sections[section]
-        let formattedDate = dateFormatter.string(from: sectionInfo.releaseDate)
-        return "v\(sectionInfo.version) (\(formattedDate))"
     }
     
     override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
@@ -63,27 +107,52 @@ class AppHistoryViewerVC: UITableViewController {
         cellForRowAt indexPath: IndexPath)
         -> UITableViewCell
     {
-        let cell = tableView.dequeueReusableCell(withIdentifier: AppHistoryItemCell.storyboardID)
-            as! AppHistoryItemCell
-        if let appHistory = appHistory {
-            let item = appHistory.sections[indexPath.section].items[indexPath.row]
-            setupCell(cell, item: item)
+        switch sections[indexPath.section] {
+        case .fallbackSeparator(date: let fallbackDate):
+            let cell = tableView
+                .dequeueReusableCell(withIdentifier: AppHistoryFallbackCell.storyboardID)
+                as! AppHistoryFallbackCell
+            let formattedDate = dateFormatter.string(from: fallbackDate)
+            cell.textLabel?.text = String.localizedStringWithFormat(
+                LString.perpetualLicenseStatus,
+                formattedDate)
+            return cell
+        case .historySection(section: let releaseInfo):
+            let cell = tableView
+                .dequeueReusableCell(withIdentifier: AppHistoryItemCell.storyboardID)
+                as! AppHistoryItemCell
+            let item = releaseInfo.items[indexPath.row]
+            let isOwned = (fallbackDate != nil) && (releaseInfo.releaseDate < fallbackDate!)
+            setupCell(cell, item: item, isOwned: isOwned)
+            return cell
         }
-        return cell
     }
     
-    private func setupCell(_ cell: AppHistoryItemCell, item: AppHistory.Item) {
+    private func setupCell(_ cell: AppHistoryItemCell, item: AppHistory.Item, isOwned: Bool) {
         cell.titleLabel.text = item.title
         switch item.type {
         case .none:
             cell.detailLabel.text = ""
             cell.accessoryView = nil
+            cell.accessoryType = isOwned ? .checkmark : .none
         case .free:
-            cell.detailLabel.text = "Free" //TODO: localize
             cell.accessoryView = nil
+            if isOwned {
+                cell.accessoryType = .checkmark
+                cell.detailLabel.text = ""
+            } else {
+                cell.accessoryType = .none
+                cell.detailLabel.text = LString.premiumFreePlanPrice
+            }
         case .premium:
             cell.detailLabel.text = ""
-            cell.accessoryView = PremiumBadgeAccessory()
+            if isOwned {
+                cell.accessoryView = nil
+                cell.accessoryType = .checkmark
+            } else {
+                cell.accessoryType = .none
+                cell.accessoryView = PremiumBadgeAccessory()
+            }
         }
     }
 }

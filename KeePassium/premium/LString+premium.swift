@@ -160,5 +160,16 @@ You can manage and cancel your subscriptions by going to your account settings o
         value: "No previous purchase could be restored.",
         comment: "Text of an error message: there were no in-app purchases that can be restored")
     
+    // MARK: Perpetual license
+
+    public static let perpetualLicense = NSLocalizedString(
+        "[Premium/perpetualLicense]",
+        value: "Perpetual license",
+        comment: "Name of the permanent/never-ending license.")
+
+    public static let perpetualLicenseStatus = NSLocalizedString(
+        "[Premium/PerpetualLicense/status]",
+        value: "You have a perpetual license for all the versions before %@.",
+        comment: "[formattedDate: String]")
 
 }
