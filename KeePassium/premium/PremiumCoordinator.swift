@@ -151,7 +151,7 @@ extension PremiumCoordinator: PricingPlanPickerDelegate {
             self.childCoordinators.removeLast()
             assert(self.childCoordinators.isEmpty)
         }
-        helpViewerCoordinator.article = HelpArticle.perpetualFallbackLicense
+        helpViewerCoordinator.article = HelpArticle.load(.perpetualFallbackLicense)
         helpViewerCoordinator.start()
         childCoordinators.append(helpViewerCoordinator)
         planPicker.present(router.navigationController, animated: true, completion: nil)

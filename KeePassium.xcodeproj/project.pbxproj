@@ -150,6 +150,10 @@
 		756B15D024C19C1E004A75B6 /* FileAddingHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 756B15CE24C19C1E004A75B6 /* FileAddingHelper.swift */; };
 		756B15D124C19C1E004A75B6 /* FileAddingHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 756B15CE24C19C1E004A75B6 /* FileAddingHelper.swift */; };
 		756B15D224C19C1E004A75B6 /* FileAddingHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 756B15CE24C19C1E004A75B6 /* FileAddingHelper.swift */; };
+		756FC99624F45437007F9920 /* perpetual-fallback-license.json in Resources */ = {isa = PBXBuildFile; fileRef = 756FC99524F45437007F9920 /* perpetual-fallback-license.json */; };
+		756FC99724F45437007F9920 /* perpetual-fallback-license.json in Resources */ = {isa = PBXBuildFile; fileRef = 756FC99524F45437007F9920 /* perpetual-fallback-license.json */; };
+		756FC99824F45437007F9920 /* perpetual-fallback-license.json in Resources */ = {isa = PBXBuildFile; fileRef = 756FC99524F45437007F9920 /* perpetual-fallback-license.json */; };
+		756FC99924F45437007F9920 /* perpetual-fallback-license.json in Resources */ = {isa = PBXBuildFile; fileRef = 756FC99524F45437007F9920 /* perpetual-fallback-license.json */; };
 		756FF64420BAB20300FF890B /* UIColor+namedColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 756FF64320BAB20300FF890B /* UIColor+namedColors.swift */; };
 		7572664B24CB15530099B6E1 /* HelpViewerCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7572664A24CB15530099B6E1 /* HelpViewerCoordinator.swift */; };
 		7572664C24CB15530099B6E1 /* HelpViewerCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7572664A24CB15530099B6E1 /* HelpViewerCoordinator.swift */; };
@@ -919,6 +923,7 @@
 		756B245D243F74E000AA121A /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/PasscodeInputVC.strings; sourceTree = "<group>"; };
 		756B245E243F74E000AA121A /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/SettingsBackupTimeoutPickerVC.strings; sourceTree = "<group>"; };
 		756D15602129AFB60052C728 /* KeePassium.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = KeePassium.entitlements; sourceTree = "<group>"; };
+		756FC99524F45437007F9920 /* perpetual-fallback-license.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "perpetual-fallback-license.json"; sourceTree = "<group>"; };
 		756FF64320BAB20300FF890B /* UIColor+namedColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+namedColors.swift"; sourceTree = "<group>"; };
 		7572664A24CB15530099B6E1 /* HelpViewerCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpViewerCoordinator.swift; sourceTree = "<group>"; };
 		7572664F24CB17410099B6E1 /* HelpViewerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpViewerVC.swift; sourceTree = "<group>"; };
@@ -1630,6 +1635,7 @@
 		754BF07D2082A6BD00E3A292 /* KeePassium */ = {
 			isa = PBXGroup;
 			children = (
+				756FC99424F453CF007F9920 /* resources */,
 				751A565724CCE0F8001227D6 /* app-icons */,
 				758BF0D920D21EE500897C83 /* general */,
 				757ADC4323A1045C00D708D2 /* challenge-response */,
@@ -1715,6 +1721,14 @@
 				75679ACD22FD896F00372301 /* NewsCenter.swift */,
 			);
 			path = news;
+			sourceTree = "<group>";
+		};
+		756FC99424F453CF007F9920 /* resources */ = {
+			isa = PBXGroup;
+			children = (
+				756FC99524F45437007F9920 /* perpetual-fallback-license.json */,
+			);
+			path = resources;
 			sourceTree = "<group>";
 		};
 		756FF64520BAB52C00FF890B /* entry */ = {
@@ -2102,6 +2116,7 @@
 				755B863223054FAD00E9FC83 /* PasscodeInputVC.storyboard in Resources */,
 				75C51454234A792B00B44512 /* Assets.xcassets in Resources */,
 				751E0D352309AFFC0088BB10 /* EntryFinderVC.storyboard in Resources */,
+				756FC99724F45437007F9920 /* perpetual-fallback-license.json in Resources */,
 				751E0D3B2309B01A0088BB10 /* DiagnosticsViewerVC.storyboard in Resources */,
 				75802632222EBC3800F4525F /* ProgressVC.storyboard in Resources */,
 				7584CEF124D208E80063B421 /* HardwareKeyPicker.storyboard in Resources */,
@@ -2190,6 +2205,7 @@
 				751E0D252309AFBA0088BB10 /* FileInfoVC.storyboard in Resources */,
 				75C38045217A3204006F74C2 /* PlaceholderVC.storyboard in Resources */,
 				7572665524CB18520099B6E1 /* HelpViewerVC.storyboard in Resources */,
+				756FC99624F45437007F9920 /* perpetual-fallback-license.json in Resources */,
 				758FC12D24CEF72000BAD35C /* appicon-info_iPadApp_76@2x.png in Resources */,
 				75ED429D2313A3EF003DE72E /* SettingsDatabaseTimeoutVC.storyboard in Resources */,
 				758FC17B24CEF72000BAD35C /* appicon-atom-black_iPhoneApp_60@3x.png in Resources */,
@@ -2284,6 +2300,7 @@
 				75B38C6F233E5B7C006BDEFC /* FileInfoVC.storyboard in Resources */,
 				75B38C70233E5B7C006BDEFC /* PlaceholderVC.storyboard in Resources */,
 				7572665724CB18520099B6E1 /* HelpViewerVC.storyboard in Resources */,
+				756FC99824F45437007F9920 /* perpetual-fallback-license.json in Resources */,
 				758FC12E24CEF72000BAD35C /* appicon-info_iPadApp_76@2x.png in Resources */,
 				75B38C71233E5B7C006BDEFC /* SettingsDatabaseTimeoutVC.storyboard in Resources */,
 				758FC17C24CEF72000BAD35C /* appicon-atom-black_iPhoneApp_60@3x.png in Resources */,
@@ -2314,6 +2331,7 @@
 				75D7DFAF233E5E310029AD87 /* PasscodeInputVC.storyboard in Resources */,
 				75C51455234A792C00B44512 /* Assets.xcassets in Resources */,
 				75D7DFB0233E5E310029AD87 /* EntryFinderVC.storyboard in Resources */,
+				756FC99924F45437007F9920 /* perpetual-fallback-license.json in Resources */,
 				75D7DFB1233E5E310029AD87 /* DiagnosticsViewerVC.storyboard in Resources */,
 				75D7DFB3233E5E310029AD87 /* ProgressVC.storyboard in Resources */,
 				7584CEF324D208E80063B421 /* HardwareKeyPicker.storyboard in Resources */,

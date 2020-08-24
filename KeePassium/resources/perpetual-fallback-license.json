@@ -1,0 +1,41 @@
+{
+    "title": "Rent-to-own license (perpetual fallback license)",
+    "sections": [
+        {
+            "heading": null,
+            "body": "The perpetual fallback license enables you to use some premium features even without an active subscription."
+        },
+        {
+            "heading": "Why",
+            "body": "Usually, subscriptions are treated as a \"rent\": you get full access to the app only while you are paying for it. As soon as you stop paying, you would lose access to the premium features. Even if you supported the app development for years, you would not have anything to show for it. This seems unfair."
+        },
+        {
+            "heading": null,
+            "body": "To fix this, KeePassium offers a rent-to-own (perpetual fallback) license for long-time subscribers."
+        },
+        {
+            "heading": "Yearly subscription",
+            "body": "Any app release which was followed by a 1-year subscription, becomes yours forever. In other words, whenever you purchase or renew an annual subscription, you get a perpetual license for the full version available on the payment day."
+        },
+        {
+            "heading": "Monthly subscription",
+            "body": "Any app release which was followed by 12 consecutive monthly payments, becomes yours forever. In other words, if your monthly subscription is cancelled after 12 or more months, the date of your perpetual license is the cancellation day minus 12 months. The idea is the same as for the annual subscription, but paid in 12 installments."
+        },
+        {
+            "heading": "Eligibility",
+            "body": "Any customer who has been subscribed for at least one year (or 12 consecutive months)."
+        },
+        {
+            "heading": "FAQ",
+            "body": "- What happens when I cancel my subscription?\n- You lose access to premium features added in the last 12 months. If you are eligible for the rent-to-own license, you keep access to all the premium features added 12 months ago or earlier."
+        },
+        {
+            "heading": "Does the perpetual license cover user support?",
+            "body": "No. Premium user support is an ongoing service. It is available only to active subscribers."
+        },
+        {
+            "heading": "Can I combine monthly and yearly subscription?",
+            "body": "Yes. You can switch from yearly to monthly subscription. The date of your perpetual license will be the cancellation date minus 12 months."
+        }
+    ]
+}
