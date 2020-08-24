@@ -8,79 +8,34 @@
 
 import KeePassiumLib
 
-public struct HelpArticle: Decodable {
-    public struct Section: Decodable {
-        var heading: String?
-        var body: String
-    }
-    
-    let title: String
-    let sections: [Section]
+public struct HelpArticle {
+    private let content: NSAttributedString
     
     public enum Key: String {
         case perpetualFallbackLicense = "perpetual-fallback-license"
     }
     
     public func rendered() -> NSAttributedString {
-        let output = NSMutableAttributedString()
-        
-        output.append(title.appendingNewLine.styled(.title1, paragraphSpacing: 12))
-        for section in sections {
-            if let heading = section.heading {
-                output.append(heading.appendingNewLine.styled(.headline))
-            }
-            output.append(section.body.appendingNewLine.styled(.body))
-        }
-        return output
+        return content
     }
     
     /// Loads a HelpArticle instance from a JSON resource file with the given name.
     public static func load(_ key: Key) -> HelpArticle? {
         let fileName = key.rawValue
-        guard let url = Bundle.main.url(forResource: fileName, withExtension: "json", subdirectory: "") else {
+        guard let url = Bundle.main.url(forResource: fileName, withExtension: "html", subdirectory: "") else {
             Diag.error("Failed to find help article file")
             return nil
         }
         do {
-            let fileContents = try Data(contentsOf: url)
-            let jsonDecoder = JSONDecoder()
-            let helpArticle = try jsonDecoder.decode(HelpArticle.self, from: fileContents)
-            return helpArticle
+            var d: NSDictionary? = nil
+            let content = try NSAttributedString(
+                url: url,
+                options: [.documentType: NSAttributedString.DocumentType.html],
+                documentAttributes: &d)
+            return HelpArticle(content: content)
         } catch {
             Diag.error("Failed to load help article file [reason: \(error.localizedDescription)]")
             return nil
         }
-    }
-}
-
-fileprivate extension String {
-    var appendingNewLine: String {
-        if self.last != "\n" {
-            return self + "\n"
-        } else {
-            return self
-        }
-    }
-    
-    func styled(
-        _ textStyle: UIFont.TextStyle = .body,
-        paragraphSpacing: CGFloat = 6.0,
-        paragraphSpacingBefore: CGFloat = 12.0,
-        alignment: NSTextAlignment = .natural)
-        -> NSAttributedString
-    {
-        let font = UIFont.preferredFont(forTextStyle: textStyle)
-        let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.paragraphSpacing = paragraphSpacing
-        paragraphStyle.paragraphSpacingBefore = paragraphSpacingBefore
-        paragraphStyle.alignment = .left
-        let attributedString = NSMutableAttributedString(
-            string: self,
-            attributes: [
-                NSAttributedString.Key.font: font,
-                NSAttributedString.Key.paragraphStyle: paragraphStyle
-            ]
-        )
-        return attributedString
     }
 }
