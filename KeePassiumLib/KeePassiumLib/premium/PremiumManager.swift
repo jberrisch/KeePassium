@@ -95,7 +95,7 @@ public class PremiumManager: NSObject {
     // MARK: - Time interval constants
     
 #if DEBUG
-    /// Time since first launch, when premium features are available in free version.
+    /// Time since first launch, when the casual/expert usage is not differentiated.
     private let gracePeriodInSeconds: TimeInterval = 1 * 60
 
     /// Time since subscription expiration, when premium features are still available.
@@ -293,7 +293,7 @@ public class PremiumManager: NSObject {
     
     /// True iff given `feature` is available for the current status.
     public func isAvailable(feature: PremiumFeature) -> Bool {
-        return feature.isAvailable(in: status)
+        return feature.isAvailable(in: status, fallbackDate: fallbackDate)
     }
     
     // MARK: - Grace period management

@@ -28,6 +28,7 @@ class SettingsVC: UITableViewController, Refreshable {
     @IBOutlet weak var premiumTrialCell: UITableViewCell!
     @IBOutlet weak var premiumStatusCell: UITableViewCell!
     @IBOutlet weak var manageSubscriptionCell: UITableViewCell!
+    @IBOutlet weak var appHistoryCell: UITableViewCell!
     
     private var settingsNotifications: SettingsNotifications!
     
@@ -39,6 +40,7 @@ class SettingsVC: UITableViewController, Refreshable {
         static let premiumTrial = IndexPath(row: 0, section: premiumSectionIndex)
         static let premiumStatus = IndexPath(row: 1, section: premiumSectionIndex)
         static let manageSubscription = IndexPath(row: 2, section: premiumSectionIndex)
+        static let appHistoryCell = IndexPath(row: 3, section: premiumSectionIndex)
     }
     /// Indices of hidden cells (for now set only in refreshPremiumStatus)
     private var hiddenIndexPaths = Set<IndexPath>()
@@ -72,6 +74,7 @@ class SettingsVC: UITableViewController, Refreshable {
             setPremiumCellVisibility(premiumTrialCell, isHidden: true)
             setPremiumCellVisibility(premiumStatusCell, isHidden: true)
             setPremiumCellVisibility(manageSubscriptionCell, isHidden: true)
+            setPremiumCellVisibility(appHistoryCell, isHidden: true)
         }
         refreshPremiumStatus()
         #if DEBUG
@@ -93,6 +96,7 @@ class SettingsVC: UITableViewController, Refreshable {
     deinit {
         // TODO: this should be managed automatically once 
         appIconSwitcherCoordinator = nil
+        appHistoryCoordinator = nil
         premiumCoordinator = nil
     }
     
@@ -100,6 +104,7 @@ class SettingsVC: UITableViewController, Refreshable {
         self.dismiss(animated: animated) { [self] in //strong self, keep it alive until we're done
             // TODO: this should be managed automatically once
             self.appIconSwitcherCoordinator = nil
+            self.appHistoryCoordinator = nil
             self.premiumCoordinator = nil
         }
     }
@@ -214,6 +219,8 @@ class SettingsVC: UITableViewController, Refreshable {
             didPressUpgradeToPremium()
         case manageSubscriptionCell:
             didPressManageSubscription()
+        case appHistoryCell:
+            didPressShowAppHistory()
         case diagnosticLogCell:
             let viewer = ViewDiagnosticsVC.make()
             show(viewer, sender: self)
@@ -282,6 +289,20 @@ class SettingsVC: UITableViewController, Refreshable {
             self?.appIconSwitcherCoordinator = nil
         }
         appIconSwitcherCoordinator!.start()
+    }
+    
+    var appHistoryCoordinator: AppHistoryCoordinator?
+    func didPressShowAppHistory() {
+        assert(appHistoryCoordinator == nil)
+        guard let navigationController = navigationController else {
+            fatalError()
+        }
+        let router = NavigationRouter(navigationController)
+        appHistoryCoordinator = AppHistoryCoordinator(router: router)
+        appHistoryCoordinator!.dismissHandler = { [weak self] coordinator in
+            self?.appHistoryCoordinator = nil
+        }
+        appHistoryCoordinator!.start()
     }
     
     // MARK: - Premium-related actions
