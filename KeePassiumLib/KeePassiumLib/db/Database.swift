@@ -93,10 +93,6 @@ public class DatabaseLoadingWarnings {
     }
 }
 
-public protocol DatabaseProgressDelegate {
-    func databaseProgressChanged(percent: Int)
-}
-
 open class Database: Eraseable {
     /// File system path to the database file
     var filePath: String?
