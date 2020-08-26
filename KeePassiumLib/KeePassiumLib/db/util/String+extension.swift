@@ -21,4 +21,28 @@ extension String {
     var utf8data: Data {
         return self.data(using: .utf8)! // ok to force-unwrap
     }
+    
+    
+    /// Performs localized, case-insensitive inclusion test,
+    /// with an option to ignore diacritic differences.
+    public func localizedContains<T: StringProtocol>(
+        _ other: T,
+        options: String.CompareOptions = [])
+        -> Bool
+    {
+        let position = range(
+            of: other,
+            options: options,
+            locale: Locale.current)
+        return position != nil
+    }
+    
+    /// Returns true if string contains any diacritic characters (such as á, è, ô)
+    public func containsDiacritics() -> Bool {
+        let withoutDiacritics = self.folding(
+            options: [.diacriticInsensitive],
+            locale: Locale.current)
+        let result = self.compare(withoutDiacritics, options: .literal, range: nil, locale: nil)
+        return result != .orderedSame
+    }
 }

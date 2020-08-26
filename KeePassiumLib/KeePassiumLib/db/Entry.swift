@@ -53,19 +53,20 @@ public class EntryField: Eraseable {
     public func contains(
         word: Substring,
         includeFieldNames: Bool,
-        includeProtectedValues: Bool
+        includeProtectedValues: Bool,
+        options: String.CompareOptions
     ) -> Bool {
         guard name != EntryField.password else { return false } // don't search in passwords
         
         if includeFieldNames
             && !isStandardField
-            && name.localizedCaseInsensitiveContains(word)
+            && name.localizedContains(word, options: options)
         {
             return true
         }
         
         let includeFieldValue = !isProtected || includeProtectedValues
-        if includeFieldValue && value.localizedCaseInsensitiveContains(word) {
+        if includeFieldValue && value.localizedContains(word, options: options) {
             return true
         }
         return false
@@ -305,7 +306,8 @@ public class Entry: DatabaseItem, Eraseable {
                 wordFound = field.contains(
                     word: word,
                     includeFieldNames: query.includeFieldNames,
-                    includeProtectedValues: query.includeProtectedValues)
+                    includeProtectedValues: query.includeProtectedValues,
+                    options: query.compareOptions)
                 if wordFound {
                     break
                 }
@@ -315,7 +317,7 @@ public class Entry: DatabaseItem, Eraseable {
             }
 
             for att in attachments {
-                if att.name.localizedCaseInsensitiveContains(word) {
+                if att.name.localizedContains(word, options: query.compareOptions) {
                     wordFound = true
                     break
                 }

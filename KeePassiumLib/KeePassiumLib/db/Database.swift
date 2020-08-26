@@ -55,6 +55,7 @@ public struct SearchQuery {
     public var includeDeleted: Bool
     public var includeFieldNames: Bool
     public var includeProtectedValues: Bool
+    public var compareOptions: String.CompareOptions
     
     public var text: String {
         didSet {
@@ -67,6 +68,7 @@ public struct SearchQuery {
         includeDeleted: Bool,
         includeFieldNames: Bool,
         includeProtectedValues: Bool,
+        compareOptions: String.CompareOptions,
         text: String,
         textWords: Array<Substring>)
     {
@@ -74,6 +76,7 @@ public struct SearchQuery {
         self.includeDeleted = includeDeleted
         self.includeFieldNames = includeFieldNames
         self.includeProtectedValues = includeProtectedValues
+        self.compareOptions = compareOptions
         self.text = text
         self.textWords = textWords
     }
