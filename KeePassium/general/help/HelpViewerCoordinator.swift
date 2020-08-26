@@ -42,4 +42,16 @@ extension HelpViewerCoordinator: HelpViewerDelegate {
     func didPressCancel(in viewController: HelpViewerVC) {
         router.pop(animated: true)
     }
+    
+    func didPressShare(at popoverAnchor: PopoverAnchor, in viewController: HelpViewerVC) {
+        guard let text = viewController.bodyLabel.attributedText else {
+            assertionFailure()
+            return
+        }
+        let activityController = UIActivityViewController(
+            activityItems: [text],
+            applicationActivities: nil)
+        popoverAnchor.apply(to: activityController.popoverPresentationController)
+        viewController.present(activityController, animated: true)
+    }
 }

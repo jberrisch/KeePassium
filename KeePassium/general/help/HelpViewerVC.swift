@@ -9,8 +9,8 @@
 import KeePassiumLib
 
 protocol HelpViewerDelegate: class {
-    //TODO: not routed yet
     func didPressCancel(in viewController: HelpViewerVC)
+    func didPressShare(at popoverAnchor: PopoverAnchor, in viewController: HelpViewerVC)
 }
 
 class HelpViewerVC: UIViewController {
@@ -36,7 +36,10 @@ class HelpViewerVC: UIViewController {
             tableName: "help",
             value: "Help",
             comment: "Generic title of the help viewer")
-        
+
+        let shareButton = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(didPressShareButton(_:)))
+        navigationItem.rightBarButtonItem = shareButton
+
         refresh()
     }
     
@@ -49,7 +52,14 @@ class HelpViewerVC: UIViewController {
         }
         bodyLabel.attributedText = content.rendered()
     }
+
     @IBAction func didPressCancel(_ sender: Any) {
         delegate?.didPressCancel(in: self)
     }
+    
+    @objc func didPressShareButton(_ sender: UIBarButtonItem) {
+        let popoverAnchor = PopoverAnchor(barButtonItem: sender)
+        delegate?.didPressShare(at: popoverAnchor, in: self)
+    }
+
 }
