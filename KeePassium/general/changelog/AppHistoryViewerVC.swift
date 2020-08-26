@@ -135,8 +135,10 @@ extension AppHistoryViewerVC {
             cell.detailLabel.text = ""
             cell.accessoryView = nil
             cell.accessoryType = isOwned ? .checkmark : .none
+            cell.tintColor = .auxiliaryText
         case .free:
             cell.accessoryView = nil
+            cell.tintColor = .auxiliaryText
             if isOwned {
                 cell.accessoryType = .checkmark
                 cell.detailLabel.text = ""
@@ -149,6 +151,7 @@ extension AppHistoryViewerVC {
             if isOwned {
                 cell.accessoryView = nil
                 cell.accessoryType = .checkmark
+                cell.tintColor = .systemYellow
             } else {
                 cell.accessoryType = .none
                 cell.accessoryView = PremiumBadgeAccessory()
