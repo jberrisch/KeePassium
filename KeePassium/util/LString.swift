@@ -336,7 +336,14 @@ public enum LString {
         comment: "Error message shown when the user tries to change file attributes (such as creation/modification date, backup flag, etc)"
     )
     
-    // App Lock
+    // MARK: Help viewer
+
+    public static let titleHelpViewer = NSLocalizedString(
+        "[Help Viewer/title]",
+        value: "Help",
+        comment: "Generic title of in-app help article")
+    
+    // MARK: App Lock
     public static let titleTouchID  = NSLocalizedString(
         "[AppLock/Biometric/Hint] Unlock KeePassium",
         value: "Unlock KeePassium",

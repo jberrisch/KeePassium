@@ -31,11 +31,7 @@ class HelpViewerVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.title = NSLocalizedString(
-            "[Help Viewer/title]",
-            tableName: "help",
-            value: "Help",
-            comment: "Generic title of the help viewer")
+        self.title = LString.titleHelpViewer
 
         let shareButton = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(didPressShareButton(_:)))
         navigationItem.rightBarButtonItem = shareButton
