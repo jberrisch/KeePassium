@@ -125,7 +125,7 @@
                                                     <color key="textColor" name="PrimaryText"/>
                                                     <nil key="highlightedColor"/>
                                                     <attributedString key="userComments">
-                                                        <fragment content="Action: open AppStore subscription management page"/>
+                                                        <fragment content="Action: open app history page (change log)"/>
                                                     </attributedString>
                                                 </label>
                                                 <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" image="settings-app-history-listitem" id="bLv-oV-yGW">
