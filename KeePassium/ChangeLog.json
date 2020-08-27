@@ -1,6 +1,36 @@
 {
     "sections": [
         {
+            "version": "1.15",
+            "releaseDate": "2020-08-27T00:00:00Z",
+            "items": [
+                {
+                    "title": "🧩 Added: Perpetual fallback license for subscriptions (rent-to-own license)",
+                    "type": 0
+                },
+                {
+                    "title": "🧩 Added: App history screen (What's New)",
+                    "type": 1
+                },
+                {
+                    "title": "🛠 Improved: The search is no longer sensitive to diacritics, unless you use diacritics in the query. (For example, \"hello\" would find both \"héllo\" and \"héllö\", whereas \"héllo\" would find \"héllo\" but not \"héllö\".) [thanks, hunhejj]",
+                    "type": 1
+                },
+                {
+                    "title": "🛠 Improved: Haptic feedback in AutoFill after pasting the credentials",
+                    "type": 1
+                },
+                {
+                    "title": "🛠 Improved: Updated translations [thanks, everyone]",
+                    "type": 1
+                },
+                {
+                    "title": "🐞 Fixed: Updating broken references to external files [thanks, Paul]",
+                    "type": 1
+                }
+            ]
+        },
+        {
             "version": "1.14",
             "releaseDate": "2020-08-19T00:00:00Z",
             "items": [
@@ -9,7 +39,7 @@
                     "type": 1
                 },
                 {
-                    "title": "🧩 Added: automatic backup of the latest opened database version",
+                    "title": "🧩 Added: Automatic backup of the latest opened database version",
                     "type": 1
                 },
                 {
