@@ -144,6 +144,8 @@ class SettingsVC: UITableViewController, Refreshable {
                 hiddenIndexPaths.insert(CellIndexPath.premiumStatus)
             case manageSubscriptionCell:
                 hiddenIndexPaths.insert(CellIndexPath.manageSubscription)
+            case appHistoryCell:
+                hiddenIndexPaths.insert(CellIndexPath.appHistoryCell)
             default:
                 break
             }
@@ -155,6 +157,8 @@ class SettingsVC: UITableViewController, Refreshable {
                 hiddenIndexPaths.remove(CellIndexPath.premiumStatus)
             case manageSubscriptionCell:
                 hiddenIndexPaths.remove(CellIndexPath.manageSubscription)
+            case appHistoryCell:
+                hiddenIndexPaths.remove(CellIndexPath.appHistoryCell)
             default:
                 break
             }
