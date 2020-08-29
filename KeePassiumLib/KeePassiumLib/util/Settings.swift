@@ -119,6 +119,7 @@ public class Settings {
         
         // UI overrides
         case hideAppLockSetupReminder
+        case textScale
     }
 
     /// Notification constants
@@ -1358,6 +1359,22 @@ public class Settings {
         }
     }
 
+    /// Relative text font scale of entry fields (relative to default)
+    public var textScale: CGFloat {
+        get {
+            let stored = UserDefaults.appGroupShared
+                .object(forKey: Keys.textScale.rawValue)
+                as? CGFloat
+            return stored ?? 1.0
+        }
+        set {
+            updateAndNotify(
+                oldValue: textScale,
+                newValue: newValue.clamped(to: 0.5...2.0),
+                key: .textScale)
+        }
+    }
+    
     // MARK: - Password generator
     
     /// Password generator: length of generated passwords
@@ -1500,7 +1517,7 @@ public class Settings {
     }
 
     /// Updates stored value, and notifies observers if the new value is different.
-    private func updateAndNotify(oldValue: Int, newValue: Int, key: Keys) {
+    private func updateAndNotify<T: SignedNumeric>(oldValue: T, newValue: T, key: Keys) {
         UserDefaults.appGroupShared.set(newValue, forKey: key.rawValue)
         if newValue != oldValue {
             postChangeNotification(changedKey: key)

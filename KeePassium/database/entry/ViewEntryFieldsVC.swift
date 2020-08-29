@@ -117,6 +117,13 @@ class ViewEntryFieldsVC: UITableViewController, Refreshable {
         editButton.action = #selector(onEditAction)
         editButton.accessibilityIdentifier = "edit_entry_button" // for UI testing
 
+        /// Resize text on pinch gesture
+        let zoomGestureRecognizer = UIPinchGestureRecognizer(
+            target: self,
+            action: #selector(didPinchToZoom(_:))
+        )
+        tableView.addGestureRecognizer(zoomGestureRecognizer)
+        
         entryChangeNotifications = EntryChangeNotifications(observer: self)
         entry?.touch(.accessed)
         refresh()
@@ -158,6 +165,16 @@ class ViewEntryFieldsVC: UITableViewController, Refreshable {
         present(editEntryFieldsVC, animated: true, completion: nil)
     }
     
+    @objc private func didPinchToZoom(_ gestureRecognizer : UIPinchGestureRecognizer) {
+        if gestureRecognizer.state == .began {
+            gestureRecognizer.scale = Settings.current.textScale
+        }
+        if gestureRecognizer.state == .changed {
+            Settings.current.textScale = gestureRecognizer.scale
+            tableView.reloadData()
+        }
+    }
+
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
