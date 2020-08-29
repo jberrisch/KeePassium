@@ -239,6 +239,12 @@ extension ViewEntryFieldsVC: ViewableFieldCellDelegate {
     func cellHeightDidChange(_ cell: ViewableFieldCell) {
         tableView.beginUpdates()
         tableView.endUpdates()
+        
+        guard let viewableField = cell.field else { return }
+        if viewableField.internalName == EntryField.notes {
+            let isCollapsed = viewableField.isHeightConstrained
+            Settings.current.isCollapseNotesField = isCollapsed
+        }
     }
     
     func cellDidExpand(_ cell: ViewableFieldCell) {

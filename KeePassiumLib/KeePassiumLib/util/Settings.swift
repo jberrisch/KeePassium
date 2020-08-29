@@ -90,6 +90,7 @@ public class Settings {
         case entryListDetail
         case entryViewerPage
         case hideProtectedFields
+        case collapseNotesField
         
         // Search
         case startWithSearch
@@ -1166,6 +1167,21 @@ public class Settings {
                 oldValue: isHideProtectedFields,
                 newValue: newValue,
                 key: Keys.hideProtectedFields)
+        }
+    }
+    
+    /// Whether to collapse the Notes field by default
+    public var isCollapseNotesField: Bool {
+        get {
+            let stored = UserDefaults.appGroupShared
+                .object(forKey: Keys.collapseNotesField.rawValue) as? Bool
+            return stored ?? false
+        }
+        set {
+            updateAndNotify(
+                oldValue: isCollapseNotesField,
+                newValue: newValue,
+                key: Keys.collapseNotesField)
         }
     }
     

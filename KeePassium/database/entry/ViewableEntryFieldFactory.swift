@@ -156,9 +156,7 @@ class ViewableEntryFieldFactory {
                 continue
             }
             
-            // in KP1, all fields are not protected, but we still need to hide the password
-            let isHidden = field.isProtected || field.name == EntryField.password
-            let viewableField = BasicViewableField(field: field, isValueHidden: isHidden)
+            let viewableField = makeOne(field: field)
             result.append(viewableField)
         }
         
@@ -169,6 +167,18 @@ class ViewableEntryFieldFactory {
             result.append(TOTPViewableField(fields: entry.fields))
         }
         
+        return result
+    }
+    
+    static private func makeOne(field: EntryField) -> ViewableField {
+        // in KP1, all fields are not protected, but we still need to hide the password
+        let isHidden = field.isProtected || field.name == EntryField.password
+        let result = BasicViewableField(field: field, isValueHidden: isHidden)
+        
+        if field.name == EntryField.notes {
+            // pre-collapse/expand Notes field as stored in the settings
+            result.isHeightConstrained = Settings.current.isCollapseNotesField
+        }
         return result
     }
 }
