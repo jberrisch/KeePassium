@@ -14,6 +14,7 @@ public enum FileType {
     
     public static let databaseUTIs = [
         "public.data", "public.content", // Google Drive needs this
+        "public.item", // for dynamic UTIs in Dropbox, iCloud Drive and GDrive
         "com.keepassium.kdb", "com.keepassium.kdbx",
         "com.maxep.mikee.kdb", "com.maxep.mikee.kdbx", 
         "com.jflan.MiniKeePass.kdb", "com.jflan.MiniKeePass.kdbx",
