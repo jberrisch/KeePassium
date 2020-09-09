@@ -1765,6 +1765,7 @@
 		756FF64720BAB56A00FF890B /* database */ = {
 			isa = PBXGroup;
 			children = (
+				75BE091D25098F3500C436C2 /* icon */,
 				7533032523C52AB600F38CC7 /* relocation */,
 				756FF64620BAB55000FF890B /* group */,
 				756FF64520BAB52C00FF890B /* entry */,
@@ -1831,8 +1832,6 @@
 				75C3802C217A2650006F74C2 /* AppCoverVC.storyboard */,
 				757FB3C721F8D34A00F016FA /* PasscodeInputVC.swift */,
 				755B863423054FAD00E9FC83 /* PasscodeInputVC.storyboard */,
-				756AE9D220CF8B5E00995846 /* ChooseIconVC.swift */,
-				751E0D242309AFAC0088BB10 /* ChooseIconVC.storyboard */,
 				7529310C21ADA46C00E4B0D2 /* FileInfoVC.swift */,
 				751E0D282309AFBA0088BB10 /* FileInfoVC.storyboard */,
 				751BE252211C395D0071050A /* ViewDiagnosticsVC.swift */,
@@ -1887,6 +1886,15 @@
 				7575B24822D8476300B84B3F /* SearchHelper+extensions.swift */,
 			);
 			path = util;
+			sourceTree = "<group>";
+		};
+		75BE091D25098F3500C436C2 /* icon */ = {
+			isa = PBXGroup;
+			children = (
+				756AE9D220CF8B5E00995846 /* ChooseIconVC.swift */,
+				751E0D242309AFAC0088BB10 /* ChooseIconVC.storyboard */,
+			);
+			path = icon;
 			sourceTree = "<group>";
 		};
 		75C3800F217A0497006F74C2 /* appLock */ = {
