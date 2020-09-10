@@ -475,15 +475,13 @@ extension EditEntryVC: ItemIconPickerCoordinatorDelegate {
     func showIconPicker(at popoverAnchor: PopoverAnchor) {
         assert(itemIconPickerCoordinator == nil)
         
-        let router = NavigationRouter.createPopover(at: popoverAnchor)
+        let router = NavigationRouter(navigationController!)
         itemIconPickerCoordinator = ItemIconPickerCoordinator(router: router)
         itemIconPickerCoordinator!.dismissHandler = { [self] (coordinator) in
             self.itemIconPickerCoordinator = nil
         }
         itemIconPickerCoordinator!.delegate = self
         itemIconPickerCoordinator!.start(selectedIconID: entry?.iconID)
-        
-        present(router.navigationController, animated: true, completion: nil)
     }
     
     func didSelectIcon(standardIcon: IconID, in coordinator: ItemIconPickerCoordinator) {
