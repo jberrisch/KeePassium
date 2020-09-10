@@ -59,7 +59,6 @@ class EditGroupVC: UIViewController, Refreshable {
             popover.sourceView = popoverSource
             popover.sourceRect = popoverSource.bounds
         }
-//        navVC.definesPresentationContext = true
         return navVC
     }
     
@@ -91,20 +90,18 @@ class EditGroupVC: UIViewController, Refreshable {
             nameTextField.selectAll(nil)
         }
     }
-    
+        
     func refresh() {
         nameTextField.text = group.name
         let icon = UIImage.kpIcon(forGroup: group)
         imageView.image = icon
     }
     
-    func dismissPopover(animated: Bool, completion: (() -> Void)?) {
+    func dismissPopover(animated: Bool) {
         resignFirstResponder()
-        if let navVC = navigationController {
-            navVC.dismiss(animated: animated, completion: completion)
-        } else {
-            dismiss(animated: animated, completion: completion)
-        }
+        dismiss(animated: animated, completion: { [self] in // keep self until done
+            self.itemIconPickerCoordinator = nil
+        })
     }
 
     // MARK: - Keeping original state
@@ -135,7 +132,7 @@ class EditGroupVC: UIViewController, Refreshable {
         case .edit:
             restoreOriginalState()
         }
-        dismissPopover(animated: true, completion: nil)
+        dismissPopover(animated: true)
     }
     
     @IBAction func didPressDone(_ sender: Any) {
@@ -200,7 +197,7 @@ extension EditGroupVC: DatabaseManagerObserver {
 
     func databaseManager(didSaveDatabase urlRef: URLReference) {
         hideSavingOverlay()
-        self.dismissPopover(animated: true, completion: nil)
+        self.dismissPopover(animated: true)
         if let group = group {
             delegate?.groupEditor(groupDidChange: group)
             GroupChangeNotifications.post(groupDidChange: group)
