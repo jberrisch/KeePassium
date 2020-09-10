@@ -38,6 +38,7 @@ class EditEntryVC: UITableViewController, Refreshable {
     }
     private var mode: Mode = .edit
     
+    var itemIconPickerCoordinator: ItemIconPickerCoordinator? // owned ref
     
     /// Return an instance of the entry editor in `create` mode
     static func make(
@@ -114,6 +115,10 @@ class EditEntryVC: UITableViewController, Refreshable {
                 _ = titleCell?.becomeFirstResponder()
             }
         }
+    }
+    
+    deinit {
+        itemIconPickerCoordinator = nil
     }
     
     // MARK: - Keeping/restoring the original state
@@ -376,7 +381,9 @@ extension EditEntryVC: ValidatingTextFieldDelegate {
 extension EditEntryVC: EditableFieldCellDelegate {
     func didPressButton(field: EditableField, in cell: EditableFieldCell) {
         if cell is EditEntryTitleCell {
-            didPressChangeIcon(in: cell)
+            guard let button = (cell as! EditEntryTitleCell).changeIconButton else { fatalError() }
+            let popoverAnchor = PopoverAnchor(sourceView: button, sourceRect: button.bounds)
+            didPressChangeIcon(in: cell, at: popoverAnchor)
         } else if cell is EditEntrySingleLineProtectedCell {
             didPressRandomize(field: field, in: cell)
         } else if field.internalName == EntryField.userName {
@@ -384,8 +391,8 @@ extension EditEntryVC: EditableFieldCellDelegate {
         }
     }
     
-    func didPressChangeIcon(in cell: EditableFieldCell) {
-        showIconChooser()
+    func didPressChangeIcon(in cell: EditableFieldCell, at popoverAnchor: PopoverAnchor) {
+        showIconPicker(at: popoverAnchor)
     }
 
     func didPressReturn(in cell: EditableFieldCell) {
@@ -464,17 +471,26 @@ extension EditEntryVC: EditableFieldCellDelegate {
     }
 }
 
-extension EditEntryVC: IconChooserDelegate {
-    func showIconChooser() {
-        let iconChooser = ChooseIconVC.make(selectedIconID: entry?.iconID, delegate: self)
-        navigationController?.pushViewController(iconChooser, animated: true)
+extension EditEntryVC: ItemIconPickerCoordinatorDelegate {
+    func showIconPicker(at popoverAnchor: PopoverAnchor) {
+        assert(itemIconPickerCoordinator == nil)
+        
+        let router = NavigationRouter.createPopover(at: popoverAnchor)
+        itemIconPickerCoordinator = ItemIconPickerCoordinator(router: router)
+        itemIconPickerCoordinator!.dismissHandler = { [self] (coordinator) in
+            self.itemIconPickerCoordinator = nil
+        }
+        itemIconPickerCoordinator!.delegate = self
+        itemIconPickerCoordinator!.start(selectedIconID: entry?.iconID)
+        
+        present(router.navigationController, animated: true, completion: nil)
     }
     
-    func iconChooser(didChooseIcon iconID: IconID?) {
-        guard let entry = entry, let iconID = iconID else { return }
-        guard iconID != entry.iconID else { return }
+    func didSelectIcon(standardIcon: IconID, in coordinator: ItemIconPickerCoordinator) {
+        guard let entry = entry else { return }
+        guard standardIcon != entry.iconID else { return }
         
-        entry.iconID = iconID
+        entry.iconID = standardIcon
         isModified = true
         refresh()
     }

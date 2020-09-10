@@ -9,73 +9,79 @@
 import UIKit
 import KeePassiumLib
 
-protocol IconChooserDelegate {
-    func iconChooser(didChooseIcon iconID: IconID?)
+protocol ItemIconPickerDelegate {
+    func didPressCancel(in viewController: ItemIconPicker)
+    func didSelectIcon(iconID: IconID?, in viewController: ItemIconPicker)
     //TODO: add custom icons
 }
-fileprivate let selectedColor = UIColor.actionTint
 
-public class IconChooserCell: UICollectionViewCell {
+public class ItemIconPickerCell: UICollectionViewCell {
     @IBOutlet weak var imageView: UIImageView!
+    
     public override var isSelected: Bool {
         get { return super.isSelected }
         set {
             super.isSelected = newValue
-            setNeedsDisplay()
+            refresh()
         }
     }
+    
     public override var isHighlighted: Bool {
         get { return super.isHighlighted }
         set {
             super.isHighlighted = newValue
-            setNeedsDisplay()
+            refresh()
         }
     }
     
-    public override func draw(_ rect: CGRect) {
-        super.draw(rect)
-        
-        let layer = self.contentView.layer
-        layer.cornerRadius = 4.0
-        if isHighlighted || isSelected {
-            layer.borderWidth = isSelected ? 1.0 : 1.0
-            layer.borderColor = selectedColor.cgColor
-        } else { 
+    public override func awakeFromNib() {
+        super.awakeFromNib()
+    }
+    private func refresh() {
+        let layer = contentView.layer
+        if isHighlighted {
+            layer.borderWidth = 1.0
+            layer.borderColor = UIColor.actionTint.cgColor
+            layer.backgroundColor = UIColor.actionTint.cgColor
+            imageView.tintColor = UIColor.actionText
+        } else {
+            layer.borderWidth = 0.0
             layer.borderColor = UIColor.clear.cgColor
+            layer.backgroundColor = UIColor.clear.cgColor
+            imageView.tintColor = UIColor.iconTint
         }
+        setNeedsDisplay()
     }
 }
 
-class ChooseIconVC: UICollectionViewController {
+class ItemIconPicker: UICollectionViewController {
     private let cellID = "IconCell"
 
-    public var delegate: IconChooserDelegate?
+    public var delegate: ItemIconPickerDelegate?
     public var selectedIconID: IconID?
-    
-    public static func make(
-        selectedIconID: IconID?,
-        delegate: IconChooserDelegate?) -> UIViewController
-    {
-        let vc = ChooseIconVC.instantiateFromStoryboard()
-        vc.selectedIconID = selectedIconID
-        vc.delegate = delegate
-        return vc
-    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         clearsSelectionOnViewWillAppear = false
         collectionView.allowsSelection = true
-        
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         if let selectedIconID = selectedIconID {
             let selIndexPath = IndexPath(row: Int(selectedIconID.rawValue), section: 0)
             collectionView.selectItem(
                 at: selIndexPath, animated: true,
                 scrollPosition: .centeredVertically)
-            collectionView.cellForItem(at: selIndexPath)?.isHighlighted = true
         }
     }
-
+    
+    // MARK: - Actions
+    
+    @IBAction func didPressCancel(_ sender: UIBarButtonItem) {
+        delegate?.didPressCancel(in: self)
+    }
+    
     // MARK: - UICollectionViewDataSource
 
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -97,13 +103,18 @@ class ChooseIconVC: UICollectionViewController {
         let cell = collectionView.dequeueReusableCell(
             withReuseIdentifier: cellID,
             for: indexPath)
-            as! IconChooserCell
+            as! ItemIconPickerCell
         DispatchQueue.global(qos: .userInitiated).async {
             if let kpIcon = UIImage.kpIcon(forID: IconID.all[indexPath.row]) {
                 DispatchQueue.main.async {
                     cell.imageView.image = kpIcon
                 }
             }
+        }
+        if let selectedRow = selectedIconID?.rawValue, selectedRow == indexPath.row {
+            cell.isHighlighted = true
+        } else {
+            cell.isHighlighted = false
         }
         return cell
     }
@@ -113,8 +124,8 @@ class ChooseIconVC: UICollectionViewController {
         didSelectItemAt indexPath: IndexPath)
     {
         if indexPath.row < IconID.all.count {
-            delegate?.iconChooser(didChooseIcon: IconID.all[indexPath.row])
-            navigationController?.popViewController(animated: true)
+            let selectedIconID = IconID.all[indexPath.row]
+            delegate?.didSelectIcon(iconID: selectedIconID, in: self)
         }
     }
 }

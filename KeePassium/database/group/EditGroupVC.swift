@@ -30,6 +30,7 @@ class EditGroupVC: UIViewController, Refreshable {
     }
     private var mode: Mode = .edit
     
+    private var itemIconPickerCoordinator: ItemIconPickerCoordinator?
     
     // MARK: - ViewContoller lifecycle
     static func make(
@@ -78,6 +79,7 @@ class EditGroupVC: UIViewController, Refreshable {
     }
     
     deinit {
+        itemIconPickerCoordinator = nil
         DatabaseManager.shared.removeObserver(self)
     }
     
@@ -148,8 +150,7 @@ class EditGroupVC: UIViewController, Refreshable {
     }
     
     @IBAction func didPressChangeIcon(_ sender: Any) {
-        let chooseIconVC = ChooseIconVC.make(selectedIconID: group.iconID, delegate: self)
-        navigationController?.pushViewController(chooseIconVC, animated: true)
+        showIconPicker()
     }
     
     // MARK: - Progress tracking
@@ -235,13 +236,24 @@ extension EditGroupVC: DatabaseManagerObserver {
     }
 }
 
-extension EditGroupVC: IconChooserDelegate {
-    func iconChooser(didChooseIcon iconID: IconID?) {
-        // nil if cancelled
-        if let iconID = iconID {
-            group.iconID = iconID
-            imageView.image = UIImage.kpIcon(forGroup: group)
+// MARK: ItemIconPickerCoordinatorDelegate
+extension EditGroupVC: ItemIconPickerCoordinatorDelegate {
+    func showIconPicker() {
+        assert(itemIconPickerCoordinator == nil)
+        
+        guard let navVC = navigationController else { assertionFailure(); return }
+        let router = NavigationRouter(navVC)
+        itemIconPickerCoordinator = ItemIconPickerCoordinator(router: router)
+        itemIconPickerCoordinator!.dismissHandler = { [self] (coordinator) in
+            self.itemIconPickerCoordinator = nil
         }
+        itemIconPickerCoordinator!.delegate = self
+        itemIconPickerCoordinator!.start(selectedIconID: group.iconID)
+    }
+    
+    func didSelectIcon(standardIcon: IconID, in coordinator: ItemIconPickerCoordinator) {
+        group.iconID = standardIcon
+        imageView.image = UIImage.kpIcon(forGroup: group)
     }
 }
 
