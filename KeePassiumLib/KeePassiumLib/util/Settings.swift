@@ -1375,18 +1375,25 @@ public class Settings {
         }
     }
 
+    /// The range of allowed `textScale` values
+    private let textScaleAllowedRange: ClosedRange<CGFloat> = 0.5...2.0
+    
     /// Relative text font scale of entry fields (relative to default)
     public var textScale: CGFloat {
         get {
-            let stored = UserDefaults.appGroupShared
+            let storedValueOrNil = UserDefaults.appGroupShared
                 .object(forKey: Keys.textScale.rawValue)
                 as? CGFloat
-            return stored ?? 1.0
+            if let value = storedValueOrNil {
+                return value.clamped(to: textScaleAllowedRange)
+            } else {
+                return 1.0
+            }
         }
         set {
             updateAndNotify(
                 oldValue: textScale,
-                newValue: newValue.clamped(to: 0.5...2.0),
+                newValue: newValue.clamped(to: textScaleAllowedRange),
                 key: .textScale)
         }
     }
