@@ -145,18 +145,23 @@ public class FileKeeper {
         // Intitialize (and create if necessary) internal directories.
         guard let sharedContainerURL = FileManager.default.containerURL(
             forSecurityApplicationGroupIdentifier: AppGroup.id) else { fatalError() }
-        backupDirURL = sharedContainerURL.appendingPathComponent(
+        
+        // We have to ensure directories exist before assigning them to constants.
+        // Otherwise standardizedFileURL does nothing, and stored paths are not standardized.
+        let _backupDirURL = sharedContainerURL.appendingPathComponent(
             FileKeeper.backupDirectoryName,
             isDirectory: true)
-            .standardizedFileURL
         do {
             try FileManager.default.createDirectory(
-                at: backupDirURL, withIntermediateDirectories: true, attributes: nil)
+                at: _backupDirURL,
+                withIntermediateDirectories: true,
+                attributes: nil)
         } catch {
             Diag.warning("Failed to create backup directory")
             // No further action: postponing the error until the first file writing operation
             // that has UI to show the error to the user.
         }
+        self.backupDirURL = _backupDirURL.standardizedFileURL
         
         deleteExpiredBackupFiles()
     }
