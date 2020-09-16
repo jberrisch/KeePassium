@@ -64,10 +64,6 @@ class AppIconPicker: UITableViewController, Refreshable {
         return cell
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-    }
-    
     // MARK: Premium filter
     
     private func isRequiresPurchase(_ appIcon: AppIcon) -> Bool {
