@@ -143,7 +143,7 @@ public class URLReference:
     public private(set) var fileProvider: FileProvider?
     
     /// Dispatch queue for asynchronous URLReference operations
-    fileprivate let backgroundQueue = DispatchQueue(
+    fileprivate static let backgroundQueue = DispatchQueue(
         label: "com.keepassium.URLReference",
         qos: .background,
         attributes: [.concurrent])
@@ -319,7 +319,7 @@ public class URLReference:
     {
         execute(
             withTimeout: URLReference.defaultTimeout,
-            on: backgroundQueue,
+            on: URLReference.backgroundQueue,
             slowSyncOperation: { () -> Result<URL, Error> in
                 do {
                     let url = try self.resolveSync()
@@ -413,7 +413,7 @@ public class URLReference:
             switch result {
             case .success(let url):
                 // don't update info request counter here
-                self.backgroundQueue.async { // strong self
+                URLReference.backgroundQueue.async { // strong self
                     self.refreshInfo(for: url, completion: callback)
                 }
             case .failure(let error):
@@ -551,7 +551,7 @@ public class URLReference:
     /// Re-aquires information about resolved URL synchronously.
     private func refreshInfoSync() {
         let semaphore = DispatchSemaphore(value: 0)
-        backgroundQueue.async { [self] in
+        URLReference.backgroundQueue.async { [self] in
             self.refreshInfo { _ in
                 // `cachedInfo` and `error` are already updated,
                 // so we have nothing to do here.
