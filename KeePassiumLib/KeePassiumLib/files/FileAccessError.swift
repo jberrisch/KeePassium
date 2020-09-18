@@ -138,4 +138,14 @@ public enum FileAccessError: LocalizedError {
             return .systemError(originalError)
         }
     }
+    
+    /// The original error which caused this one. Currently is defined only for `.systemError`.
+    public var underlyingError: Error? {
+        switch self {
+        case .systemError(let originalError):
+            return originalError
+        default:
+            return nil
+        }
+    }
 }

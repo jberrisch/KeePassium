@@ -101,6 +101,16 @@ public class URLReference:
         return (nsError.domain == NSCocoaErrorDomain) && (nsError.code == 257)
     }
     
+    /// True if the error is an "file doesn't exist" error associated with iOS 14 upgrade.
+    public var isFileMissingIOS14: Bool {
+        guard #available(iOS 14, *), location == .external else {
+            return false
+        }
+        guard let underlyingError = error?.underlyingError,
+              let nsError = underlyingError as NSError? else { return false }
+        return (nsError.domain == NSCocoaErrorDomain) && (nsError.code == 4)
+    }
+    
     /// Bookmark data
     private let data: Data
     /// Location type of the original URL

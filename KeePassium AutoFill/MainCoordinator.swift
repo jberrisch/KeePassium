@@ -565,7 +565,7 @@ extension MainCoordinator: DatabaseManagerObserver {
         // Keep the entered password intact
         databaseUnlockerVC.hideProgressOverlay()
         
-        if urlRef.hasPermissionError257 {
+        if urlRef.hasPermissionError257 || urlRef.isFileMissingIOS14 {
             databaseUnlockerVC.showErrorMessage(
                 message,
                 reason: reason,
