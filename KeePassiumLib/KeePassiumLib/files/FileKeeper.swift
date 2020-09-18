@@ -916,6 +916,14 @@ public class FileKeeper {
         }
     }
 
+    /// Returns true iff the file name matches that of the .latest backup file.
+    private func isLatestBackupFile(_ urlRef: URLReference) -> Bool {
+        guard let fileName = urlRef.url?.deletingPathExtension().lastPathComponent else {
+            return false
+        }
+        return fileName.hasSuffix(backupLatestSuffix)
+    }
+    
     /// Asynchronously delete backup files older than given time interval from now.
     ///
     /// - Parameter olderThan: maximum age of remaining backups.
@@ -923,6 +931,10 @@ public class FileKeeper {
         let allBackupFileRefs = getBackupFiles()
         let now = Date.now
         for fileRef in allBackupFileRefs {
+            // The .latest backup file should always remain available
+            if isLatestBackupFile(fileRef) {
+                continue
+            }
             getBackupFileDate(fileRef) { [weak self] fileDate in
                 guard let self = self else { return }
                 guard let fileDate = fileDate else {
