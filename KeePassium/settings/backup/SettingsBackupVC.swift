@@ -15,6 +15,7 @@ class SettingsBackupVC: UITableViewController {
     @IBOutlet weak var showBackupFilesSwitch: UISwitch!
     @IBOutlet weak var backupDurationCell: UITableViewCell!
     @IBOutlet weak var deleteAllBackupsButton: UIButton!
+    @IBOutlet weak var backupDeletionSpinner: UIActivityIndicatorView!
     
     private var settingsNotifications: SettingsNotifications!
     private var fileKeeperNotifications: FileKeeperNotifications!
@@ -113,12 +114,20 @@ class SettingsBackupVC: UITableViewController {
             title: LString.actionDelete,
             style: .destructive,
             handler: { [weak self] (action) in
-                FileKeeper.shared.deleteBackupFiles(olderThan: -TimeInterval.infinity) // = all
-                self?.refresh()
+                self?.deleteBackupFiles()
             }
         )
         confirmationAlert.addAction(deleteAction)
         present(confirmationAlert, animated: true, completion: nil)
+    }
+    
+    private func deleteBackupFiles() {
+        backupDeletionSpinner.isHidden = false
+        DispatchQueue.main.async { [self] in // strong self
+            FileKeeper.shared.deleteBackupFiles(olderThan: -TimeInterval.infinity) // = all
+            self.backupDeletionSpinner.isHidden = true
+            self.refresh()
+        }
     }
 }
 
