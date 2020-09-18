@@ -98,7 +98,7 @@ public class URLReference:
     /// "The file couldn’t be opened because you don’t have permission to view it.")
     public var hasPermissionError257: Bool {
         guard let nsError = error as NSError? else { return false }
-        return (nsError.domain == "NSCocoaErrorDomain") && (nsError.code == 257)
+        return (nsError.domain == NSCocoaErrorDomain) && (nsError.code == 257)
     }
     
     /// Bookmark data

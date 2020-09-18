@@ -121,12 +121,12 @@ public enum FileAccessError: LocalizedError {
             """)
         switch (nsError.domain, nsError.code) {
         // "Could not communicate with the helper app" - Google Drive offline
-        case ("NSCocoaErrorDomain", 4101):
+        case (NSCocoaErrorDomain, 4101):
             fallthrough
             
         // "Could not communicate with the helper app" - Sync.com offline after device restart
-        case ("NSCocoaErrorDomain", 4097): fallthrough
-        case ("NSCocoaErrorDomain", 4099):
+        case (NSCocoaErrorDomain, 4097): fallthrough
+        case (NSCocoaErrorDomain, 4099):
             return .fileProviderDoesNotRespond(fileProvider: fileProvider)
             
         // "No valid file provider found with identifier com.google.Drive.FileProviderExtension"
