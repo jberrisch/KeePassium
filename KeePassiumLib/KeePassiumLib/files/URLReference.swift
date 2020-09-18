@@ -613,16 +613,35 @@ public class URLReference:
         }
         
         func extractFileProviderID(_ fullString: String) -> String? {
-            // The string looks like "fileprovider:#com.owncloud.ios-app.ownCloud-File-Provider/001F351B-02F7-4F70-B6E0-C8E5996F7F8C/A52BED37B76B4BA7A701F4654A6EE6B5"
-            // So we need to clean it up.
-            let regexp = try! NSRegularExpression(
-                pattern: #"fileprovider\:#?([a-zA-Z0-9\.\-\_]+)"#,
-                options: [])
+            // The full string contains a lot of redundant info, we need to clean it up.
+            // Moreover, its format depends on the iOS version that created the bookmark.
+            
+            // Since bookmark might be saved from an old iOS version,
+            // we need to check all patterns until something fits.
+            let regExpressions: [NSRegularExpression] = [
+                // iOS 12/13 store file provider IDs like this:
+                //     "fileprovider:#com.owncloud.ios-app.ownCloud-File-Provider/001F351B-02F7-4F70-B6E0-C8E5996F7F8C/A52BED37B76B4BA7A701F4654A6EE6B5"
+                //     "fileprovider:com.owncloud.ios-app.ownCloud-File-Provider/001F351B-02F7-4F70-B6E0-C8E5996F7F8C/A52BED37B76B4BA7A701F4654A6EE6B5"
+                try! NSRegularExpression(
+                    pattern: #"fileprovider\:#?([a-zA-Z0-9\.\-\_]+)"#,
+                    options: []),
+                // iOS 14 stores file provider IDs like this:
+                //     "fp:/OjRaKgcVe7nCFT6sFxYnWxTV3NNIdQZYcv5IlK6HDws=/com.apple.FileProvider.LocalStorage//did=636"
+                //     "fp:/VR3ykTi_hHbvSDecanF2SYE4U1zKfCp53F7pitQa6dI=/com.getdropbox.Dropbox.FileProvider/123456/Base64abcC9hbGxfY2Fwcy5rZGJ4"
+                try! NSRegularExpression(
+                    pattern: #"fp\:/.*?/([a-zA-Z0-9\.\-\_]+)/"#,
+                    options: [])
+            ]
+
             let fullRange = NSRange(fullString.startIndex..<fullString.endIndex, in: fullString)
-            guard let match = regexp.firstMatch(in: fullString, options: [], range: fullRange),
-                let foundRange = Range(match.range(at: 1), in: fullString)
-                else { return nil }
-            return String(fullString[foundRange])
+            for regexp in regExpressions {
+                if let match = regexp.firstMatch(in: fullString, options: [], range: fullRange),
+                   let foundRange = Range(match.range(at: 1), in: fullString)
+                {
+                    return String(fullString[foundRange])
+                }
+            }
+            return nil
         }
         
         func extractBookmarkedURLString(_ sandboxInfoString: String) -> String? {
