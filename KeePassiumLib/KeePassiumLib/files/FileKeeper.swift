@@ -795,6 +795,15 @@ public class FileKeeper {
         case timestamped
     }
     
+    let backupTimestampFormatter: DateFormatter = {
+        let dateFormatter = DateFormatter()
+        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+        dateFormatter.dateFormat = "yyyy-MM-dd_HHmmss"
+        return dateFormatter
+    }()
+    let backupTimestampSeparator = Character("_")
+    let backupLatestSuffix = ".latest"
+    
     /// Saves `contents` in a timestamped file in local Documents/Backup folder.
     ///
     /// - Parameters:
@@ -816,15 +825,13 @@ public class FileKeeper {
         switch mode {
         case .latest:
             timestamp = Date.now
-            fileNameSuffix = ".latest"
+            fileNameSuffix = backupLatestSuffix
         case .timestamped:
             // We deduct one second from the timestamp to ensure
             // correct timing order of backup vs. original files
             timestamp = Date.now - 1.0
-            let dateFormatter = DateFormatter()
-            dateFormatter.locale = Locale(identifier: "en_US_POSIX")
-            dateFormatter.dateFormat = "yyyy-MM-dd_HHmmss"
-            fileNameSuffix = "_" + dateFormatter.string(from: timestamp)
+            let timestampString = backupTimestampFormatter.string(from: timestamp)
+            fileNameSuffix = String(backupTimestampSeparator) + timestampString
         }
         
         let baseFileName = nameTemplateURL
@@ -877,6 +884,38 @@ public class FileKeeper {
         Diag.info("Backup maintenance completed")
     }
 
+    
+    /// Extracts timestamp of the backup file.
+    /// First, tries to parse the timestamp in the file name (quick). Otherwise via the file modification time (slow).
+    /// - Parameters:
+    ///   - urlRef: backup file of interest
+    ///   - completion: called with the result (date or `nil` in case of error)
+    private func getBackupFileDate(_ urlRef: URLReference, completion: @escaping (Date?) -> Void) {
+        // Attempt 1: try parsing the file name
+        if let url = urlRef.url {
+            let fileName = url.deletingPathExtension().lastPathComponent
+            let possibleTimestamp = fileName.suffix(backupTimestampFormatter.dateFormat.count)
+            if let date = backupTimestampFormatter.date(from: String(possibleTimestamp)) {
+                completion(date)
+                return
+            }
+        }
+        // Attempt 2: try fetching the file modification timestamp
+        urlRef.getCachedInfo(canFetch: true) { result in
+            switch result {
+            case .success(let fileInfo):
+                guard let date = fileInfo.modificationDate else {
+                    completion(nil)
+                    return
+                }
+                completion(date)
+            case .failure(let error):
+                Diag.warning("Failed to check backup file age [reason: \(error.localizedDescription)]")
+                completion(nil)
+            }
+        }
+    }
+
     /// Asynchronously delete backup files older than given time interval from now.
     ///
     /// - Parameter olderThan: maximum age of remaining backups.
@@ -884,26 +923,21 @@ public class FileKeeper {
         let allBackupFileRefs = getBackupFiles()
         let now = Date.now
         for fileRef in allBackupFileRefs {
-            fileRef.getCachedInfo(canFetch: true) { [weak self] result in
+            getBackupFileDate(fileRef) { [weak self] fileDate in
                 guard let self = self else { return }
-                switch result {
-                case .success(let fileInfo):
-                    guard let modificationDate = fileInfo.modificationDate else {
-                        Diag.warning("Failed to get backup file age.")
-                        return
-                    }
-                    guard now.timeIntervalSince(modificationDate) > maxAge else {
-                        // not old enough
-                        return
-                    }
-                    do {
-                        try self.deleteFile(fileRef, fileType: .database, ignoreErrors: false)
-                        FileKeeperNotifier.notifyFileRemoved(urlRef: fileRef, fileType: .database)
-                    } catch {
-                        Diag.warning("Failed to delete backup file [reason: \(error.localizedDescription)]")
-                    }
-                case .failure(let error):
-                    Diag.warning("Failed to check backup file age [reason: \(error.localizedDescription)]")
+                guard let fileDate = fileDate else {
+                    Diag.warning("Failed to get backup file age.")
+                    return
+                }
+                guard now.timeIntervalSince(fileDate) > maxAge else {
+                    // not old enough
+                    return
+                }
+                do {
+                    try self.deleteFile(fileRef, fileType: .database, ignoreErrors: false)
+                    FileKeeperNotifier.notifyFileRemoved(urlRef: fileRef, fileType: .database)
+                } catch {
+                    Diag.warning("Failed to delete backup file [reason: \(error.localizedDescription)]")
                 }
             }
         }
