@@ -682,11 +682,16 @@ fileprivate class DatabaseLoader: ProgressObserver {
             self.progress.cancel()
             self.endBackgroundTask()
         }
+        startTime = Date.now
     }
     
     private func endBackgroundTask() {
         // App extensions don't have UIApplication instance and cannot manage background tasks.
         guard let appShared = AppGroup.applicationShared else { return }
+        if let startTime = startTime {
+            let duration = Date.now.timeIntervalSince(startTime)
+            print(String(format: "Done in %.2f s", arguments: [duration]))
+        }
         
         guard let bgTask = backgroundTask else { return }
         print("ending background task")
