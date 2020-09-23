@@ -43,9 +43,16 @@ public class BaseDocument: UIDocument, Synchronizable {
     }
     
     /// Attempts to open the document with given timeout.
+    /// - Parameter timeout: time to wait for completion (defaults to `BaseDocument.timeout`)
+    /// - Parameter queue: `OperationQueue` to use for opening. If undefined, will use a queue with .background QOS
     /// - Parameter callback: called on a background queue with the operation result
-    public func open(withTimeout timeout: TimeInterval, _ callback: @escaping OpenCallback) {
-        BaseDocument.backgroundQueue.addOperation {
+    public func open(
+        withTimeout timeout: TimeInterval = BaseDocument.timeout,
+        queue: OperationQueue? = nil,
+        _ callback: @escaping OpenCallback)
+    {
+        let operationQueue = queue ?? BaseDocument.backgroundQueue
+        operationQueue.addOperation {
             let semaphore = DispatchSemaphore(value: 0)
             
             var hasTimedOut = false

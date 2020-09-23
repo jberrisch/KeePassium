@@ -640,6 +640,16 @@ fileprivate class DatabaseLoader: ProgressObserver {
     private let warnings: DatabaseLoadingWarnings
     private let completion: CompletionHandler
     
+    private let operationQueue: OperationQueue = {
+        let q = OperationQueue()
+        q.name = "com.keepassium.DatabaseLoader"
+        q.maxConcurrentOperationCount = 1
+        q.qualityOfService = .userInitiated
+        return q
+    }()
+    
+    private var startTime: Date?
+    
     /// `completion` is always called once done, even if there was an error.
     init(
         dbRef: URLReference,
@@ -739,7 +749,7 @@ fileprivate class DatabaseLoader: ProgressObserver {
     private func onDatabaseURLResolved(url: URL, fileProvider: FileProvider?) {
         let dbDoc = DatabaseDocument(fileURL: url, fileProvider: fileProvider)
         progress.status = LString.Progress.loadingDatabaseFile
-        dbDoc.open { [weak self] (result) in
+        dbDoc.open(queue: operationQueue) { [weak self] (result) in
             guard let self = self else { return }
             switch result {
             case .success(let docData):
@@ -828,7 +838,7 @@ fileprivate class DatabaseLoader: ProgressObserver {
 
     private func onKeyFileURLResolved(url: URL, fileProvider: FileProvider?, dbDoc: DatabaseDocument) {
         let keyDoc = BaseDocument(fileURL: url, fileProvider: fileProvider)
-        keyDoc.open { [weak self] result in
+        keyDoc.open(queue: operationQueue) { [weak self] result in
             guard let self = self else { return }
             switch result {
             case .success(let docData):
