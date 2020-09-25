@@ -15,12 +15,8 @@ enum DatabaseLockReason {
 
 fileprivate enum ProgressSteps {
     static let start: Int64 = -1 // initial progress of evey operation (negative means indefinite)
-    static let all: Int64 = 100 // total number of step
+    static let all: Int64 = 100 // total number of steps
 
-    static let willMakeBackup: Int64 = -1
-    static let willEncryptDatabase: Int64 = 0
-    static let didEncryptDatabase: Int64 = 90
-    static let didWriteDatabase: Int64 = 100
 }
 
 
@@ -222,21 +218,16 @@ public class DatabaseManager {
         progress = ProgressEx()
         progress.totalUnitCount = ProgressSteps.all
         progress.completedUnitCount = ProgressSteps.start
-        notifyDatabaseWillSave(database: dbRef)
         
         precondition(databaseSaver == nil)
         databaseSaver = DatabaseSaver(
             databaseDocument: dbDoc,
             databaseRef: dbRef,
             progress: progress,
-            completion: databaseSaverFinished)
+            delegate: self)
         databaseSaver!.save()
     }
     
-    private func databaseSaverFinished(_ urlRef: URLReference, _ dbDoc: DatabaseDocument) {
-        databaseSaver = nil
-        // nothing else to do here
-    }
     
     /// Changes the composite key of the current database.
     /// Make sure to call `startSavingDatabase` after that.
@@ -408,52 +399,6 @@ public class DatabaseManager {
 
     // MARK: - Notification management
     
-    fileprivate func notifyDatabaseWillSave(database urlRef: URLReference) {
-        notificationQueue.async { // strong self
-            for (_, observer) in self.observers {
-                guard let strongObserver = observer.observer else { continue }
-                DispatchQueue.main.async {
-                    strongObserver.databaseManager(willSaveDatabase: urlRef)
-                }
-            }
-        }
-    }
-    
-    fileprivate func notifyDatabaseDidSave(database urlRef: URLReference) {
-        notificationQueue.async { // strong self
-            for (_, observer) in self.observers {
-                guard let strongObserver = observer.observer else { continue }
-                DispatchQueue.main.async {
-                    strongObserver.databaseManager(didSaveDatabase: urlRef)
-                }
-            }
-        }
-    }
-    
-    fileprivate func notifyDatabaseSaveError(
-        database urlRef: URLReference,
-        isCancelled: Bool,
-        message: String,
-        reason: String?)
-    {
-        if isCancelled {
-            databaseOperationCancelled(database: urlRef)
-            return
-        }
-
-        notificationQueue.async { // strong self
-            for (_, observer) in self.observers {
-                guard let strongObserver = observer.observer else { continue }
-                DispatchQueue.main.async {
-                    strongObserver.databaseManager(
-                        database: urlRef,
-                        savingError: message,
-                        reason: reason)
-                }
-            }
-        }
-    }
-
     fileprivate func notifyDatabaseWillCreate(database urlRef: URLReference) {
         notificationQueue.async { // strong self
             for (_, observer) in self.observers {
@@ -605,188 +550,63 @@ extension DatabaseManager: DatabaseLoaderDelegate {
     }
 }
 
-
-// MARK: - DatabaseSaver
-
-fileprivate class DatabaseSaver: ProgressObserver {
-    typealias CompletionHandler = (URLReference, DatabaseDocument) -> Void
+// MARK: - DatabaseSaverDelegate
+extension DatabaseManager: DatabaseSaverDelegate {
+    func databaseSaver(_ databaseSaver: DatabaseSaver, willSaveDatabase dbRef: URLReference) {
+        notificationQueue.async { // strong self
+            for (_, observer) in self.observers {
+                guard let strongObserver = observer.observer else { continue }
+                DispatchQueue.main.async {
+                    strongObserver.databaseManager(willSaveDatabase: dbRef)
+                }
+            }
+        }
+    }
     
-    private let dbDoc: DatabaseDocument
-    private let dbRef: URLReference
-    private var progressKVO: NSKeyValueObservation?
-    private unowned var notifier: DatabaseManager
-    private let completion: CompletionHandler
-
-    /// `dbRef` refers to the existing URL of the currently opened `dbDoc`.
-    /// `completion` is always called once done, even if there was an error.
-    init(
-        databaseDocument dbDoc: DatabaseDocument,
-        databaseRef dbRef: URLReference,
-        progress: ProgressEx,
-        completion: @escaping(CompletionHandler))
+    func databaseSaver(
+        _ databaseSaver: DatabaseSaver,
+        didChangeProgress progress: ProgressEx,
+        for dbRef: URLReference)
     {
-        assert(dbDoc.documentState.contains(.normal))
-        self.dbDoc = dbDoc
-        self.dbRef = dbRef
-        notifier = DatabaseManager.shared
-        self.completion = completion
-        super.init(progress: progress)
+        databaseOperationProgressDidChange(database: dbRef, progress: progress)
     }
     
-    // MARK: - Running in background
-    
-    private var backgroundTask: UIBackgroundTaskIdentifier?
-    private func startBackgroundTask() {
-        // App extensions don't have UIApplication instance and cannot manage background tasks.
-        guard let appShared = AppGroup.applicationShared else { return }
-        
-        print("Starting background task")
-        backgroundTask = appShared.beginBackgroundTask(withName: "DatabaseSaving") {
-            self.progress.cancel()
-            self.endBackgroundTask()
-        }
+    func databaseSaver(_ databaseSaver: DatabaseSaver, didCancelSaving dbRef: URLReference) {
+        databaseOperationCancelled(database: dbRef)
     }
     
-    private func endBackgroundTask() {
-        // App extensions don't have UIApplication instance and cannot manage background tasks.
-        guard let appShared = AppGroup.applicationShared else { return }
-        
-        guard let bgTask = backgroundTask else { return }
-        backgroundTask = nil
-        appShared.endBackgroundTask(bgTask)
-    }
-    
-    // MARK: - Progress tracking
-    
-    override func progressDidChange(progress: ProgressEx) {
-        notifier.databaseOperationProgressDidChange(
-            database: dbRef,
-            progress: progress)
-    }
-    
-    // MARK: - Encryption and saving
-    
-    func save() {
-        guard let database = dbDoc.database else { fatalError("Database is nil") }
-
-        startBackgroundTask()
-        startObservingProgress()
-        do {
-            if Settings.current.isBackupDatabaseOnSave {
-                // dbDoc has already been opened, so we backup its old encrypted data.
-                progress.completedUnitCount = ProgressSteps.willMakeBackup
-                progress.status = LString.Progress.makingDatabaseBackup
-                
-                // At this stage, the DB should have a resolved URL
-                assert(dbRef.url != nil)
-                let nameTemplate = dbRef.url?.lastPathComponent ?? "Backup"
-                FileKeeper.shared.makeBackup(
-                    nameTemplate: nameTemplate,
-                    mode: .timestamped,
-                    contents: dbDoc.data)
-            }
-
-            Diag.info("Encrypting database")
-            progress.completedUnitCount = ProgressSteps.willEncryptDatabase
-            let encryptionUnitCount = ProgressSteps.didEncryptDatabase - ProgressSteps.willEncryptDatabase
-            progress.addChild(
-                database.initProgress(),
-                withPendingUnitCount: encryptionUnitCount)
-            let outData = try database.save() // DatabaseError, ProgressInterruption
-            progress.completedUnitCount = ProgressSteps.didEncryptDatabase
-            
-            Diag.info("Writing database document")
-            dbDoc.data = outData
-            dbDoc.save { [self] result in // strong self
-                switch result {
-                case .success:
-                    self.progress.status = LString.Progress.done
-                    self.progress.completedUnitCount = ProgressSteps.didWriteDatabase
-                    Diag.info("Database saved OK")
-                    self.updateLatestBackup(with: outData)
-                    self.stopObservingProgress()
-                    self.notifier.notifyDatabaseDidSave(database: self.dbRef)
-                    self.completion(self.dbRef, self.dbDoc)
-                    self.endBackgroundTask()
-                case .failure(let fileAccessError):
-                    Diag.error("Database saving error. [message: \(fileAccessError.localizedDescription)]")
-                    self.stopObservingProgress()
-                    self.notifier.notifyDatabaseSaveError(
-                        database: self.dbRef,
-                        isCancelled: self.progress.isCancelled,
-                        message: fileAccessError.localizedDescription,
-                        reason: nil)
-                    self.completion(self.dbRef, self.dbDoc)
-                    self.endBackgroundTask()
+    func databaseSaver(_ databaseSaver: DatabaseSaver, didSaveDatabase dbRef: URLReference) {
+        notificationQueue.async { // strong self
+            for (_, observer) in self.observers {
+                guard let strongObserver = observer.observer else { continue }
+                DispatchQueue.main.async {
+                    strongObserver.databaseManager(didSaveDatabase: dbRef)
                 }
             }
-        } catch let error as DatabaseError {
-            Diag.error("""
-                Database saving error. [
-                    isCancelled: \(progress.isCancelled),
-                    message: \(error.localizedDescription),
-                    reason: \(String(describing: error.failureReason))]
-                """)
-            stopObservingProgress()
-            notifier.notifyDatabaseSaveError(
-                database: dbRef,
-                isCancelled: progress.isCancelled,
-                message: error.localizedDescription,
-                reason: error.failureReason)
-            completion(dbRef, dbDoc)
-            endBackgroundTask()
-        } catch let error as ProgressInterruption {
-            stopObservingProgress()
-            switch error {
-            case .cancelled(let reason):
-                Diag.error("Database saving was cancelled. [reason: \(reason.localizedDescription)]")
-                switch reason {
-                case .userRequest:
-                    notifier.notifyDatabaseSaveError(
-                        database: dbRef,
-                        isCancelled: true,
-                        message: error.localizedDescription,
-                        reason: nil)
-                case .lowMemoryWarning:
-                    // this is treated like an error, not a simple cancellation
-                    notifier.notifyDatabaseSaveError(
-                        database: dbRef,
-                        isCancelled: false,
-                        message: error.localizedDescription,
-                        reason: nil)
-                }
-                completion(dbRef, dbDoc)
-                endBackgroundTask()
-            }
-        } catch { // file writing errors
-            Diag.error("Database saving error. [isCancelled: \(progress.isCancelled), message: \(error.localizedDescription)]")
-            stopObservingProgress()
-            notifier.notifyDatabaseSaveError(
-                database: dbRef,
-                isCancelled: progress.isCancelled,
-                message: error.localizedDescription,
-                reason: nil)
-            completion(dbRef, dbDoc)
-            endBackgroundTask()
         }
     }
     
-    /// Updates the -latest backup with the new data.
-    private func updateLatestBackup(with data: ByteArray) {
-        guard Settings.current.isBackupDatabaseOnSave,
-            DatabaseManager.shouldUpdateLatestBackup(for: dbRef) else
-        {
-            return
+    func databaseSaver(
+        _ databaseSaver: DatabaseSaver,
+        didFailSaving dbRef: URLReference,
+        message: String,
+        reason: String?)
+    {
+        notificationQueue.async { // strong self
+            for (_, observer) in self.observers {
+                guard let strongObserver = observer.observer else { continue }
+                DispatchQueue.main.async {
+                    strongObserver.databaseManager(
+                        database: dbRef,
+                        savingError: message,
+                        reason: reason)
+                }
+            }
         }
-        
-        Diag.debug("Updating latest backup")
-        progress.status = LString.Progress.makingDatabaseBackup
-        
-        assert(dbRef.url != nil)
-        let nameTemplate = dbRef.url?.lastPathComponent ?? "Backup"
-        FileKeeper.shared.makeBackup(
-            nameTemplate: nameTemplate,
-            mode: .latest,
-            contents: data)
+    }
+    
+    func databaseSaverDidFinish(_ databaseSaver: DatabaseSaver, for dbRef: URLReference) {
+        self.databaseSaver = nil
+        // nothing else to do here
     }
 }

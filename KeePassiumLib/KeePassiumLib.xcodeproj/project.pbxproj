@@ -118,6 +118,7 @@
 		75D09C622174F89A00F7DEF2 /* ProgressEx.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75D09C612174F89A00F7DEF2 /* ProgressEx.swift */; };
 		75D0C77B2174AF2000C64C93 /* KeePassiumLib.h in Headers */ = {isa = PBXBuildFile; fileRef = 75D0C76D2174AF1F00C64C93 /* KeePassiumLib.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		75D4080523952FD40042122A /* CompositeKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75D4080423952FD40042122A /* CompositeKey.swift */; };
+		75E83020251CBAC80061B7DC /* DatabaseSaver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75E8301F251CBAC80061B7DC /* DatabaseSaver.swift */; };
 		75EA2D1721B2FB4000826FC6 /* Diag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75EA2D1621B2FB4000826FC6 /* Diag.swift */; };
 		75F4ACD22177456200B22D8B /* PasswordGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75F4ACD12177456200B22D8B /* PasswordGenerator.swift */; };
 		75F4ACD5217745B300B22D8B /* DatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75F4ACD3217745B300B22D8B /* DatabaseManager.swift */; };
@@ -265,6 +266,7 @@
 		75D0C76E2174AF1F00C64C93 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		75D4080423952FD40042122A /* CompositeKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompositeKey.swift; sourceTree = "<group>"; };
 		75E4CA89232D0B2200EB6805 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
+		75E8301F251CBAC80061B7DC /* DatabaseSaver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseSaver.swift; sourceTree = "<group>"; };
 		75EA2D1621B2FB4000826FC6 /* Diag.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Diag.swift; sourceTree = "<group>"; };
 		75F4ACC1217743BF00B22D8B /* DiagLib.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = DiagLib.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		75F4ACD12177456200B22D8B /* PasswordGenerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasswordGenerator.swift; sourceTree = "<group>"; };
@@ -585,6 +587,7 @@
 				75D09C4B2174F81900F7DEF2 /* GzipSwift */,
 				75D09BFC2174F77000F7DEF2 /* util */,
 				75F4ACD3217745B300B22D8B /* DatabaseManager.swift */,
+				75E8301F251CBAC80061B7DC /* DatabaseSaver.swift */,
 				75B5F7F4251B7BE100E444F0 /* DatabaseLoader.swift */,
 				75F4ACD4217745B300B22D8B /* DatabaseManagerObserver.swift */,
 				75D0C76D2174AF1F00C64C93 /* KeePassiumLib.h */,
@@ -844,6 +847,7 @@
 				75D09C602174F81900F7DEF2 /* Parser.swift in Sources */,
 				75D09C3E2174F77000F7DEF2 /* StreamCipherFactory.swift in Sources */,
 				75D09C2A2174F77000F7DEF2 /* DeletedObject2.swift in Sources */,
+				75E83020251CBAC80061B7DC /* DatabaseSaver.swift in Sources */,
 				75D09C462174F77000F7DEF2 /* KeyHelper1.swift in Sources */,
 				759896432341CED300DF39AA /* BusinessModel.swift in Sources */,
 				75B5F7F8251B7CC700E444F0 /* ProgressObserver.swift in Sources */,
