@@ -42,6 +42,7 @@ public class CompositeKey: Codable {
     
     // These vars are valid in the .final state
     internal private(set) var finalKey: SecureByteArray?
+    internal private(set) var cipherKey: SecureByteArray?
     
     
     init() {
@@ -107,6 +108,7 @@ public class CompositeKey: Codable {
         case passwordData
         case keyFileData
         case combinedStaticComponents = "staticComponents"
+        case cipherKey
         case finalKey
     }
     
@@ -134,6 +136,7 @@ public class CompositeKey: Codable {
         clone.passwordData = self.passwordData?.secureClone()
         clone.keyFileData = self.keyFileData?.clone()
         clone.combinedStaticComponents = self.combinedStaticComponents?.secureClone()
+        clone.cipherKey = self.cipherKey?.secureClone()
         clone.finalKey = self.finalKey?.secureClone()
         clone.state = self.state
         return clone
@@ -148,6 +151,8 @@ public class CompositeKey: Codable {
         self.password.erase()
         self.keyFileRef = nil
         // keep challengeHandler intact, though
+        self.cipherKey?.erase()
+        self.cipherKey = nil
         self.finalKey?.erase()
         self.finalKey = nil
     }
@@ -165,15 +170,30 @@ public class CompositeKey: Codable {
         self.keyFileData = nil
         // keep challengeHandler intact, though
         
+        self.cipherKey?.erase()
+        self.cipherKey = nil
         self.finalKey?.erase()
         self.finalKey = nil
     }
     
-    func setFinalKey(_ finalKey: SecureByteArray) {
+    /// - Parameters:
+    ///   - finalKey: decryption key of the database
+    ///   - cipherKey: (optional) internal cipher stream key
+    func setFinalKeys(_ finalKey: SecureByteArray, _ cipherKey: SecureByteArray?) {
         assert(state >= .combinedComponents)
+        self.cipherKey = cipherKey?.secureClone()
         self.finalKey = finalKey.secureClone()
         state = .final
         // keep the combined components and challengeHandler, will need them for saving
+    }
+    
+    func eraseFinalKeys() {
+        guard state >= .final else { return }
+        state = .combinedComponents
+        cipherKey?.erase()
+        cipherKey = nil
+        finalKey?.erase()
+        finalKey = nil
     }
     
     /// - Throws: `ChallengeResponseError`, `ProgressInterruption`

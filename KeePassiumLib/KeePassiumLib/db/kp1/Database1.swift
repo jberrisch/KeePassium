@@ -213,6 +213,13 @@ public class Database1: Database {
             throw ChallengeResponseError.notSupportedByDatabaseFormat
         }
         
+        if compositeKey.state == .final,
+           let _masterKey = compositeKey.finalKey {
+            // Already have the final key, can skip derivation
+            self.masterKey = _masterKey
+            return
+        }
+        
         let kdf = AESKDF()
         progress.addChild(kdf.initProgress(), withPendingUnitCount: ProgressSteps.keyDerivation)
         let kdfParams = kdf.defaultParams
@@ -241,7 +248,7 @@ public class Database1: Database {
             // throws CryptoError, ProgressInterruption
         let secureMasterSeed = SecureByteArray(header.masterSeed)
         masterKey = SecureByteArray.concat(secureMasterSeed, transformedKey).sha256
-        compositeKey.setFinalKey(masterKey)
+        compositeKey.setFinalKeys(masterKey, nil)
     }
     
     /// Reads groups and entries from plain-text `data`

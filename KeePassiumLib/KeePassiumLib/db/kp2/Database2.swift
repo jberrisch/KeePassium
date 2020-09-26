@@ -643,7 +643,17 @@ public class Database2: Database {
     func deriveMasterKey(compositeKey: CompositeKey, cipher: DataCipher) throws {
         Diag.debug("Start key derivation")
         progress.addChild(header.kdf.initProgress(), withPendingUnitCount: ProgressSteps.keyDerivation)
-        
+
+        if compositeKey.state == .final,
+           let _cipherKey = compositeKey.cipherKey, // might be nil on old installs
+           let _hmacKey = compositeKey.finalKey
+        {
+            // Already have the final keys, can skip derivation
+            self.cipherKey = _cipherKey
+            self.hmacKey = _hmacKey
+            return
+        }
+
         var combinedComponents: SecureByteArray
         if compositeKey.state == .processedComponents {
             /// merges the components according to format rules, but does not hash them
@@ -703,7 +713,7 @@ public class Database2: Database {
         self.cipherKey = cipher.resizeKey(key: joinedKey)
         let one = SecureByteArray(bytes: [1])
         self.hmacKey = SecureByteArray.concat(joinedKey, one).sha512
-        compositeKey.setFinalKey(hmacKey)
+        compositeKey.setFinalKeys(hmacKey, cipherKey)
     }
     
     /// Changes DB's composite key to the provided one.

@@ -36,6 +36,9 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
     private var yubiKey: YubiKey?
     private var fileKeeperNotifications: FileKeeperNotifications!
     
+    /// Enables/disabled quick unlock attempts
+    private var canUseFinalKey = true
+    
     var isJustLaunched = false // limits auto-unlock on iPad to the initial launch only
     var isAutoUnlockEnabled = true
     fileprivate var isAutomaticUnlock = false
@@ -460,8 +463,10 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
             databaseKey.challengeHandler = _challengeHandler
             DatabaseManager.shared.startLoadingDatabase(
                 database: databaseRef,
-                compositeKey: databaseKey)
+                compositeKey: databaseKey,
+                canUseFinalKey: canUseFinalKey)
         } else {
+            canUseFinalKey = false // there's no stored key, so there won't be quick unlock
             guard !isAutomaticUnlock else {
                 // Automatic unlock, but there is no master key?
                 // This means the key was just cleared by the watchdog.
@@ -624,15 +629,21 @@ extension UnlockDatabaseVC: DatabaseManagerObserver {
     
     func databaseManager(database urlRef: URLReference, invalidMasterKey message: String) {
         DatabaseManager.shared.removeObserver(self)
-        DatabaseSettingsManager.shared.updateSettings(for: urlRef) { (dbSettings) in
-            dbSettings.clearMasterKey()
+        if canUseFinalKey {
+            Diag.info("Express unlock failed, retrying slow")
+            canUseFinalKey = false
+            tryToUnlockDatabase(isAutomaticUnlock: isAutomaticUnlock)
+        } else {
+            DatabaseSettingsManager.shared.updateSettings(for: urlRef) { (dbSettings) in
+                dbSettings.clearMasterKey()
+            }
+            refresh()
+            // Keep the entered password intact
+            hideProgressOverlay(quickly: true)
+            
+            showErrorMessage(message, haptics: .wrongPassword)
+            maybeFocusOnPassword()
         }
-        refresh()
-        // Keep the entered password intact
-        hideProgressOverlay(quickly: true)
-        
-        showErrorMessage(message, haptics: .wrongPassword)
-        maybeFocusOnPassword()
     }
     
     func databaseManager(didLoadDatabase urlRef: URLReference, warnings: DatabaseLoadingWarnings) {

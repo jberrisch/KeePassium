@@ -147,11 +147,19 @@ public class DatabaseManager {
     /// Tries to load database and unlock it with the given composite key
     /// (as opposed to password/keyfile pair).
     /// Returns immediately, works asynchronously.
-    public func startLoadingDatabase(database dbRef: URLReference, compositeKey: CompositeKey) {
+    public func startLoadingDatabase(
+        database dbRef: URLReference,
+        compositeKey: CompositeKey,
+        canUseFinalKey: Bool)
+    {
         Diag.verbose("Will queue load database")
+        
         /// compositeKey might be erased when we leave this block.
         /// So keep a local copy.
         let compositeKeyClone = compositeKey.clone()
+        if !canUseFinalKey {
+            compositeKeyClone.eraseFinalKeys()
+        }
         serialDispatchQueue.async {
             self._loadDatabase(dbRef: dbRef, compositeKey: compositeKeyClone)
         }

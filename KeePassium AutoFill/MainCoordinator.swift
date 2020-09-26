@@ -28,6 +28,7 @@ class MainCoordinator: NSObject, Coordinator {
     fileprivate var passcodeInputController: PasscodeInputVC?
     fileprivate var isBiometricAuthShown = false
     fileprivate var isPasscodeInputShown = false
+    fileprivate var canUseFinalKey = true
     
     init(rootController: CredentialProviderViewController) {
         self.rootController = rootController
@@ -171,6 +172,7 @@ class MainCoordinator: NSObject, Coordinator {
         
         let _challengeHandler = (yubiKey != nil) ? challengeHandler : nil
         isLoadingUsingStoredDatabaseKey = false
+        canUseFinalKey = false // doing it slow, so disable fallback in case of invalid key
         DatabaseManager.shared.startLoadingDatabase(
             database: database,
             password: password,
@@ -182,16 +184,19 @@ class MainCoordinator: NSObject, Coordinator {
     private func tryToUnlockDatabase(
         database: URLReference,
         compositeKey: CompositeKey,
-        yubiKey: YubiKey?)
+        yubiKey: YubiKey?,
+        canUseFinalKey: Bool)
     {
         // This flag will be reset to `true` after we successfully open the database.
         Settings.current.isAutoFillFinishedOK = false
         
         compositeKey.challengeHandler = (yubiKey != nil) ? challengeHandler : nil
         isLoadingUsingStoredDatabaseKey = true
+        self.canUseFinalKey = canUseFinalKey
         DatabaseManager.shared.startLoadingDatabase(
             database: database,
-            compositeKey: compositeKey
+            compositeKey: compositeKey,
+            canUseFinalKey: canUseFinalKey
         )
     }
     
@@ -291,7 +296,8 @@ class MainCoordinator: NSObject, Coordinator {
             tryToUnlockDatabase(
                 database: database,
                 compositeKey: storedDatabaseKey,
-                yubiKey: dbSettings?.associatedYubiKey
+                yubiKey: dbSettings?.associatedYubiKey,
+                canUseFinalKey: true
             )
         }
     }
@@ -552,10 +558,25 @@ extension MainCoordinator: DatabaseManagerObserver {
     func databaseManager(database urlRef: URLReference, invalidMasterKey message: String) {
         guard let databaseUnlockerVC = navigationController.topViewController
             as? DatabaseUnlockerVC else { return }
+
         Settings.current.isAutoFillFinishedOK = true
-        // Keep the entered password intact
-        databaseUnlockerVC.hideProgressOverlay()
-        databaseUnlockerVC.showMasterKeyInvalid(message: message)
+        if canUseFinalKey,
+           let dbSettings = DatabaseSettingsManager.shared.getSettings(for: urlRef),
+           let compositeKey = dbSettings.masterKey
+        {
+            // Express unlock failed, fallback to the slow composite key
+            canUseFinalKey = false
+            tryToUnlockDatabase(
+                database: urlRef,
+                compositeKey: compositeKey,
+                yubiKey: dbSettings.associatedYubiKey,
+                canUseFinalKey: false
+            )
+        } else {
+            // Keep the entered password intact
+            databaseUnlockerVC.hideProgressOverlay()
+            databaseUnlockerVC.showMasterKeyInvalid(message: message)
+        }
     }
     
     func databaseManager(database urlRef: URLReference, loadingError message: String, reason: String?) {
