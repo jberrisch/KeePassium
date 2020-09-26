@@ -880,7 +880,9 @@ public class FileKeeper {
     /// Asynchronously deletes old backup files.
     public func deleteExpiredBackupFiles() {
         Diag.debug("Will perform backup maintenance")
-        deleteBackupFiles(olderThan: Settings.current.backupKeepingDuration.seconds)
+        deleteBackupFiles(
+            olderThan: Settings.current.backupKeepingDuration.seconds,
+            keepLatest: true)
         Diag.info("Backup maintenance completed")
     }
 
@@ -926,13 +928,15 @@ public class FileKeeper {
     
     /// Asynchronously delete backup files older than given time interval from now.
     ///
-    /// - Parameter olderThan: maximum age of remaining backups.
-    public func deleteBackupFiles(olderThan maxAge: TimeInterval) {
+    /// - Parameters:
+    ///   - maxAge: maximum age of remaining backups.
+    ///   - keepLatest: if true, the `.latest` files will remain regardless of age
+    public func deleteBackupFiles(olderThan maxAge: TimeInterval, keepLatest: Bool) {
         let allBackupFileRefs = getBackupFiles()
         let now = Date.now
         for fileRef in allBackupFileRefs {
             // The .latest backup file should always remain available
-            if isLatestBackupFile(fileRef) {
+            if keepLatest && isLatestBackupFile(fileRef) {
                 continue
             }
             getBackupFileDate(fileRef) { [weak self] fileDate in

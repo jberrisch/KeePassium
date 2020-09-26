@@ -114,17 +114,19 @@ class SettingsBackupVC: UITableViewController {
             title: LString.actionDelete,
             style: .destructive,
             handler: { [weak self] (action) in
-                self?.deleteBackupFiles()
+                self?.deleteAllBackupFiles()
             }
         )
         confirmationAlert.addAction(deleteAction)
         present(confirmationAlert, animated: true, completion: nil)
     }
     
-    private func deleteBackupFiles() {
+    private func deleteAllBackupFiles() {
         backupDeletionSpinner.isHidden = false
         DispatchQueue.main.async { [self] in // strong self
-            FileKeeper.shared.deleteBackupFiles(olderThan: -TimeInterval.infinity) // = all
+            FileKeeper.shared.deleteBackupFiles(
+                olderThan: -TimeInterval.infinity,
+                keepLatest: false) // = all
             self.backupDeletionSpinner.isHidden = true
             self.refresh()
         }
