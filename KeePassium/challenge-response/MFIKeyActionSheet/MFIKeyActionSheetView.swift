@@ -109,7 +109,7 @@ class MFIKeyActionSheetView: UIView {
     }
     
     private func setupView() {
-        if UIDevice.current.ykd_hasHomeButton() {
+        if UIDevice.current.hasHomeButton() {
             deviceImageView.image = UIImage(asset: .yubikeyMFIPhone)
         } else {
             deviceImageView.image = UIImage(asset: .yubikeyMFIPhoneNew)
@@ -311,22 +311,5 @@ class MFIKeyActionSheetView: UIView {
             return
         }
         delegate.mfiKeyActionSheetDidDismiss(self)
-    }
-}
-
-//
-// MARK: - Extensions
-//
-
-extension UIDevice /* MFI Key Action Sheet */ {
-    
-    func ykd_hasHomeButton() -> Bool {
-        if #available(iOS 11.0, *) {
-            guard let keyWindow = UIApplication.shared.keyWindow else {
-                return true
-            }
-            return keyWindow.safeAreaInsets.bottom == 0.0
-        }
-        return true
     }
 }
