@@ -97,7 +97,7 @@ public class URLReference:
     /// (iOS 13 cannot access files bookmarked in iOS 12 (GitHub #63):
     /// "The file couldn’t be opened because you don’t have permission to view it.")
     public var hasPermissionError257: Bool {
-        guard let nsError = error as NSError? else { return false }
+        guard let nsError = error?.underlyingError as NSError? else { return false }
         return (nsError.domain == NSCocoaErrorDomain) && (nsError.code == 257)
     }
     
