@@ -476,7 +476,6 @@ class ChooseDatabaseVC: UITableViewController, DynamicFileList, Refreshable {
             Settings.current.startupDatabase = nil
         }
 
-        DatabaseSettingsManager.shared.removeSettings(for: urlRef)
         do {
             try FileKeeper.shared.deleteFile(
                 urlRef,
@@ -488,14 +487,15 @@ class ChooseDatabaseVC: UITableViewController, DynamicFileList, Refreshable {
             Diag.error("Failed to delete database file [reason: \(error.localizedDescription)]")
             showErrorAlert(error)
         }
+        DatabaseSettingsManager.shared.removeSettings(for: urlRef, onlyIfUnused: true)
     }
     
     private func removeDatabaseFile(urlRef: URLReference) {
         if urlRef == Settings.current.startupDatabase {
             Settings.current.startupDatabase = nil
         }
-        DatabaseSettingsManager.shared.removeSettings(for: urlRef)
         FileKeeper.shared.removeExternalReference(urlRef, fileType: .database)
+        DatabaseSettingsManager.shared.removeSettings(for: urlRef, onlyIfUnused: true)
     }
     
     /// Adds pending files, if any

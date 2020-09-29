@@ -248,12 +248,11 @@ class MainCoordinator: NSObject, Coordinator {
     func removeDatabase(_ urlRef: URLReference) {
         //TODO: ask for confirmation
         FileKeeper.shared.removeExternalReference(urlRef, fileType: .database)
-        DatabaseSettingsManager.shared.removeSettings(for: urlRef)
+        DatabaseSettingsManager.shared.removeSettings(for: urlRef, onlyIfUnused: true)
         refreshFileList()
     }
     
     func deleteDatabase(_ urlRef: URLReference) {
-        DatabaseSettingsManager.shared.removeSettings(for: urlRef)
         do {
             try FileKeeper.shared.deleteFile(urlRef, fileType: .database, ignoreErrors: false)
                 // throws `FileKeeperError`
@@ -268,6 +267,7 @@ class MainCoordinator: NSObject, Coordinator {
                 cancelButtonTitle: LString.actionDismiss)
             navigationController.present(alert, animated: true, completion: nil)
         }
+        DatabaseSettingsManager.shared.removeSettings(for: urlRef, onlyIfUnused: true)
         refreshFileList()
     }
 

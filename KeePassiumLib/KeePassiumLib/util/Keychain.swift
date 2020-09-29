@@ -188,32 +188,29 @@ public class Keychain {
     // MARK: - Database-key association routines
     
     /// - Throws: KeychainError
-    internal func getDatabaseSettings(for databaseRef: URLReference) throws -> DatabaseSettings? {
-        guard let account = databaseRef.getDescriptor() else {
-            Diag.warning("Cannot get database descriptor")
-            return nil
-        }
-        if let data = try get(service: .databaseSettings, account: account) { // throws KeychainError
+    internal func getDatabaseSettings(
+        for descriptor: URLReference.Descriptor) throws
+        -> DatabaseSettings?
+    {
+        if let data = try get(service: .databaseSettings, account: descriptor) { // throws KeychainError
             return DatabaseSettings.deserialize(from: data)
         }
         return nil
     }
     
     /// - Throws: KeychainError
-    internal func setDatabaseSettings(_ dbSettings: DatabaseSettings, for databaseRef: URLReference) throws {
+    internal func setDatabaseSettings(
+        _ dbSettings: DatabaseSettings,
+        for descriptor: URLReference.Descriptor
+    ) throws {
         let data = dbSettings.serialize()
-        guard let account = databaseRef.getDescriptor() else {
-            Diag.warning("Cannot get database descriptor")
-            return
-        }
-        try set(service: .databaseSettings, account: account, data: data)
+        try set(service: .databaseSettings, account: descriptor, data: data)
             // throws KeychainError
     }
     
     /// - Throws: KeychainError
-    internal func removeDatabaseSettings(for databaseRef: URLReference) throws {
-        guard let account = databaseRef.getDescriptor() else { return }
-        try remove(service: .databaseSettings, account: account) // throws KeychainError
+    internal func removeDatabaseSettings(for descriptor: URLReference.Descriptor) throws {
+        try remove(service: .databaseSettings, account: descriptor) // throws KeychainError
     }
     
     

@@ -19,8 +19,13 @@ public class DatabaseSettingsManager {
     /// Returns an instance of settings for the given database.
     /// If nothing has been stored, returns `nil`.
     public func getSettings(for databaseRef: URLReference) -> DatabaseSettings? {
+        guard let databaseDescriptor = databaseRef.getDescriptor() else {
+            Diag.warning("Cannot get database descriptor")
+            return nil
+        }
+
         do {
-            if let dbSettings = try Keychain.shared.getDatabaseSettings(for: databaseRef) { // throws KeychainError
+            if let dbSettings = try Keychain.shared.getDatabaseSettings(for: databaseDescriptor) { // throws KeychainError
                 return dbSettings
             }
             return nil
@@ -40,8 +45,13 @@ public class DatabaseSettingsManager {
     }
     
     public func setSettings(_ dbSettings: DatabaseSettings, for databaseRef: URLReference) {
+        guard let databaseDescriptor = databaseRef.getDescriptor() else {
+            Diag.warning("Cannot get database descriptor")
+            return
+        }
+        
         do {
-            try Keychain.shared.setDatabaseSettings(dbSettings, for: databaseRef) // throws KeychainError
+            try Keychain.shared.setDatabaseSettings(dbSettings, for: databaseDescriptor) // throws KeychainError
         } catch {
             Diag.error(error.localizedDescription)
         }
@@ -53,9 +63,30 @@ public class DatabaseSettingsManager {
         setSettings(dbSettings, for: databaseRef)
     }
     
-    public func removeSettings(for databaseRef: URLReference) {
+    /// Removes settings associated with the given database
+    /// - Parameters:
+    ///   - databaseRef: associated database
+    ///   - onlyIfUnused: if true, keep settings if there is another associated database.
+    ///     If false, delete settings unconditionally.
+    public func removeSettings(for databaseRef: URLReference, onlyIfUnused: Bool) {
+        guard let databaseDescriptor = databaseRef.getDescriptor() else {
+            Diag.warning("Cannot get database descriptor")
+            return
+        }
+        
+        if onlyIfUnused {
+            let allDatabaseDescriptors = FileKeeper.shared.getAllReferences(
+                fileType: .database,
+                includeBackup: true)
+                .map { $0.getDescriptor() }
+            if allDatabaseDescriptors.contains(databaseDescriptor) {
+                // there is a database that uses these settings, so keep them
+                return
+            }
+        }
+        
         do {
-            try Keychain.shared.removeDatabaseSettings(for: databaseRef)
+            try Keychain.shared.removeDatabaseSettings(for: databaseDescriptor)
         } catch {
             Diag.error(error.localizedDescription)
         }
