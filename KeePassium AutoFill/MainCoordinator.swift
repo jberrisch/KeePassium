@@ -297,7 +297,7 @@ class MainCoordinator: NSObject, Coordinator {
                 database: database,
                 compositeKey: storedDatabaseKey,
                 yubiKey: dbSettings?.associatedYubiKey,
-                canUseFinalKey: true
+                canUseFinalKey: PremiumManager.shared.isAvailable(feature: .canUseExpressUnlock)
             )
         }
     }

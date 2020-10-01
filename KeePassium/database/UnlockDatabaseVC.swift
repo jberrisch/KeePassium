@@ -112,6 +112,9 @@ class UnlockDatabaseVC: UIViewController, Refreshable {
         }
         isViewAppeared = true
 
+        let premiumManager = PremiumManager.shared
+        canUseFinalKey = canUseFinalKey && premiumManager.isAvailable(feature: .canUseExpressUnlock)
+
         fileKeeperNotifications.startObserving()
         NotificationCenter.default.addObserver(
             self,

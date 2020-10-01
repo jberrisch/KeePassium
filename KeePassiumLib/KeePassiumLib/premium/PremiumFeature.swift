@@ -34,6 +34,9 @@ public enum PremiumFeature: Int {
     
     case canChangeAppIcon = 6
     
+    /// Can unlock databases using the cached final keys
+    case canUseExpressUnlock = 7
+    
     /// Defines whether this premium feature may be used with given premium status.
     ///
     /// - Parameter status: status to check availability against
@@ -48,7 +51,8 @@ public enum PremiumFeature: Int {
              .canUseLongDatabaseTimeouts,
              .canUseHardwareKeys,
              .canKeepMasterKeyOnDatabaseTimeout,
-             .canChangeAppIcon:
+             .canChangeAppIcon,
+             .canUseExpressUnlock:
             return isEntitled
         case .canPreviewAttachments:
             return isEntitled || (status != .freeHeavyUse)
@@ -74,6 +78,8 @@ public enum PremiumFeature: Int {
             return date > Date(iso8601string: "2020-07-14T00:00:00Z")!
         case .canChangeAppIcon:
             return date > Date(iso8601string: "2020-08-04T00:00:00Z")!
+        case .canUseExpressUnlock:
+            return date > Date(iso8601string: "2020-10-01T00:00:00Z")!
         }
     }
 }
