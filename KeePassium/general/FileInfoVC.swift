@@ -184,10 +184,12 @@ class FileInfoVC: UITableViewController {
         if #available(iOS 13, *) {
             // on iOS 13, the table becomes too wide, so we limit it.
             preferredSize.width = 400
-        }
-        
-        // Wrapped in main to ensure sizing animation (otherwise it jumps)
-        DispatchQueue.main.async { [self] in
+            // Wrapped in main to ensure sizing animation (otherwise it jumps)
+            DispatchQueue.main.async { [self] in
+                self.preferredContentSize = preferredSize
+            }
+        } else {
+            // On iOS 12, animated sizing makes controls non-tappable
             self.preferredContentSize = preferredSize
         }
     }
