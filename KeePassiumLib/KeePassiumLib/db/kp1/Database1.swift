@@ -169,7 +169,7 @@ public class Database1: Database {
             try header.read(data: dbFileData) // throws Header1.Error
             Diag.debug("Header read OK")
             
-            try deriveMasterKey(compositeKey: compositeKey)
+            try deriveMasterKey(compositeKey: compositeKey, canUseFinalKey: true)
                 // throws CryptoError, ChallengeResponseError, ProgressInterruption
             Diag.debug("Key derivation OK")
             
@@ -206,14 +206,15 @@ public class Database1: Database {
     }
     
     /// - Throws: `CryptoError`, `ChallengeResponseError`, `ProgressInterruption`
-    func deriveMasterKey(compositeKey: CompositeKey) throws {
+    func deriveMasterKey(compositeKey: CompositeKey, canUseFinalKey: Bool) throws {
         Diag.debug("Start key derivation")
         
         guard compositeKey.challengeHandler == nil else {
             throw ChallengeResponseError.notSupportedByDatabaseFormat
         }
         
-        if compositeKey.state == .final,
+        if canUseFinalKey,
+           compositeKey.state == .final,
            let _masterKey = compositeKey.finalKey {
             // Already have the final key, can skip derivation
             self.masterKey = _masterKey
@@ -419,7 +420,7 @@ public class Database1: Database {
         
             // update encryption seeds and transform the keys
             try header.randomizeSeeds() // throws CryptoError
-            try deriveMasterKey(compositeKey: self.compositeKey)
+            try deriveMasterKey(compositeKey: self.compositeKey, canUseFinalKey: false)
                 // throws CryptoError, ChallengeResponseError, ProgressInterruption
             Diag.debug("Key derivation OK")
             

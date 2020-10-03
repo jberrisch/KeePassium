@@ -193,7 +193,10 @@ public class Database2: Database {
             Diag.verbose("== DB2 progress CP1: \(progress.completedUnitCount)")
             
             // calculate cypher key
-            try deriveMasterKey(compositeKey: compositeKey, cipher: header.dataCipher)
+            try deriveMasterKey(
+                compositeKey: compositeKey,
+                cipher: header.dataCipher,
+                canUseFinalKey: true)
                 // throws CryptoError, ChallengeResponseError, ProgressInterruption
             Diag.debug("Key derivation OK")
             Diag.verbose("== DB2 progress CP2: \(progress.completedUnitCount)")
@@ -640,11 +643,12 @@ public class Database2: Database {
     
     /// Updates `cipherKey` field by transforming the given `compositeKey`.
     /// - Throws: `CryptoError`, `ChallengeResponseError`, `ProgressInterruption`
-    func deriveMasterKey(compositeKey: CompositeKey, cipher: DataCipher) throws {
+    func deriveMasterKey(compositeKey: CompositeKey, cipher: DataCipher, canUseFinalKey: Bool) throws {
         Diag.debug("Start key derivation")
         progress.addChild(header.kdf.initProgress(), withPendingUnitCount: ProgressSteps.keyDerivation)
 
-        if compositeKey.state == .final,
+        if canUseFinalKey,
+           compositeKey.state == .final,
            let _cipherKey = compositeKey.cipherKey, // might be nil on old installs
            let _hmacKey = compositeKey.finalKey
         {
@@ -1023,7 +1027,10 @@ public class Database2: Database {
         do {
             try header.randomizeSeeds() // throws CryptoError.rngError
             Diag.debug("Seeds randomized OK")
-            try deriveMasterKey(compositeKey: compositeKey, cipher: header.dataCipher)
+            try deriveMasterKey(
+                compositeKey: compositeKey,
+                cipher: header.dataCipher,
+                canUseFinalKey: false)
                 // throws CryptoError, ChallengeResponseError, ProgressInterruption
             Diag.debug("Key derivation OK")
         } catch let error as CryptoError {
