@@ -108,7 +108,11 @@ public class PremiumManager: NSObject {
     private let lapsePeriodInSeconds: TimeInterval = 2 * 24 * 60 * 60 // 2 days
     private let heavyUseThreshold: TimeInterval = 8 * 60 * 60 / 12 // 8 hours / year
 #endif
+    
+    /// Duration of premium support after the fallback date.
+    private let premiumSupportDuration: TimeInterval = 365 * 24 * 60 * 60 // 365 days
 
+    
     // MARK: - Subscription status
     
     /// Whether a free trial is available or has already been used.
@@ -310,6 +314,21 @@ public class PremiumManager: NSObject {
         }
     }
     
+    /// True if user's current license includes premium support.
+    public func isPremiumSupportAvailable() -> Bool {
+        switch status {
+        case .subscribed,
+             .lapsed:
+            return true
+        case .initialGracePeriod,
+             .freeLightUse,
+             .freeHeavyUse:
+            if let fallbackDate = fallbackDate {
+                let supportExpiryDate = fallbackDate.addingTimeInterval(premiumSupportDuration)
+                return supportExpiryDate < .now
+            }
+            return false
+        }
     }
     
     // MARK: - Premium feature availability
