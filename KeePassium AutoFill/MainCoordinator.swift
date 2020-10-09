@@ -572,6 +572,7 @@ extension MainCoordinator: DatabaseManagerObserver {
            let compositeKey = dbSettings.masterKey
         {
             // Express unlock failed, fallback to the slow composite key
+            Diag.info("Express unlock failed, retrying with key derivation")
             canUseFinalKey = false
             tryToUnlockDatabase(
                 database: urlRef,
