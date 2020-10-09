@@ -419,7 +419,7 @@ extension MainCoordinator: DatabaseChooserDelegate {
         watchdog.restart()
         let existingNonBackupDatabaseRefs = sender.databaseRefs.filter {
             ($0.location != .internalBackup) && // exclude backup files
-                !($0.hasPermissionError257 || $0.isFileMissingIOS14) // exclude broken refs
+                !($0.hasPermissionError257 || $0.hasFileMissingError) // exclude broken refs
         }
         if existingNonBackupDatabaseRefs.count > 0 {
             if PremiumManager.shared.isAvailable(feature: .canUseMultipleDatabases) {
@@ -589,7 +589,7 @@ extension MainCoordinator: DatabaseManagerObserver {
         // Keep the entered password intact
         databaseUnlockerVC.hideProgressOverlay()
         
-        if urlRef.hasPermissionError257 || urlRef.isFileMissingIOS14 {
+        if urlRef.hasPermissionError257 || urlRef.hasFileMissingError {
             databaseUnlockerVC.showErrorMessage(
                 message,
                 reason: reason,

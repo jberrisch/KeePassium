@@ -101,14 +101,22 @@ public class URLReference:
         return (nsError.domain == NSCocoaErrorDomain) && (nsError.code == 257)
     }
     
-    /// True if the error is an "file doesn't exist" error associated with iOS 14 upgrade.
-    public var isFileMissingIOS14: Bool {
-        guard #available(iOS 14, *), location == .external else {
+    /// True if the error is an "file doesn't exist" error (especially associated with iOS 14 upgrade).
+    public var hasFileMissingError: Bool {
+        guard location == .external,
+              let underlyingError = error?.underlyingError,
+              let nsError = underlyingError as NSError? else { return false }
+        
+        switch nsError.domain {
+        case NSCocoaErrorDomain:
+            // happens after iOS 14 upgrade
+            return nsError.code == CocoaError.Code.fileNoSuchFile.rawValue
+        case NSFileProviderErrorDomain:
+            // happens when the file was actually deleted
+            return nsError.code == NSFileProviderError.noSuchItem.rawValue
+        default:
             return false
         }
-        guard let underlyingError = error?.underlyingError,
-              let nsError = underlyingError as NSError? else { return false }
-        return (nsError.domain == NSCocoaErrorDomain) && (nsError.code == 4)
     }
     
     /// Bookmark data

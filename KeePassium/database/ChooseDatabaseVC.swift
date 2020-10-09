@@ -351,7 +351,7 @@ class ChooseDatabaseVC: UITableViewController, DynamicFileList, Refreshable {
     @IBAction func didPressAddDatabase(_ sender: Any) {
         let existingNonBackupDatabaseRefs = databaseRefs.filter {
             ($0.location != .internalBackup) && // exclude backup files
-                !($0.hasPermissionError257 || $0.isFileMissingIOS14) // exclude broken refs
+                !($0.hasPermissionError257 || $0.hasFileMissingError) // exclude broken refs
         }
         if existingNonBackupDatabaseRefs.count > 0 {
             premiumUpgradeHelper.performActionOrOfferUpgrade(.canUseMultipleDatabases, in: self) {
