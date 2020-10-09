@@ -203,13 +203,10 @@ public class Entry: DatabaseItem, Eraseable {
     }
 
     /// - Returns: first field with given name
-    public func getField(with name: String) -> EntryField? {
-        for field in fields {
-            if field.name == name {
-                return field
-            }
-        }
-        return nil
+    public func getField<T: StringProtocol>(with name: T) -> EntryField? {
+        return fields.first(where: {
+            $0.name.compare(name) == .orderedSame
+        })
     }
     
     /// Deletes field with the given name (ignores errors) without making backup.

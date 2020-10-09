@@ -199,7 +199,7 @@ public class ByteArray: Eraseable, Codable, CustomDebugStringConvertible {
     }
     
     /// Tries to create a ByteArray from a hex-encoded string. (From https://stackoverflow.com/a/40278391)
-    convenience public init?(hexString string: String) {
+    convenience public init?<T: StringProtocol>(hexString string: T) {
         // Convert 0 ... 9, a ... f, A ...F to their decimal value,
         // return nil for all other input characters
         func decodeNibble(u: UInt16) -> UInt8? {
