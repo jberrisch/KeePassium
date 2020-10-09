@@ -201,7 +201,7 @@ public class PremiumManager: NSObject {
         }
         
         if status != previousStatus {
-            Diag.info("Premium subscription status changed [was: \(previousStatus), now: \(status)]")
+            Diag.info("Premium status has changed [was: \(previousStatus), now: \(status)]")
             notifyStatusChanged()
         }
     }
@@ -280,13 +280,36 @@ public class PremiumManager: NSObject {
     
     // MARK: - Receipt parsing
     
-    public func reloadReceipt(withLogging: Bool=false) {
+    public func reloadReceipt() {
         // Don't care about receipts in prepaid version
         guard BusinessModel.type == .freemium else { return }
-        let receiptAnalyzer = ReceiptAnalyzer()
-        receiptAnalyzer.loadReceipt()
-        self.isTrialAvailable = !receiptAnalyzer.containsTrial
-        self.fallbackDate = receiptAnalyzer.fallbackDate
+        
+        let oldFallbackDate = fallbackDate
+        if AppGroup.isMainApp {
+            let receiptAnalyzer = ReceiptAnalyzer()
+            receiptAnalyzer.loadReceipt()
+            isTrialAvailable = !receiptAnalyzer.containsTrial
+            fallbackDate = receiptAnalyzer.fallbackDate
+            do {
+                try Keychain.shared.setPremiumFallbackDate(fallbackDate) // throws KeychainError
+            } catch {
+                Diag.warning("Failed to store premium fallback date [message: \(error.localizedDescription)]")
+            }
+        } else { // we are in AutoFill, the receipt is not available
+            do {
+                fallbackDate = try Keychain.shared.getPremiumFallbackDate()  // throws KeychainError
+            } catch {
+                Diag.warning("Failed to retrieve premium fallback date [message: \(error.localizedDescription)]")
+            }
+        }
+        
+        if let newFallbackDate = fallbackDate, newFallbackDate != oldFallbackDate {
+            // some features might have become available
+            Diag.info("Premium fallback date changed to \(fallbackDate!.iso8601String())")
+            notifyStatusChanged()
+        }
+    }
+    
     }
     
     // MARK: - Premium feature availability

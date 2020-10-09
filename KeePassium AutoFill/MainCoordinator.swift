@@ -81,7 +81,11 @@ class MainCoordinator: NSObject, Coordinator {
                 completion: nil)
         }
 
-        PremiumManager.shared.usageMonitor.startInterval()
+        let premiumManager = PremiumManager.shared
+        // Update the premium fallback date.
+        // Since receipt is not available in AutoFill, will use the date stored in keychain.
+        premiumManager.reloadReceipt()
+        premiumManager.usageMonitor.startInterval()
 
         rootController.present(pageController, animated: false, completion: nil)
         startMainFlow()
