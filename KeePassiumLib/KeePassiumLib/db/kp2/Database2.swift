@@ -645,7 +645,6 @@ public class Database2: Database {
     /// - Throws: `CryptoError`, `ChallengeResponseError`, `ProgressInterruption`
     func deriveMasterKey(compositeKey: CompositeKey, cipher: DataCipher, canUseFinalKey: Bool) throws {
         Diag.debug("Start key derivation")
-        progress.addChild(header.kdf.initProgress(), withPendingUnitCount: ProgressSteps.keyDerivation)
 
         if canUseFinalKey,
            compositeKey.state == .final,
@@ -655,9 +654,11 @@ public class Database2: Database {
             // Already have the final keys, can skip derivation
             self.cipherKey = _cipherKey
             self.hmacKey = _hmacKey
+            progress.completedUnitCount += ProgressSteps.keyDerivation
             return
         }
 
+        progress.addChild(header.kdf.initProgress(), withPendingUnitCount: ProgressSteps.keyDerivation)
         var combinedComponents: SecureByteArray
         if compositeKey.state == .processedComponents {
             /// merges the components according to format rules, but does not hash them

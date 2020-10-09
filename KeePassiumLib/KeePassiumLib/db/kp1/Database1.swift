@@ -215,9 +215,11 @@ public class Database1: Database {
         
         if canUseFinalKey,
            compositeKey.state == .final,
-           let _masterKey = compositeKey.finalKey {
+           let _masterKey = compositeKey.finalKey
+        {
             // Already have the final key, can skip derivation
             self.masterKey = _masterKey
+            progress.completedUnitCount += ProgressSteps.keyDerivation
             return
         }
         
