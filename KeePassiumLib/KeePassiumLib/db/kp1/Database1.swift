@@ -338,6 +338,10 @@ public class Database1: Database {
         }
         // Mark everything inside the backup group as deleted
         backupGroup?.deepSetDeleted(true)
+        
+        progress.localizedDescription = LString.Progress.resolvingFieldReferences
+        // Resolve references in loaded content
+        resolveReferences(allEntries: entries)
     }
     
     /// Decrypts DB data using current master key.
@@ -378,8 +382,13 @@ public class Database1: Database {
             var groups = Array<Group>()
             var entries = Array<Entry>()
             root.collectAllChildren(groups: &groups, entries: &entries)
+
+            // Refresh references to reflect the modified content.
+            // This does not affect the output file, just its displayed version.
+            progress.localizedDescription = LString.Progress.resolvingFieldReferences
+            resolveReferences(allEntries: entries)
+
             Diag.info("Saving \(groups.count) groups and \(entries.count)+\(metaStreamEntries.count) entries")
-            
             let packingProgress = ProgressEx()
             packingProgress.totalUnitCount = Int64(groups.count + entries.count + metaStreamEntries.count)
             packingProgress.localizedDescription = NSLocalizedString(

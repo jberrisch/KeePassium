@@ -78,6 +78,11 @@ internal enum LString {
             bundle: Bundle.framework,
             value: "Making backup copy...",
             comment: "Database saving status: making a local backup copy of the database")
+        static let resolvingFieldReferences = NSLocalizedString(
+            "[Database/Progress/resolvingFieldReferences]",
+            bundle: Bundle.framework,
+            value: "Resolving field references…",
+            comment: "Database loading/saving status: replacing field references with their values")
         static let done = NSLocalizedString(
             "[Database/Progress] Done",
             bundle: Bundle.framework,

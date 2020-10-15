@@ -20,8 +20,42 @@ public class EntryField: Eraseable {
     public static let totp = "TOTP"
 
     public var name: String
-    public var value: String
+    public var value: String {
+        didSet {
+            resolvedValueInternal = nil
+        }
+    }
     public var isProtected: Bool
+    
+    /// Cached resolved value.
+    /// `nil`until resolved.
+    /// Equals to `value` if there are not references.
+    internal var resolvedValueInternal: String?
+    
+    /// Resolved value of the field (if resolved; otherwise just a copy of `value`)
+    public var resolvedValue: String {
+        guard resolvedValueInternal != nil else {
+            assertionFailure()
+            return value
+        }
+        return resolvedValueInternal!
+    }
+    
+    private(set) public var resolveStatus = EntryFieldReference.ResolveStatus.noReferences
+    
+    /// Indicates whether the field includes any references to other fields (resolvable or not).
+    public var hasReferences: Bool {
+        return resolveStatus != .noReferences
+    }
+
+    public var decoratedValue: String {
+        guard hasReferences else {
+            return resolvedValue
+        }
+        return "→ " + resolvedValue
+
+    }
+    
     /// True if field's name is one of the fixed/standard KP2 fields.
     public var isStandardField: Bool {
         return EntryField.isStandardName(name: self.name)
@@ -30,23 +64,53 @@ public class EntryField: Eraseable {
         return standardNames.contains(name)
     }
     
-    public init(name: String, value: String, isProtected: Bool) {
+    public convenience init(name: String, value: String, isProtected: Bool) {
+        self.init(
+            name: name,
+            value: value,
+            isProtected: isProtected,
+            resolvedValue: value,  // assume the raw value, until we explicitly go through resolving
+            resolveStatus: .noReferences
+        )
+    }
+    
+    internal init(
+        name: String,
+        value: String,
+        isProtected: Bool,
+        resolvedValue: String?,
+        resolveStatus: EntryFieldReference.ResolveStatus
+    ) {
         self.name = name
         self.value = value
         self.isProtected = isProtected
+        self.resolvedValueInternal = resolvedValue
+        self.resolveStatus = resolveStatus
     }
+    
     deinit {
         erase()
     }
     
     public func clone() -> EntryField {
-        return EntryField(name: self.name, value: self.value, isProtected: self.isProtected)
+        let clone = EntryField(
+            name: name,
+            value: value,
+            isProtected: isProtected,
+            resolvedValue: resolvedValue,
+            resolveStatus: resolveStatus
+        )
+        return clone
     }
     
     public func erase() {
         name.erase()
         value.erase()
         isProtected = false
+
+        resolvedValueInternal?.erase()
+        resolvedValueInternal = nil
+        resolveStatus = .noReferences
     }
     
     /// Checks if the field name/value contains given `text`.
@@ -66,10 +130,42 @@ public class EntryField: Eraseable {
         }
         
         let includeFieldValue = !isProtected || includeProtectedValues
-        if includeFieldValue && value.localizedContains(word, options: options) {
-            return true
+        if includeFieldValue {
+            return resolvedValue.localizedContains(word, options: options)
         }
         return false
+    }
+    
+    /// Resolves field's references in relation to the given references,
+    /// and updates the `resolvedValue` property.
+    /// - Parameters:
+    ///   - entries: other entries in the database
+    ///   - maxDepth: maximum permitted depth of chained references
+    /// - Returns: resolved value
+    @discardableResult
+    public func resolveReferences<T>(entries: T, maxDepth: Int = 3) -> String
+        where T: Collection, T.Element: Entry
+    {
+        guard resolvedValueInternal == nil else {
+            return resolvedValueInternal!
+        }
+        
+        var _resolvedValue = value
+        let status = EntryFieldReference.resolveReferences(
+            in: value,
+            entries: entries,
+            maxDepth: maxDepth,
+            resolvedValue: &_resolvedValue
+        )
+        resolveStatus = status
+        resolvedValueInternal = _resolvedValue
+        return _resolvedValue
+    }
+    
+    /// Resets the cached resolved value, so it needs to be resolved again.
+    public func unresolveReferences() {
+        resolvedValueInternal = nil
+        resolveStatus = .noReferences
     }
 }
 
@@ -84,27 +180,46 @@ public class Entry: DatabaseItem, Eraseable {
     public var isSupportsExtraFields: Bool { get { return false } }
     public var isSupportsMultipleAttachments: Bool { return false }
 
-    public var title: String    {
+    public var title: String {
         get{ return getField(with: EntryField.title)?.value ?? "" }
         set { setField(name: EntryField.title, value: newValue) }
     }
+    public var resolvedTitle: String {
+        get{ return getField(with: EntryField.title)?.resolvedValue ?? "" }
+    }
+    
     public var userName: String {
         get{ return getField(with: EntryField.userName)?.value ?? "" }
         set { setField(name: EntryField.userName, value: newValue) }
     }
+    public var resolvedUserName: String {
+        get{ return getField(with: EntryField.userName)?.resolvedValue ?? "" }
+    }
+    
     public var password: String {
         get{ return getField(with: EntryField.password)?.value ?? "" }
         set { setField(name: EntryField.password, value: newValue) }
     }
+    public var resolvedPassword: String {
+        get{ return getField(with: EntryField.password)?.resolvedValue ?? "" }
+    }
+    
     public var url: String {
         get{ return getField(with: EntryField.url)?.value ?? "" }
         set { setField(name: EntryField.url, value: newValue) }
     }
+    public var resolvedURL: String {
+        get{ return getField(with: EntryField.url)?.resolvedValue ?? "" }
+    }
+
     public var notes: String {
         get{ return getField(with: EntryField.notes)?.value ?? "" }
         set { setField(name: EntryField.notes, value: newValue) }
     }
-
+    public var resolvedNotes: String {
+        get{ return getField(with: EntryField.notes)?.resolvedValue ?? "" }
+    }
+    
     public internal(set) var creationTime: Date
     public internal(set) var lastModificationTime: Date
     public internal(set) var lastAccessTime: Date
@@ -170,7 +285,12 @@ public class Entry: DatabaseItem, Eraseable {
     
     /// Builds an appropriate child instance of `EntryField`.
     func makeEntryField(name: String, value: String, isProtected: Bool) -> EntryField {
-        return EntryField(name: name, value: value, isProtected: isProtected)
+        return EntryField(
+            name: name,
+            value: value,
+            isProtected: isProtected,
+            resolvedValue: value, // assume the raw value, until we explicitly go through resolving
+            resolveStatus: .noReferences)
     }
     
     /// Sets standard/fixed fields to empty values.

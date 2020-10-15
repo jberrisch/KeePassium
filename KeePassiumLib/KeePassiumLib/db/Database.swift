@@ -232,5 +232,26 @@ open class Database: Eraseable {
     public func makeAttachment(name: String, data: ByteArray) -> Attachment {
         fatalError("Pure virtual method")
     }
+    
+    /// Resolves all field references in all entries.
+    internal func resolveReferences<T>(allEntries: T)
+        where T: Collection, T.Element: Entry
+    {
+        Diag.debug("Resolving references")
+        
+        // First of all, erase any cached resolved values
+        allEntries.forEach { entry in
+            entry.fields.forEach { field in
+                field.unresolveReferences()
+            }
+        }
+        // And now, resolve them anew
+        allEntries.forEach { entry in
+            entry.fields.forEach { field in
+                field.resolveReferences(entries: allEntries)
+            }
+        }
+        Diag.verbose("References resolved OK")
+    }
 }
 

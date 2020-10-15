@@ -9,9 +9,28 @@
 public class EntryFieldReference {
     public enum Status {
         case parsed
-        case targetMissing
         case resolved
+        case targetMissing
+        case tooDeep
     }
+    public enum ResolveStatus {
+        case noReferences
+        case hasReferences
+        case brokenReferences
+        case tooDeepReferences
+        
+        public var isError: Bool {
+            switch self {
+            case .noReferences,
+                 .hasReferences:
+                return false
+            case .brokenReferences,
+                 .tooDeepReferences:
+                return true
+            }
+        }
+    }
+    
     private(set) public var status: Status
     
     enum FieldType {
@@ -36,31 +55,78 @@ public class EntryFieldReference {
     
     private static let refPrefix = "{REF:"
     private static let regexp = try! NSRegularExpression(
-        pattern: #"{REF:([TUPANI])@([TUPANIO]):(.+)}"#,
+        pattern: #"\{REF:([TUPANI])@([TUPANIO]):(.+?)\}"#,
         options: []
     )
     
     /// Range of this reference in the source string
-    private var range: NSRange?
+    private var range: Range<String.Index>
     private var targetFieldType: FieldType
     private var searchFieldType: FieldType
     private var searchValue: Substring
-
-    /// The referenced field, if resolved.
-    /// (Also `nil` if the target field is UUID. In this case, `status` is `.resolved`, but `target` is `nil`.
-    private(set) public var targetField: Weak<EntryField>?
-   
     
     private init(
-        range: NSRange,
+        range: Range<String.Index>,
         targetFieldType: FieldType,
         searchFieldType: FieldType,
         searchValue: Substring)
     {
+        self.range = range
         self.targetFieldType = targetFieldType
         self.searchFieldType = searchFieldType
         self.searchValue = searchValue
         self.status = .parsed
+    }
+    
+    // MARK: Public interface
+    
+    /// Parses the `value`, identifies any references, resolves them using `entries` and returns the resolved value.
+    /// If there are no references, simply returns `value`.
+    /// - Parameters:
+    ///   - value: raw field value with possible references to other fields.
+    ///   - entries: all entries of the database.
+    ///   - maxDepth: maximum allowed depth of chained references
+    ///   - resolvedValue: inout parameter returns `value` with any references replaced by their respective values.
+    /// - Returns: status indicating whether `value` was successfully resolved
+    public static func resolveReferences<T>(
+        in value: String,
+        entries: T,
+        maxDepth: Int,
+        resolvedValue: inout String
+        ) -> ResolveStatus
+        where T: Collection, T.Element: Entry
+    {
+        guard maxDepth > 0 else {
+            Diag.warning("Too many chained references")
+            // keep resolvedValue unchanged
+            return .tooDeepReferences
+        }
+        
+        let refs = EntryFieldReference.parse(value)
+        if refs.isEmpty { // there are no references
+            resolvedValue = value
+            return .noReferences
+        }
+        
+        var status = ResolveStatus.hasReferences
+        var outputValue = value
+        refs.reversed().forEach { ref in
+            let resolvedRefValue = ref.getResolvedValue(entries: entries, maxDepth: maxDepth - 1)
+            switch ref.status {
+            case .parsed:
+                assertionFailure("Should be resolved")
+            case .targetMissing:
+                status = .brokenReferences
+                // leave the broken ref as it is, keep replacing others
+            case .tooDeep:
+                status = .tooDeepReferences
+                // leave the broken ref as it is, keep replacing others
+            case .resolved:
+                outputValue.replaceSubrange(ref.range, with: resolvedRefValue)
+            }
+        }
+        resolvedValue = outputValue
+        return status
     }
     
     // MARK: Parsing
@@ -70,7 +136,7 @@ public class EntryFieldReference {
     ///     `{REF:<WantedField>@<SearchIn>:<Text>}`.
     ///     The string can contain serveral references.
     /// - Returns: Initialized references with a suitable status
-    public static func parse(_ string: String) -> [EntryFieldReference] {
+    private static func parse(_ string: String) -> [EntryFieldReference] {
         guard string.contains(refPrefix) else {
             // fast check: there are no refs
             return []
@@ -80,7 +146,8 @@ public class EntryFieldReference {
         let fullRange = NSRange(string.startIndex..<string.endIndex, in: string)
         let matches = regexp.matches(in: string, options: [], range: fullRange)
         for match in matches {
-            guard match.numberOfRanges == 3,
+            guard match.numberOfRanges == 4,
+                  let range = Range(match.range, in: string),
                   let targetFieldCodeRange = Range(match.range(at: 1), in: string),
                   let searchFieldCodeRange = Range(match.range(at: 2), in: string),
                   let searchValueRange =  Range(match.range(at: 3), in: string) else
@@ -112,7 +179,7 @@ public class EntryFieldReference {
                 continue
             }
             let ref = EntryFieldReference(
-                range: match.range,
+                range: range,
                 targetFieldType: targetFieldType,
                 searchFieldType: searchFieldType,
                 searchValue: searchValue)
@@ -123,45 +190,67 @@ public class EntryFieldReference {
     
     // MARK: Resolving
     
-    /// Finds the target field of this reference.
-    /// - Parameter entries: entries to search among (e.g. all the DB entries)
-    /// - Returns: `true` if resolved successfully
-    public func resolve(entries: [Entry]) -> Bool {
-        assert(status == .parsed)
+    private func getResolvedValue<T>(entries: T, maxDepth: Int) -> String
+        where T: Collection, T.Element: Entry
+    {
         guard let entry = findEntry(in: entries, field: searchFieldType, value: searchValue) else {
-            targetField = nil
             status = .targetMissing
-            return false
+            return ""
         }
         
         switch targetFieldType {
         case .uuid:
             // UUID is not an EntryField, which makes it rather difficult to reference.
-            // Most likely, nobody will use it as a target field anyway.
-            // We'll recognize UUID target by the combination (resolved, but target field is nil).
-            targetField = nil
-            status = .resolved
+            return entry.uuid.data.asHexString
         case .named(let name):
-            if let _targetField = entry.getField(with: name) {
-                self.targetField = Weak(_targetField)
-                status = .resolved
+            if let targetField = entry.getField(with: name) {
+                let resolvedValue = targetField.resolveReferences(entries: entries, maxDepth: maxDepth - 1)
+                switch targetField.resolveStatus {
+                case .noReferences,
+                     .hasReferences:
+                    status = .resolved
+                    return resolvedValue
+                case .brokenReferences:
+                    // failed to resolve the field, just return the original value
+                    status = .targetMissing
+                    return targetField.value
+                case .tooDeepReferences:
+                    // failed to resolve the field, just return the original value
+                    status = .tooDeep
+                    return targetField.value
+                }
+
             } else {
-                self.targetField = nil
                 status = .targetMissing
+                return ""
             }
         case .otherNamed:
-            if let _targetField = entry.getField(with: searchValue) {
-                self.targetField = Weak(_targetField)
-                status = .resolved
+            if let targetField = entry.getField(with: searchValue) {
+                let resolvedValue = targetField.resolveReferences(entries: entries, maxDepth: maxDepth - 1)
+                switch targetField.resolveStatus {
+                case .noReferences,
+                     .hasReferences:
+                    status = .resolved
+                    return resolvedValue
+                case .brokenReferences:
+                    // failed to resolve the field, just return the original value
+                    status = .targetMissing
+                    return targetField.value
+                case .tooDeepReferences:
+                    // failed to resolve the field, just return the original value
+                    status = .tooDeep
+                    return targetField.value
+                }
             } else {
-                self.targetField = nil
                 status = .targetMissing
+                return ""
             }
         }
-        return status == .resolved
     }
     
-    func findEntry(in entries: [Entry], field: FieldType, value: Substring) -> Entry? {
+    private func findEntry<T>(in entries: T, field: FieldType, value: Substring) -> Entry?
+        where T: Collection, T.Element: Entry
+    {
         let result: Entry?
         switch field {
         case .uuid:
@@ -191,23 +280,6 @@ public class EntryFieldReference {
             })
         }
         return result
-    }
-    
-    public func getValue(maxDepth: Int) -> String {
-        if maxDepth == 0 {
-            return "{REF: ???}" //TODO: localize this
-        }
-        
-        switch status {
-        case .parsed:
-            assertionFailure("The reference should be resolved by now")
-            return "{REF: unresolved}"
-        case .targetMissing:
-            return "{REF: ?}"
-        case .resolved:
-            let field = targetField?.value
-            return field?.getResolvedValue(maxDepth: maxDepth - 1)
-        }
     }
 }
 

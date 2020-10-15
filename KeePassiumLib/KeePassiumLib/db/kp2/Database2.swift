@@ -256,17 +256,25 @@ public class Database2: Database {
             if let backupGroup = getBackupGroup(createIfMissing: false) {
                 backupGroup.deepSetDeleted(true)
             }
-            
+
             progress.localizedDescription = NSLocalizedString(
                 "[Database2/Progress/integrityCheck]",
                 bundle: Bundle.framework,
                 value: "Checking integrity",
                 comment: "Progress bar status")
-            // check if there are any missing or redundant (unreferenced) binaries
-            checkAttachmentsIntegrity(warnings: warnings)
             
+            assert(root != nil)
+            var allEntries = [Entry]()
+            root?.collectAllEntries(to: &allEntries)
+            
+            // check if there are any missing or redundant (unreferenced) binaries
+            checkAttachmentsIntegrity(allEntries: allEntries, warnings: warnings)
+
             // check if there are any (non-critically) misformatted custom fields
-            checkCustomFieldsIntegrity(warnings: warnings)
+            checkCustomFieldsIntegrity(allEntries: allEntries, warnings: warnings)
+
+            progress.localizedDescription = LString.Progress.resolvingFieldReferences
+            resolveReferences(allEntries: allEntries)
             
             Diag.debug("Content loaded OK")
             Diag.verbose("== DB2 progress CP5: \(progress.completedUnitCount)")
@@ -768,7 +776,7 @@ public class Database2: Database {
     
     /// Checks if any entries refer to non-existent binaries,
     /// or any binaries not referenced from entries.
-    func checkAttachmentsIntegrity(warnings: DatabaseLoadingWarnings) {
+    func checkAttachmentsIntegrity(allEntries: [Entry], warnings: DatabaseLoadingWarnings) {
         /// Helper function. Adds attachmentID-to-attachmentName pairs to `nameByID` dict,
         /// for the given entry and its historical versions.
         func mapAttachmentNamesByID(of entry: Entry2, nameByID: inout [Binary2.ID: String]) {
@@ -789,9 +797,6 @@ public class Database2: Database {
                 insertAllAttachmentIDs(of: historyEntry, into: &ids)
             }
         }
-        
-        var allEntries = [Entry]()
-        root?.collectAllEntries(to: &allEntries)
         
         // First of all, ensure all attachments have a name
         maybeFixAttachmentNames(entries: allEntries, warnings: warnings)
@@ -911,11 +916,7 @@ public class Database2: Database {
     
     /// Checks if there are any (non-critically) misformatted custom fields,
     /// and adds a corresponding warning in case of trouble.
-    private func checkCustomFieldsIntegrity(warnings: DatabaseLoadingWarnings) {
-        guard let root = root else { return }
-        var allEntries = [Entry]()
-        root.collectAllEntries(to: &allEntries)
-        
+    private func checkCustomFieldsIntegrity(allEntries: [Entry], warnings: DatabaseLoadingWarnings) {
         let problematicEntries = allEntries.filter { entry in
             let isProblematicEntry = entry.fields.reduce(false) { result, field in
                 return result || field.name.isEmpty
@@ -936,7 +937,7 @@ public class Database2: Database {
             entryPaths)
         warnings.messages.append(warningMessage)
     }
-    
+        
     /// Rebuilds the binary pool from attachments of individual entries (including their histories).
     private func updateBinaries(root: Group2) {
         Diag.verbose("Updating all binaries")
@@ -1069,6 +1070,13 @@ public class Database2: Database {
             try encryptBlocksV4(to: outStream, xmlData: xmlData) // throws ProgressInterruption
         }
         Diag.debug("Content encryption OK")
+        
+        // Re-resolve references to reflect the updated content.
+        // This does not affect the saved file, just its displayed version.
+        var allEntries = [Entry]()
+        root?.collectAllEntries(to: &allEntries)
+        progress.localizedDescription = LString.Progress.resolvingFieldReferences
+        resolveReferences(allEntries: allEntries)
         
         progress.completedUnitCount = progress.totalUnitCount
         return outStream.data!

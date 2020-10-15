@@ -22,6 +22,9 @@ protocol ViewableField: class {
     var visibleName: String { get }
     
     var value: String? { get }
+    var resolvedValue: String? { get }
+    var decoratedValue: String? { get }
+    
     var isProtected: Bool { get }
     
     /// Can this field be edited?
@@ -62,6 +65,8 @@ class BasicViewableField: ViewableField {
     
     var internalName: String { return field?.name ?? "" }
     var value: String? { return field?.value }
+    var resolvedValue: String? { return field?.resolvedValue }
+    var decoratedValue: String? { return field?.decoratedValue }
     var isProtected: Bool { return field?.isProtected ?? false }
     /// True for standard fields that cannot be moved around.
     var isFixed: Bool { return field?.isStandardField ?? false }
@@ -114,6 +119,13 @@ class TOTPViewableField: DynamicViewableField {
     override var value: String {
         return totpGenerator?.generate() ?? ""
     }
+    override var resolvedValue: String? {
+        return value
+    }
+    override var decoratedValue: String? {
+        return value
+    }
+    
     var elapsedTimeFraction: Float? {
         return totpGenerator?.elapsedTimeFraction
     }
