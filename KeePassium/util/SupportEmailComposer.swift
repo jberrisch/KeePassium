@@ -75,7 +75,7 @@ class SupportEmailComposer: NSObject {
             return betaSupportEmail
         }
         
-        if PremiumManager.shared.isPremiumSupportEnabled() {
+        if PremiumManager.shared.isPremiumSupportAvailable() {
             return premiumSupportEmail
         } else {
             return freeSupportEmail
