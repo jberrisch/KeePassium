@@ -139,7 +139,9 @@ class MainCoordinator: NSObject, Coordinator {
             )
         }
         
-        let passwordCredential = ASPasswordCredential(user: entry.userName, password: entry.password)
+        let passwordCredential = ASPasswordCredential(
+            user: entry.resolvedUserName,
+            password: entry.resolvedPassword)        
         rootController.extensionContext.completeRequest(withSelectedCredential: passwordCredential) {
             (expired) in
             HapticFeedback.play(.credentialsPasted)
