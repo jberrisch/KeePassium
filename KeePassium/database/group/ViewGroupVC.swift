@@ -412,14 +412,14 @@ open class ViewGroupVC: UITableViewController, Refreshable {
         case .none:
             return nil
         case .userName:
-            return entry.getField(with: EntryField.userName)?.decoratedValue
+            return entry.getField(with: EntryField.userName)?.premiumDecoratedValue
         case .password:
-            return entry.getField(with: EntryField.password)?.decoratedValue
+            return entry.getField(with: EntryField.password)?.premiumDecoratedValue
         case .url:
-            return entry.getField(with: EntryField.url)?.decoratedValue
+            return entry.getField(with: EntryField.url)?.premiumDecoratedValue
         case .notes:
             return entry.getField(with: EntryField.notes)?
-                .decoratedValue
+                .premiumDecoratedValue
                 .replacingOccurrences(of: "\r", with: " ")
                 .replacingOccurrences(of: "\n", with: " ")
         case .lastModifiedDate:

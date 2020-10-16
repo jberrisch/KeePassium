@@ -47,14 +47,6 @@ public class EntryField: Eraseable {
     public var hasReferences: Bool {
         return resolveStatus != .noReferences
     }
-
-    public var decoratedValue: String {
-        guard hasReferences else {
-            return resolvedValue
-        }
-        return "→ " + resolvedValue
-
-    }
     
     /// True if field's name is one of the fixed/standard KP2 fields.
     public var isStandardField: Bool {

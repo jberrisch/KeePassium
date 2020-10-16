@@ -66,7 +66,7 @@ class BasicViewableField: ViewableField {
     var internalName: String { return field?.name ?? "" }
     var value: String? { return field?.value }
     var resolvedValue: String? { return field?.resolvedValue }
-    var decoratedValue: String? { return field?.decoratedValue }
+    var decoratedValue: String? { return field?.premiumDecoratedValue }
     var isProtected: Bool { return field?.isProtected ?? false }
     /// True for standard fields that cannot be moved around.
     var isFixed: Bool { return field?.isStandardField ?? false }
