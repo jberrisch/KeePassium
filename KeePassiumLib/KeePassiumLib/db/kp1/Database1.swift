@@ -264,11 +264,7 @@ public class Database1: Database {
         
         let loadProgress = ProgressEx()
         loadProgress.totalUnitCount = Int64(header.groupCount + header.entryCount)
-        loadProgress.localizedDescription = NSLocalizedString(
-            "[Database1/Progress] Parsing content",
-            bundle: Bundle.framework,
-            value: "Parsing content",
-            comment: "Status message: processing the content of a database")
+        loadProgress.localizedDescription = LString.Progress.database1ParsingContent
         self.progress.addChild(loadProgress, withPendingUnitCount: ProgressSteps.parsing)
         
         // load all groups
@@ -391,11 +387,7 @@ public class Database1: Database {
             Diag.info("Saving \(groups.count) groups and \(entries.count)+\(metaStreamEntries.count) entries")
             let packingProgress = ProgressEx()
             packingProgress.totalUnitCount = Int64(groups.count + entries.count + metaStreamEntries.count)
-            packingProgress.localizedDescription = NSLocalizedString(
-                "[Database1/Progress] Packing the content",
-                bundle: Bundle.framework,
-                value: "Packing the content",
-                comment: "Status message: collecting database items into a single package")
+            packingProgress.localizedDescription = LString.Progress.database1PackingContent
             progress.addChild(packingProgress, withPendingUnitCount: ProgressSteps.packing)
             Diag.debug("Packing the content")
             // write groups and entries in a buffer

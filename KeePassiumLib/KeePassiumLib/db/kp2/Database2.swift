@@ -180,12 +180,7 @@ public class Database2: Database {
         Diag.info("Loading KP2 database")
         progress.completedUnitCount = 0
         progress.totalUnitCount = ProgressSteps.all
-        progress.localizedDescription = NSLocalizedString(
-            "[Database2/Progress] Loading database",
-            bundle: Bundle.framework,
-            value: "Loading database",
-            comment: "Progress bar status")
-
+        progress.localizedDescription = LString.Progress.database2LoadingDatabase
         do {
             // read header
             try header.read(data: dbFileData) // throws HeaderError
@@ -223,11 +218,7 @@ public class Database2: Database {
             
             if header.isCompressed {
                 // inflate compressed GZip data to XML
-                progress.localizedDescription = NSLocalizedString(
-                    "[Database2/Progress/decompressing]",
-                    bundle: Bundle.framework,
-                    value: "Decompressing database",
-                    comment: "Progress bar status: un-zipping the database content")
+                progress.localizedDescription = LString.Progress.database2DecompressingDatabase
                 Diag.debug("Inflating Gzip data")
                 decryptedData = try decryptedData.gunzipped() // throws GzipError
             } else {
@@ -257,11 +248,7 @@ public class Database2: Database {
                 backupGroup.deepSetDeleted(true)
             }
 
-            progress.localizedDescription = NSLocalizedString(
-                "[Database2/Progress/integrityCheck]",
-                bundle: Bundle.framework,
-                value: "Checking integrity",
-                comment: "Progress bar status")
+            progress.localizedDescription = LString.Progress.database2IntegrityCheck
             
             assert(root != nil)
             var allEntries = [Entry]()
@@ -374,11 +361,7 @@ public class Database2: Database {
         let allBlocksData = ByteArray(capacity: blockBytesCount)
         let readingProgress = ProgressEx()
         readingProgress.totalUnitCount = Int64(blockBytesCount)
-        readingProgress.localizedDescription = NSLocalizedString(
-            "[Database2/Progress] Reading database content",
-            bundle: Bundle.framework,
-            value: "Reading database content",
-            comment: "Progress bar status")
+        readingProgress.localizedDescription = LString.Progress.database2ReadingContent
         progress.addChild(readingProgress, withPendingUnitCount: ProgressSteps.readingBlocks)
         var blockIndex: UInt64 = 0
         while true {
@@ -458,11 +441,7 @@ public class Database2: Database {
         var blockID: UInt32 = 0
         let readingProgress = ProgressEx()
         readingProgress.totalUnitCount = Int64(decryptedData.count - startData.count)
-        readingProgress.localizedDescription = NSLocalizedString(
-            "[Database2/Progress] Reading database content",
-            bundle: Bundle.framework,
-            value: "Reading database content",
-            comment: "Progress bar status")
+        readingProgress.localizedDescription = LString.Progress.database2ReadingContent
         progress.addChild(readingProgress, withPendingUnitCount: ProgressSteps.readingBlocks)
         while(true) {
             guard let inBlockID: UInt32 = decryptedStream.readUInt32() else {
@@ -556,11 +535,7 @@ public class Database2: Database {
         parsingOptions.parserSettings.shouldTrimWhitespace = false
         do {
             Diag.debug("Parsing XML")
-            progress.localizedDescription = NSLocalizedString(
-                "[Database2/Progress/parsingXML]",
-                bundle: Bundle.framework,
-                value: "Parsing database",
-                comment: "Progress bar status: parsing decrypted XML content")
+            progress.localizedDescription = LString.Progress.database2ParsingXML
             let xmlDoc = try AEXMLDocument(xml: xmlData.asData, options: parsingOptions)
             if let xmlError = xmlDoc.error {
                 Diag.error("Cannot parse XML: \(xmlError.localizedDescription)")
@@ -1164,11 +1139,7 @@ public class Database2: Database {
         
         let writeProgress = ProgressEx()
         writeProgress.totalUnitCount = Int64(data.count)
-        writeProgress.localizedDescription = NSLocalizedString(
-            "[Database2/Progress] Writing encrypted blocks",
-            bundle: Bundle.framework,
-            value: "Writing encrypted blocks",
-            comment: "Progress bar status")
+        writeProgress.localizedDescription = LString.Progress.database2WritingBlocks
         progress.addChild(writeProgress, withPendingUnitCount: ProgressSteps.writingBlocks)
         
         Diag.verbose("\(data.count) bytes to write")
@@ -1272,11 +1243,7 @@ public class Database2: Database {
         var blockStart: Int = 0
         var blockID: UInt32 = 0
         let writingProgress = ProgressEx()
-        writingProgress.localizedDescription = NSLocalizedString(
-            "[Database2/Progress] Writing encrypted blocks",
-            bundle: Bundle.framework,
-            value: "Writing encrypted blocks",
-            comment: "Progress bar status")
+        writingProgress.localizedDescription = LString.Progress.database2WritingBlocks
         writingProgress.totalUnitCount = Int64(inData.count)
         progress.addChild(writingProgress, withPendingUnitCount: ProgressSteps.writingBlocks)
         while blockStart != inData.count {
