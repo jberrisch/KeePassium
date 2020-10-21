@@ -55,11 +55,12 @@ public class Database1: Database {
     private enum ProgressSteps {
         static let all: Int64 = 100
         static let keyDerivation: Int64 = 60
+        static let resolvingReferences: Int64 = 5
         
-        static let decryption: Int64 = 30
+        static let decryption: Int64 = 25
         static let parsing: Int64 = 10
 
-        static let encryption: Int64 = 30
+        static let encryption: Int64 = 25
         static let packing: Int64 = 10
     }
     
@@ -264,11 +265,7 @@ public class Database1: Database {
         
         let loadProgress = ProgressEx()
         loadProgress.totalUnitCount = Int64(header.groupCount + header.entryCount)
-        loadProgress.localizedDescription = NSLocalizedString(
-            "[Database1/Progress] Parsing content",
-            bundle: Bundle.framework,
-            value: "Parsing content",
-            comment: "Status message: processing the content of a database")
+        loadProgress.localizedDescription = LString.Progress.database1ParsingContent
         self.progress.addChild(loadProgress, withPendingUnitCount: ProgressSteps.parsing)
         
         // load all groups
@@ -338,6 +335,13 @@ public class Database1: Database {
         }
         // Mark everything inside the backup group as deleted
         backupGroup?.deepSetDeleted(true)
+        
+        // Resolve references in loaded content
+        resolveReferences(
+            allEntries: entries,
+            parentProgress: progress,
+            pendingProgressUnits: ProgressSteps.resolvingReferences
+        )
     }
     
     /// Decrypts DB data using current master key.
@@ -378,15 +382,19 @@ public class Database1: Database {
             var groups = Array<Group>()
             var entries = Array<Entry>()
             root.collectAllChildren(groups: &groups, entries: &entries)
+
+            // Refresh references to reflect the modified content.
+            // This does not affect the output file, just its displayed version.
+            resolveReferences(
+                allEntries: entries,
+                parentProgress: progress,
+                pendingProgressUnits: ProgressSteps.resolvingReferences
+            )
+
             Diag.info("Saving \(groups.count) groups and \(entries.count)+\(metaStreamEntries.count) entries")
-            
             let packingProgress = ProgressEx()
             packingProgress.totalUnitCount = Int64(groups.count + entries.count + metaStreamEntries.count)
-            packingProgress.localizedDescription = NSLocalizedString(
-                "[Database1/Progress] Packing the content",
-                bundle: Bundle.framework,
-                value: "Packing the content",
-                comment: "Status message: collecting database items into a single package")
+            packingProgress.localizedDescription = LString.Progress.database1PackingContent
             progress.addChild(packingProgress, withPendingUnitCount: ProgressSteps.packing)
             Diag.debug("Packing the content")
             // write groups and entries in a buffer

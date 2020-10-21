@@ -113,6 +113,18 @@ struct PricingPlanBenefit {
             value: "Make KeePassium look unique, familiar, or disguise it as a calculator — the choice is yours.",
             comment: "Explanation of a premium feature")
     )
+    
+    static let viewFieldReferences = PricingPlanBenefit(
+        image: .premiumBenefitFieldReferences,
+        title: NSLocalizedString(
+            "[Premium/Benefits/ViewFieldReferences/title]",
+            value: "Show field references",
+            comment: "Title of a premium feature"),
+        description: NSLocalizedString(
+            "[Premium/Benefits/ViewFieldReferences/details]",
+            value: "Use field references to show information from other entries, instead of creating multiple copies of the same information.",
+            comment: "Explanation of a premium feature")
+    )
 }
 
 class PricingPlanFactory {
@@ -195,6 +207,7 @@ class FreePricingPlan: PricingPlan {
             PricingPlanBenefit.attachmentPreview,
             PricingPlanBenefit.yubikeyChallengeResponse,
             PricingPlanBenefit.customAppIcons,
+            PricingPlanBenefit.viewFieldReferences,
         ]
         self.smallPrint = nil
     }
@@ -258,6 +271,7 @@ class PricingPlanPremiumMonthly: RealPricingPlan {
             PricingPlanBenefit.attachmentPreview,
             PricingPlanBenefit.yubikeyChallengeResponse,
             PricingPlanBenefit.customAppIcons,
+            PricingPlanBenefit.viewFieldReferences,
         ]
         self.smallPrint = LString.subscriptionConditions
         self.maybeOfferTrial() // this can change some of the above
@@ -285,6 +299,7 @@ class PricingPlanPremiumYearly: RealPricingPlan {
             PricingPlanBenefit.attachmentPreview,
             PricingPlanBenefit.yubikeyChallengeResponse,
             PricingPlanBenefit.customAppIcons,
+            PricingPlanBenefit.viewFieldReferences,
         ]
         self.smallPrint = LString.subscriptionConditions
         self.maybeOfferTrial() // this can change some of the above
@@ -311,6 +326,7 @@ class PricingPlanPremiumForever: RealPricingPlan {
             PricingPlanBenefit.attachmentPreview,
             PricingPlanBenefit.yubikeyChallengeResponse,
             PricingPlanBenefit.customAppIcons,
+            PricingPlanBenefit.viewFieldReferences,
         ]
         self.smallPrint = nil
     }

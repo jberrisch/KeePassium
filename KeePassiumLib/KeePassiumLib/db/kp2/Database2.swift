@@ -94,15 +94,16 @@ public class Database2: Database {
         // common
         static let all: Int64 = 100
         static let keyDerivation: Int64 = 60
+        static let resolvingReferences: Int64 = 5
 
         // loading
         static let decryption: Int64 = 20
         static let readingBlocks: Int64 = 5
         static let gzipUnpack: Int64 = 5
-        static let parsing: Int64 = 10
+        static let parsing: Int64 = 5
         
         // writing
-        static let packing: Int64 = 10
+        static let packing: Int64 = 5
         static let gzipPack: Int64 = 5
         static let encryption: Int64 = 20
         static let writingBlocks: Int64 = 5
@@ -180,12 +181,7 @@ public class Database2: Database {
         Diag.info("Loading KP2 database")
         progress.completedUnitCount = 0
         progress.totalUnitCount = ProgressSteps.all
-        progress.localizedDescription = NSLocalizedString(
-            "[Database2/Progress] Loading database",
-            bundle: Bundle.framework,
-            value: "Loading database",
-            comment: "Progress bar status")
-
+        progress.localizedDescription = LString.Progress.database2LoadingDatabase
         do {
             // read header
             try header.read(data: dbFileData) // throws HeaderError
@@ -223,11 +219,7 @@ public class Database2: Database {
             
             if header.isCompressed {
                 // inflate compressed GZip data to XML
-                progress.localizedDescription = NSLocalizedString(
-                    "[Database2/Progress/decompressing]",
-                    bundle: Bundle.framework,
-                    value: "Decompressing database",
-                    comment: "Progress bar status: un-zipping the database content")
+                progress.localizedDescription = LString.Progress.database2DecompressingDatabase
                 Diag.debug("Inflating Gzip data")
                 decryptedData = try decryptedData.gunzipped() // throws GzipError
             } else {
@@ -256,18 +248,26 @@ public class Database2: Database {
             if let backupGroup = getBackupGroup(createIfMissing: false) {
                 backupGroup.deepSetDeleted(true)
             }
+
+            progress.localizedDescription = LString.Progress.database2IntegrityCheck
             
-            progress.localizedDescription = NSLocalizedString(
-                "[Database2/Progress/integrityCheck]",
-                bundle: Bundle.framework,
-                value: "Checking integrity",
-                comment: "Progress bar status")
+            assert(root != nil)
+            var allEntries = [Entry]()
+            root?.collectAllEntries(to: &allEntries)
+            
             // check if there are any missing or redundant (unreferenced) binaries
-            checkAttachmentsIntegrity(warnings: warnings)
-            
+            checkAttachmentsIntegrity(allEntries: allEntries, warnings: warnings)
+
             // check if there are any (non-critically) misformatted custom fields
-            checkCustomFieldsIntegrity(warnings: warnings)
-            
+            checkCustomFieldsIntegrity(allEntries: allEntries, warnings: warnings)
+
+            resolveReferences(
+                allEntries: allEntries,
+                parentProgress: progress,
+                pendingProgressUnits: ProgressSteps.resolvingReferences
+            )
+            // Leaving the do-catch block takes 2 s in debug builds; release is ok.
+
             Diag.debug("Content loaded OK")
             Diag.verbose("== DB2 progress CP5: \(progress.completedUnitCount)")
         } catch let error as Header2.HeaderError {
@@ -366,11 +366,7 @@ public class Database2: Database {
         let allBlocksData = ByteArray(capacity: blockBytesCount)
         let readingProgress = ProgressEx()
         readingProgress.totalUnitCount = Int64(blockBytesCount)
-        readingProgress.localizedDescription = NSLocalizedString(
-            "[Database2/Progress] Reading database content",
-            bundle: Bundle.framework,
-            value: "Reading database content",
-            comment: "Progress bar status")
+        readingProgress.localizedDescription = LString.Progress.database2ReadingContent
         progress.addChild(readingProgress, withPendingUnitCount: ProgressSteps.readingBlocks)
         var blockIndex: UInt64 = 0
         while true {
@@ -450,11 +446,7 @@ public class Database2: Database {
         var blockID: UInt32 = 0
         let readingProgress = ProgressEx()
         readingProgress.totalUnitCount = Int64(decryptedData.count - startData.count)
-        readingProgress.localizedDescription = NSLocalizedString(
-            "[Database2/Progress] Reading database content",
-            bundle: Bundle.framework,
-            value: "Reading database content",
-            comment: "Progress bar status")
+        readingProgress.localizedDescription = LString.Progress.database2ReadingContent
         progress.addChild(readingProgress, withPendingUnitCount: ProgressSteps.readingBlocks)
         while(true) {
             guard let inBlockID: UInt32 = decryptedStream.readUInt32() else {
@@ -548,11 +540,7 @@ public class Database2: Database {
         parsingOptions.parserSettings.shouldTrimWhitespace = false
         do {
             Diag.debug("Parsing XML")
-            progress.localizedDescription = NSLocalizedString(
-                "[Database2/Progress/parsingXML]",
-                bundle: Bundle.framework,
-                value: "Parsing database",
-                comment: "Progress bar status: parsing decrypted XML content")
+            progress.localizedDescription = LString.Progress.database2ParsingXML
             let xmlDoc = try AEXMLDocument(xml: xmlData.asData, options: parsingOptions)
             if let xmlError = xmlDoc.error {
                 Diag.error("Cannot parse XML: \(xmlError.localizedDescription)")
@@ -768,7 +756,7 @@ public class Database2: Database {
     
     /// Checks if any entries refer to non-existent binaries,
     /// or any binaries not referenced from entries.
-    func checkAttachmentsIntegrity(warnings: DatabaseLoadingWarnings) {
+    func checkAttachmentsIntegrity(allEntries: [Entry], warnings: DatabaseLoadingWarnings) {
         /// Helper function. Adds attachmentID-to-attachmentName pairs to `nameByID` dict,
         /// for the given entry and its historical versions.
         func mapAttachmentNamesByID(of entry: Entry2, nameByID: inout [Binary2.ID: String]) {
@@ -789,9 +777,6 @@ public class Database2: Database {
                 insertAllAttachmentIDs(of: historyEntry, into: &ids)
             }
         }
-        
-        var allEntries = [Entry]()
-        root?.collectAllEntries(to: &allEntries)
         
         // First of all, ensure all attachments have a name
         maybeFixAttachmentNames(entries: allEntries, warnings: warnings)
@@ -911,11 +896,7 @@ public class Database2: Database {
     
     /// Checks if there are any (non-critically) misformatted custom fields,
     /// and adds a corresponding warning in case of trouble.
-    private func checkCustomFieldsIntegrity(warnings: DatabaseLoadingWarnings) {
-        guard let root = root else { return }
-        var allEntries = [Entry]()
-        root.collectAllEntries(to: &allEntries)
-        
+    private func checkCustomFieldsIntegrity(allEntries: [Entry], warnings: DatabaseLoadingWarnings) {
         let problematicEntries = allEntries.filter { entry in
             let isProblematicEntry = entry.fields.reduce(false) { result, field in
                 return result || field.name.isEmpty
@@ -936,7 +917,7 @@ public class Database2: Database {
             entryPaths)
         warnings.messages.append(warningMessage)
     }
-    
+        
     /// Rebuilds the binary pool from attachments of individual entries (including their histories).
     private func updateBinaries(root: Group2) {
         Diag.verbose("Updating all binaries")
@@ -1070,6 +1051,16 @@ public class Database2: Database {
         }
         Diag.debug("Content encryption OK")
         
+        // Re-resolve references to reflect the updated content.
+        // This does not affect the saved file, just its displayed version.
+        var allEntries = [Entry]()
+        root?.collectAllEntries(to: &allEntries)
+        resolveReferences(
+            allEntries: allEntries,
+            parentProgress: progress,
+            pendingProgressUnits: ProgressSteps.resolvingReferences
+        )
+        
         progress.completedUnitCount = progress.totalUnitCount
         return outStream.data!
     }
@@ -1156,11 +1147,7 @@ public class Database2: Database {
         
         let writeProgress = ProgressEx()
         writeProgress.totalUnitCount = Int64(data.count)
-        writeProgress.localizedDescription = NSLocalizedString(
-            "[Database2/Progress] Writing encrypted blocks",
-            bundle: Bundle.framework,
-            value: "Writing encrypted blocks",
-            comment: "Progress bar status")
+        writeProgress.localizedDescription = LString.Progress.database2WritingBlocks
         progress.addChild(writeProgress, withPendingUnitCount: ProgressSteps.writingBlocks)
         
         Diag.verbose("\(data.count) bytes to write")
@@ -1264,11 +1251,7 @@ public class Database2: Database {
         var blockStart: Int = 0
         var blockID: UInt32 = 0
         let writingProgress = ProgressEx()
-        writingProgress.localizedDescription = NSLocalizedString(
-            "[Database2/Progress] Writing encrypted blocks",
-            bundle: Bundle.framework,
-            value: "Writing encrypted blocks",
-            comment: "Progress bar status")
+        writingProgress.localizedDescription = LString.Progress.database2WritingBlocks
         writingProgress.totalUnitCount = Int64(inData.count)
         progress.addChild(writingProgress, withPendingUnitCount: ProgressSteps.writingBlocks)
         while blockStart != inData.count {

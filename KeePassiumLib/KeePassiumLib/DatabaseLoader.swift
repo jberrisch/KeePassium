@@ -54,7 +54,7 @@ public class DatabaseLoader: ProgressObserver {
         static let willDecryptDatabase: Int64 = 0
         static let didDecryptDatabase: Int64 = 100
         
-        static let willMakeBackup: Int64 = -1
+        static let willMakeBackup: Int64 = -1 // indefinite
     }
     
     weak var delegate: DatabaseLoaderDelegate?
@@ -343,6 +343,7 @@ public class DatabaseLoader: ProgressObserver {
                 && DatabaseManager.shouldUpdateLatestBackup(for: dbRef)
             if shouldUpdateBackup {
                 Diag.debug("Updating latest backup")
+                progress.completedUnitCount = ProgressSteps.willMakeBackup
                 progress.status = LString.Progress.makingDatabaseBackup
                 // At this stage, the DB should have a resolved URL
                 assert(dbRef.url != nil)
