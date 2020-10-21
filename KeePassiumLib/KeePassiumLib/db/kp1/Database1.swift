@@ -55,11 +55,12 @@ public class Database1: Database {
     private enum ProgressSteps {
         static let all: Int64 = 100
         static let keyDerivation: Int64 = 60
+        static let resolvingReferences: Int64 = 5
         
-        static let decryption: Int64 = 30
+        static let decryption: Int64 = 25
         static let parsing: Int64 = 10
 
-        static let encryption: Int64 = 30
+        static let encryption: Int64 = 25
         static let packing: Int64 = 10
     }
     
@@ -335,9 +336,12 @@ public class Database1: Database {
         // Mark everything inside the backup group as deleted
         backupGroup?.deepSetDeleted(true)
         
-        progress.localizedDescription = LString.Progress.resolvingFieldReferences
         // Resolve references in loaded content
-        resolveReferences(allEntries: entries)
+        resolveReferences(
+            allEntries: entries,
+            parentProgress: progress,
+            pendingProgressUnits: ProgressSteps.resolvingReferences
+        )
     }
     
     /// Decrypts DB data using current master key.
@@ -381,8 +385,11 @@ public class Database1: Database {
 
             // Refresh references to reflect the modified content.
             // This does not affect the output file, just its displayed version.
-            progress.localizedDescription = LString.Progress.resolvingFieldReferences
-            resolveReferences(allEntries: entries)
+            resolveReferences(
+                allEntries: entries,
+                parentProgress: progress,
+                pendingProgressUnits: ProgressSteps.resolvingReferences
+            )
 
             Diag.info("Saving \(groups.count) groups and \(entries.count)+\(metaStreamEntries.count) entries")
             let packingProgress = ProgressEx()

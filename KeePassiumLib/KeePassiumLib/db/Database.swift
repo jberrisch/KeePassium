@@ -234,10 +234,22 @@ open class Database: Eraseable {
     }
     
     /// Resolves all field references in all entries.
-    internal func resolveReferences<T>(allEntries: T)
+    /// - Parameters:
+    ///   - allEntries: all entries of the database
+    ///   - parentProgress: DB's loading progress; the resolving progress will be added to it as a child.
+    ///   - pendingProgressUnits: parent progress units designated for the resolving phase.
+    internal func resolveReferences<T>(
+        allEntries: T,
+        parentProgress: ProgressEx,
+        pendingProgressUnits: Int64)
         where T: Collection, T.Element: Entry
     {
         Diag.debug("Resolving references")
+        
+        let resolvingProgress = ProgressEx()
+        resolvingProgress.totalUnitCount = Int64(allEntries.count)
+        resolvingProgress.localizedDescription = LString.Progress.resolvingFieldReferences
+        progress.addChild(resolvingProgress, withPendingUnitCount: pendingProgressUnits)
         
         // First of all, erase any cached resolved values
         allEntries.forEach { entry in
@@ -245,13 +257,20 @@ open class Database: Eraseable {
                 field.unresolveReferences()
             }
         }
+        
+        var entriesProcessed = 0
         // And now, resolve them anew
         allEntries.forEach { entry in
             entry.fields.forEach { field in
                 field.resolveReferences(entries: allEntries)
             }
+            entriesProcessed += 1
+            if entriesProcessed % 100 == 0 {
+                resolvingProgress.completedUnitCount = Int64(entriesProcessed)
+            }
         }
-        Diag.verbose("References resolved OK")
+        resolvingProgress.completedUnitCount = resolvingProgress.totalUnitCount // ensure 100%
+        Diag.debug("References resolved OK")
     }
 }
 

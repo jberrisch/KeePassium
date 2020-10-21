@@ -94,15 +94,16 @@ public class Database2: Database {
         // common
         static let all: Int64 = 100
         static let keyDerivation: Int64 = 60
+        static let resolvingReferences: Int64 = 5
 
         // loading
         static let decryption: Int64 = 20
         static let readingBlocks: Int64 = 5
         static let gzipUnpack: Int64 = 5
-        static let parsing: Int64 = 10
+        static let parsing: Int64 = 5
         
         // writing
-        static let packing: Int64 = 10
+        static let packing: Int64 = 5
         static let gzipPack: Int64 = 5
         static let encryption: Int64 = 20
         static let writingBlocks: Int64 = 5
@@ -260,9 +261,13 @@ public class Database2: Database {
             // check if there are any (non-critically) misformatted custom fields
             checkCustomFieldsIntegrity(allEntries: allEntries, warnings: warnings)
 
-            progress.localizedDescription = LString.Progress.resolvingFieldReferences
-            resolveReferences(allEntries: allEntries)
-            
+            resolveReferences(
+                allEntries: allEntries,
+                parentProgress: progress,
+                pendingProgressUnits: ProgressSteps.resolvingReferences
+            )
+            // Leaving the do-catch block takes 2 s in debug builds; release is ok.
+
             Diag.debug("Content loaded OK")
             Diag.verbose("== DB2 progress CP5: \(progress.completedUnitCount)")
         } catch let error as Header2.HeaderError {
@@ -1050,8 +1055,11 @@ public class Database2: Database {
         // This does not affect the saved file, just its displayed version.
         var allEntries = [Entry]()
         root?.collectAllEntries(to: &allEntries)
-        progress.localizedDescription = LString.Progress.resolvingFieldReferences
-        resolveReferences(allEntries: allEntries)
+        resolveReferences(
+            allEntries: allEntries,
+            parentProgress: progress,
+            pendingProgressUnits: ProgressSteps.resolvingReferences
+        )
         
         progress.completedUnitCount = progress.totalUnitCount
         return outStream.data!
