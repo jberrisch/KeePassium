@@ -135,7 +135,7 @@ class ViewEntryVC: UIViewController, Refreshable {
 
     func refresh() {
         guard let entry = entry else { return }
-        titleLabel.setText(entry.title, strikethrough: entry.isExpired)
+        titleLabel.setText(entry.resolvedTitle, strikethrough: entry.isExpired)
         titleImageView?.image = UIImage.kpIcon(forEntry: entry)
         if isHistoryMode {
             if traitCollection.horizontalSizeClass == .compact {

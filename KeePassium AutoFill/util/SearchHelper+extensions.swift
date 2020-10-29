@@ -146,9 +146,9 @@ extension SearchHelper {
     
     /// Returns a similarity score of the given `domain` in the given `entry`.
     private func getSimilarity(domain: String, entry: Entry, options: String.CompareOptions) -> Double {
-        let urlScore = howSimilar(domain: domain, with: URL.guessFrom(malformedString: entry.url))
-        let titleScore = entry.title.localizedContains(domain, options: options) ? 0.8 : 0.0
-        let notesScore = entry.notes.localizedContains(domain, options: options) ? 0.5 : 0.0
+        let urlScore = howSimilar(domain: domain, with: URL.guessFrom(malformedString: entry.resolvedURL))
+        let titleScore = entry.resolvedTitle.localizedContains(domain, options: options) ? 0.8 : 0.0
+        let notesScore = entry.resolvedNotes.localizedContains(domain, options: options) ? 0.5 : 0.0
         
         if let entry2 = entry as? Entry2 {
             // Entry 2
@@ -217,22 +217,22 @@ extension SearchHelper {
         // - `url.host` occurs inside custom field values -> 0.6
         
         // is entry URL similar to the `url`?
-        let urlScore = howSimilar(url, with: URL.guessFrom(malformedString: entry.url))
+        let urlScore = howSimilar(url, with: URL.guessFrom(malformedString: entry.resolvedURL))
         // does `url.host` occure inside entry title or notes?
         let titleScore: Double
         let notesScore: Double
         
         if let urlHost = url.host, let urlDomain2 = url.domain2 {
-            if entry.title.localizedCaseInsensitiveContains(urlHost) {
+            if entry.resolvedTitle.localizedCaseInsensitiveContains(urlHost) {
                 titleScore = 0.8
-            } else if entry.title.localizedCaseInsensitiveContains(urlDomain2) {
+            } else if entry.resolvedTitle.localizedCaseInsensitiveContains(urlDomain2) {
                 titleScore = 0.5
             } else {
                 titleScore = 0.0
             }
-            if entry.notes.localizedCaseInsensitiveContains(urlHost) {
+            if entry.resolvedNotes.localizedCaseInsensitiveContains(urlHost) {
                 notesScore = 0.5
-            } else if entry.notes.localizedCaseInsensitiveContains(urlDomain2) {
+            } else if entry.resolvedNotes.localizedCaseInsensitiveContains(urlDomain2) {
                 notesScore = 0.3
             } else {
                 notesScore = 0.0

@@ -254,12 +254,6 @@ public class Database2: Database {
             assert(root != nil)
             var allCurrentEntries = [Entry]()
             root?.collectAllEntries(to: &allCurrentEntries) // excludes history entries
-            
-            // check if there are any missing or redundant (unreferenced) binaries
-            checkAttachmentsIntegrity(allEntries: allCurrentEntries, warnings: warnings)
-
-            // check if there are any (non-critically) misformatted custom fields
-            checkCustomFieldsIntegrity(allEntries: allCurrentEntries, warnings: warnings)
 
             var allEntriesPlusHistory = [Entry](reserveCapacity: allCurrentEntries.count * 4)
             allCurrentEntries.forEach { entry in
@@ -268,13 +262,21 @@ public class Database2: Database {
                 allEntriesPlusHistory.append(contentsOf: entry2.history)
             }
             
+            // Field references should be resolved before integrity checks:
+            // error messages might need to mention resolved entry titles.
             resolveReferences(
                 allEntries: allEntriesPlusHistory,
                 parentProgress: progress,
                 pendingProgressUnits: ProgressSteps.resolvingReferences
             )
-            // Leaving the do-catch block takes 2 s in debug builds; release is ok.
 
+            // check if there are any missing or redundant (unreferenced) binaries
+            checkAttachmentsIntegrity(allEntries: allCurrentEntries, warnings: warnings)
+
+            // check if there are any (non-critically) misformatted custom fields
+            checkCustomFieldsIntegrity(allEntries: allCurrentEntries, warnings: warnings)
+
+            // Leaving the do-catch block takes 2 s in debug builds; release is ok.
             Diag.debug("Content loaded OK")
             Diag.verbose("== DB2 progress CP5: \(progress.completedUnitCount)")
         } catch let error as Header2.HeaderError {
@@ -886,7 +888,7 @@ public class Database2: Database {
             return
         }
         let listOfEntryNames = affectedEntries
-            .compactMap { $0.getGroupPath() + "/" + $0.title } // get names
+            .compactMap { $0.getGroupPath() + "/" + $0.resolvedTitle } // get names
             .map { "\"\($0)\"" } // add surrounding quotes
             .joined(separator: "\n ") // merge into a string
         
@@ -913,7 +915,7 @@ public class Database2: Database {
         guard problematicEntries.count > 0 else { return }
         
         let entryPaths = problematicEntries
-            .map { entry in "'\(entry.title)' in '\(entry.getGroupPath())'" }
+            .map { entry in "'\(entry.resolvedTitle)' in '\(entry.getGroupPath())'" }
             .joined(separator: "\n")
         let warningMessage = String.localizedStringWithFormat(
             NSLocalizedString(

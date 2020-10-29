@@ -413,7 +413,7 @@ public class Database1: Database {
             // also write the meta-stream entries (which are not included in the above list)
             for metaEntry in metaStreamEntries {
                 metaEntry.write(to: contentStream)
-                print("Wrote a meta-stream entry: \(metaEntry.notes)")
+                print("Wrote a meta-stream entry: \(metaEntry.rawNotes)")
                 packingProgress.completedUnitCount += 1
                 if packingProgress.isCancelled {
                     throw ProgressInterruption.cancelled(reason: packingProgress.cancellationReason)

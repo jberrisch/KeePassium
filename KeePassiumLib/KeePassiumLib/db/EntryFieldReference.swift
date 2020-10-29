@@ -203,7 +203,7 @@ public class EntryFieldReference {
             // UUID is not an EntryField, which makes it rather difficult to reference.
             return entry.uuid.data.asHexString
         case .named(let name):
-            if let targetField = entry.getField(with: name) {
+            if let targetField = entry.getField(name) {
                 let resolvedValue = targetField.resolveReferences(entries: entries, maxDepth: maxDepth - 1)
                 switch targetField.resolveStatus {
                 case .noReferences,
@@ -225,7 +225,7 @@ public class EntryFieldReference {
                 return ""
             }
         case .otherNamed:
-            if let targetField = entry.getField(with: searchValue) {
+            if let targetField = entry.getField(searchValue) {
                 let resolvedValue = targetField.resolveReferences(entries: entries, maxDepth: maxDepth - 1)
                 switch targetField.resolveStatus {
                 case .noReferences,
@@ -269,13 +269,13 @@ public class EntryFieldReference {
             result = entries.first(where: { $0.uuid == uuid })
         case .named(let name):
             result = entries.first(where: { entry in
-                let field = entry.getField(with: name)
+                let field = entry.getField(name)
                 return field?.value.compare(value) == .some(.orderedSame)
             })
         case .otherNamed:
             // For custom fields, KeePass searches by field name
             result = entries.first(where: { entry in
-                let field = entry.getField(with: value)
+                let field = entry.getField(value)
                 return field != nil
             })
         }
