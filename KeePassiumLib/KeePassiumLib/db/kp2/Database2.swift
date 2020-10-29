@@ -252,17 +252,24 @@ public class Database2: Database {
             progress.localizedDescription = LString.Progress.database2IntegrityCheck
             
             assert(root != nil)
-            var allEntries = [Entry]()
-            root?.collectAllEntries(to: &allEntries)
+            var allCurrentEntries = [Entry]()
+            root?.collectAllEntries(to: &allCurrentEntries) // excludes history entries
             
             // check if there are any missing or redundant (unreferenced) binaries
-            checkAttachmentsIntegrity(allEntries: allEntries, warnings: warnings)
+            checkAttachmentsIntegrity(allEntries: allCurrentEntries, warnings: warnings)
 
             // check if there are any (non-critically) misformatted custom fields
-            checkCustomFieldsIntegrity(allEntries: allEntries, warnings: warnings)
+            checkCustomFieldsIntegrity(allEntries: allCurrentEntries, warnings: warnings)
 
+            var allEntriesPlusHistory = [Entry](reserveCapacity: allCurrentEntries.count * 4)
+            allCurrentEntries.forEach { entry in
+                allEntriesPlusHistory.append(entry)
+                guard let entry2 = entry as? Entry2 else { assertionFailure(); return }
+                allEntriesPlusHistory.append(contentsOf: entry2.history)
+            }
+            
             resolveReferences(
-                allEntries: allEntries,
+                allEntries: allEntriesPlusHistory,
                 parentProgress: progress,
                 pendingProgressUnits: ProgressSteps.resolvingReferences
             )
