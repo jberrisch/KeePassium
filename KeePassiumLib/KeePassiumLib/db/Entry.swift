@@ -22,7 +22,8 @@ public class EntryField: Eraseable {
     public var name: String
     public var value: String {
         didSet {
-            resolvedValueInternal = nil
+            // assume the raw value, until we explicitly go through resolving
+            resolvedValueInternal = value
         }
     }
     public var isProtected: Bool
