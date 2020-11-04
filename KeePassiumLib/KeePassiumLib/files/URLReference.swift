@@ -722,7 +722,7 @@ public class URLReference:
         if let urlString = _sandboxBookmarkedURLString ?? _hackyBookmarkedURLString {
             // In Xcode 11.3 debugger, bookmarkedURL appears `nil` even after assignment.
             // This is a debugger bug: https://stackoverflow.com/questions/58155061/convert-string-to-url-why-is-resulting-variable-nil
-            self.bookmarkedURL = URL(fileURLWithPath: urlString)
+            self.bookmarkedURL = URL(fileURLWithPath: urlString, isDirectory: false)
         }
         if let fileProviderID = _fileProviderID {
             self.fileProvider = FileProvider(rawValue: fileProviderID)
