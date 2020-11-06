@@ -133,6 +133,8 @@ extension AppDelegate: WatchdogDelegate {
                 _appCoverWindow.makeKeyAndVisible()
             }
             print("App cover shown")
+            // prevent VoiceOver from looking beneath the passcode window
+            coverVC.view.accessibilityViewIsModal = true
             coverVC.view.snapshotView(afterScreenUpdates: true)
         }
     }
@@ -180,6 +182,8 @@ extension AppDelegate: WatchdogDelegate {
             _appLockWindow.rootViewController = passcodeInputVC
             _appLockWindow.makeKeyAndVisible()
         }
+        // prevent VoiceOver from looking beneath the passcode window
+        passcodeInputVC.view.accessibilityViewIsModal = true
         passcodeInputVC.view.snapshotView(afterScreenUpdates: true)
         
         self.appLockWindow = _appLockWindow
