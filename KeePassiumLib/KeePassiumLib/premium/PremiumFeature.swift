@@ -25,7 +25,7 @@ public enum PremiumFeature: Int {
         .canKeepMasterKeyOnDatabaseTimeout: Date(iso8601string: "2020-07-14T00:00:00Z")!,
         .canChangeAppIcon: Date(iso8601string: "2020-08-04T00:00:00Z")!,
         .canUseExpressUnlock: Date(iso8601string: "2020-10-01T00:00:00Z")!,
-        .canViewFieldReferences: Date(iso8601string: "2020-10-16T00:00:00Z")!,
+        .canViewFieldReferences: Date(iso8601string: "2020-11-12T00:00:00Z")!,
     ]
     
     /// Can unlock any added database (otherwise only one, with olders modification date)
