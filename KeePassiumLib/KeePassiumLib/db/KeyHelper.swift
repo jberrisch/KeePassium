@@ -13,12 +13,12 @@ public class KeyHelper {
     internal let keyFileKeyLength = 32
     
     /// Combines given key components into a format-specific key.
-    /// At least one parameter should be non-empty.
+    /// Both can be empty simultaneously, but then there should be a challenge-response handler (defined separately)
     /// (Pure virtual method, must be overriden)
     ///
     /// - Parameter: passwordData - password data (possibly empty)
     /// - Parameter: keyFileData - key file data (possibly empty)
-    /// - Returns: composite key
+    /// - Returns: composite key (possibly empty)
     public func combineComponents(passwordData: SecureByteArray, keyFileData: ByteArray) -> SecureByteArray {
         fatalError("Pure virtual method")
     }
