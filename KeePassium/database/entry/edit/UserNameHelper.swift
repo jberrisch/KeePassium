@@ -56,8 +56,12 @@ class UserNameHelper {
         }
     }
     
+    static func getRandomUserName() -> String {
+        return UserNameGenerator.generate()
+    }
+    
     private class UserNameGenerator {
-        static let vocals = ["a","e","i","o","u"]
+        static let vowels = ["a","e","i","o","u"]
         static let consonants = ["b","c","d","f","g","h","j","k","l","m","n","p","q","r","s","t","v","w","x","y","z"]
         
         /// Returns a random readable user name
@@ -79,7 +83,7 @@ class UserNameHelper {
                 if i % 2 == 0 {
                     chars.append(consonants[Int(randomIndices[i]) % consonants.count])
                 } else {
-                    chars.append(vocals[Int(randomIndices[i]) % vocals.count])
+                    chars.append(vowels[Int(randomIndices[i]) % vowels.count])
                 }
             }
             return chars.joined()
