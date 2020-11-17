@@ -398,4 +398,15 @@ public enum LString {
         "[YubiKey] Touch the key",
         value: "Touch the key",
         comment: "Call for action: touch the sides of YubiKey 5Ci to continue")
+    
+    
+    /// Concatenates given string parts, depending on the current UI direction (LTR or RTL)
+    /// - Parameter parts: substrings to join, in left-to-right order
+    /// - Returns: joined substring in locale-dependent order
+    public static func directionAwareConcatenate(_ parts: [String]) -> String {
+        if UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft {
+            return parts.reversed().joined()
+        }
+        return parts.joined()
+    }
 }
