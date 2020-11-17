@@ -19,7 +19,6 @@ class UserNameHelper {
             namesLeft -= 1
         }
         result.append(contentsOf: getUniqueUserNames(from: database).prefix(namesLeft - 1))
-        result.append(UserNameGenerator.generate())
         return result
     }
     
