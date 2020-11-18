@@ -930,4 +930,10 @@ extension MainCoordinator: FirstSetupDelegate {
     func didPressAddDatabase(in firstSetup: FirstSetupVC, at popoverAnchor: PopoverAnchor) {
         addDatabase(popoverAnchor: popoverAnchor)
     }
+    
+    func didPressSkip(in firstSetup: FirstSetupVC) {
+        watchdog.restart()
+        navigationController.popToRootViewController(animated: true)
+        refreshFileList()
+    }
 }
