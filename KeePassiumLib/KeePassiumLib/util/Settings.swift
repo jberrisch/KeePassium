@@ -78,6 +78,7 @@ public class Settings {
         case lockAllDatabasesOnFailedPasscode
         case recentUserActivityTimestamp
         case appLockTimeout
+        case lockAppOnLaunch
         case databaseLockTimeout
         case lockDatabasesOnTimeout
         
@@ -1019,6 +1020,22 @@ public class Settings {
             if newValue != oldValue {
                 postChangeNotification(changedKey: Keys.appLockTimeout)
             }
+        }
+    }
+    
+    /// Engage App Lock when launched
+    public var isLockAppOnLaunch: Bool {
+        get {
+            let stored = UserDefaults.appGroupShared
+                .object(forKey: Keys.lockAppOnLaunch.rawValue)
+                as? Bool
+            return stored ?? false
+        }
+        set {
+            updateAndNotify(
+                oldValue: isLockAppOnLaunch,
+                newValue: newValue,
+                key: .lockAppOnLaunch)
         }
     }
     

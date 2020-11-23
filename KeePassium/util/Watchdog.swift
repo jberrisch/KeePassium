@@ -65,6 +65,9 @@ class Watchdog {
     }
     private var _isDatabaseTimeoutExpired = false
     
+    /// Is set to `true` after the launch-time triggers are handled
+    private var isAppLaunchHandled = false
+    
     public weak var delegate: WatchdogDelegate?
     
     private var appLockTimer: Timer?
@@ -167,7 +170,14 @@ class Watchdog {
     }
 
     private func isShouldEngageAppLock() -> Bool {
-        guard Settings.current.isAppLockEnabled else { return false }
+        let settings = Settings.current
+        guard settings.isAppLockEnabled else { return false }
+        
+        if !isAppLaunchHandled && settings.isLockAppOnLaunch {
+            isAppLaunchHandled = true
+            return true
+        }
+        
         let timeout = Settings.current.appLockTimeout
         switch timeout {
         case .never: // app lock disabled

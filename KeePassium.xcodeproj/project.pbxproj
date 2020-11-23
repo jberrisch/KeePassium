@@ -244,6 +244,14 @@
 		758BADBB24B5F8BF00CC9265 /* PricingPlans.swift in Sources */ = {isa = PBXBuildFile; fileRef = 758BADB924B5F8BF00CC9265 /* PricingPlans.swift */; };
 		758BF0D820D1B1DA00897C83 /* ValidatingTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 758BF0D720D1B1DA00897C83 /* ValidatingTextField.swift */; };
 		758BF0DD20D220B300897C83 /* WatchdogAwareTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 758BF0DC20D220B300897C83 /* WatchdogAwareTextField.swift */; };
+		758CA53D2569B9960034EF10 /* SwitchCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 758CA53C2569B9960034EF10 /* SwitchCell.xib */; };
+		758CA53E2569B9960034EF10 /* SwitchCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 758CA53C2569B9960034EF10 /* SwitchCell.xib */; };
+		758CA53F2569B9960034EF10 /* SwitchCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 758CA53C2569B9960034EF10 /* SwitchCell.xib */; };
+		758CA5402569B9960034EF10 /* SwitchCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 758CA53C2569B9960034EF10 /* SwitchCell.xib */; };
+		758CA5442569B9EA0034EF10 /* SwitchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 758CA5432569B9EA0034EF10 /* SwitchCell.swift */; };
+		758CA5452569B9EA0034EF10 /* SwitchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 758CA5432569B9EA0034EF10 /* SwitchCell.swift */; };
+		758CA5462569B9EA0034EF10 /* SwitchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 758CA5432569B9EA0034EF10 /* SwitchCell.swift */; };
+		758CA5472569B9EA0034EF10 /* SwitchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 758CA5432569B9EA0034EF10 /* SwitchCell.swift */; };
 		758D8E902274D2BE00644FA6 /* DatabaseCreatorVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 758D8E8F2274D2BE00644FA6 /* DatabaseCreatorVC.swift */; };
 		758FC10F24CEF71F00BAD35C /* appicon-info_iPadProApp_83.5@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 758FC0D824CEF71500BAD35C /* appicon-info_iPadProApp_83.5@2x.png */; };
 		758FC11024CEF71F00BAD35C /* appicon-info_iPadProApp_83.5@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 758FC0D824CEF71500BAD35C /* appicon-info_iPadProApp_83.5@2x.png */; };
@@ -986,6 +994,8 @@
 		758BADB924B5F8BF00CC9265 /* PricingPlans.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PricingPlans.swift; sourceTree = "<group>"; };
 		758BF0D720D1B1DA00897C83 /* ValidatingTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidatingTextField.swift; sourceTree = "<group>"; };
 		758BF0DC20D220B300897C83 /* WatchdogAwareTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchdogAwareTextField.swift; sourceTree = "<group>"; };
+		758CA53C2569B9960034EF10 /* SwitchCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SwitchCell.xib; sourceTree = "<group>"; };
+		758CA5432569B9EA0034EF10 /* SwitchCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchCell.swift; sourceTree = "<group>"; };
 		758D8E8F2274D2BE00644FA6 /* DatabaseCreatorVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseCreatorVC.swift; sourceTree = "<group>"; };
 		758FC0D824CEF71500BAD35C /* appicon-info_iPadProApp_83.5@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "appicon-info_iPadProApp_83.5@2x.png"; sourceTree = "<group>"; };
 		758FC0D924CEF71500BAD35C /* appicon-info_iPadApp_76.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "appicon-info_iPadApp_76.png"; sourceTree = "<group>"; };
@@ -1878,6 +1888,8 @@
 				757ADC4E23A5180600D708D2 /* DismissablePopover.swift */,
 				75BFB13E2481553D0017B980 /* DynamicFileList.swift */,
 				758BADB424B5EAFF00CC9265 /* GradientSeparatorView.swift */,
+				758CA53C2569B9960034EF10 /* SwitchCell.xib */,
+				758CA5432569B9EA0034EF10 /* SwitchCell.swift */,
 			);
 			path = views;
 			sourceTree = "<group>";
@@ -2133,6 +2145,7 @@
 				75802632222EBC3800F4525F /* ProgressVC.storyboard in Resources */,
 				7584CEF124D208E80063B421 /* HardwareKeyPicker.storyboard in Resources */,
 				750CFBCE21BA9ACD00E62B09 /* MainInterface.storyboard in Resources */,
+				758CA53E2569B9960034EF10 /* SwitchCell.xib in Resources */,
 				755B863923054FC700E9FC83 /* WelcomeVC.storyboard in Resources */,
 				755E7D9F232008300010E199 /* Localizable.strings in Resources */,
 				751E0D292309AFE50088BB10 /* CrashReportVC.storyboard in Resources */,
@@ -2221,6 +2234,7 @@
 				758FC12D24CEF72000BAD35C /* appicon-info_iPadApp_76@2x.png in Resources */,
 				75ED429D2313A3EF003DE72E /* SettingsDatabaseTimeoutVC.storyboard in Resources */,
 				758FC17B24CEF72000BAD35C /* appicon-atom-black_iPhoneApp_60@3x.png in Resources */,
+				758CA53D2569B9960034EF10 /* SwitchCell.xib in Resources */,
 				758FC14724CEF72000BAD35C /* appicon-atom-white_iPadApp_76.png in Resources */,
 				751E0CE92309AE860088BB10 /* SettingsFileSortingVC.storyboard in Resources */,
 				758FC11324CEF72000BAD35C /* appicon-keepass_iPhoneApp_60@3x.png in Resources */,
@@ -2316,6 +2330,7 @@
 				758FC12E24CEF72000BAD35C /* appicon-info_iPadApp_76@2x.png in Resources */,
 				75B38C71233E5B7C006BDEFC /* SettingsDatabaseTimeoutVC.storyboard in Resources */,
 				758FC17C24CEF72000BAD35C /* appicon-atom-black_iPhoneApp_60@3x.png in Resources */,
+				758CA53F2569B9960034EF10 /* SwitchCell.xib in Resources */,
 				758FC14824CEF72000BAD35C /* appicon-atom-white_iPadApp_76.png in Resources */,
 				75B38C72233E5B7C006BDEFC /* SettingsFileSortingVC.storyboard in Resources */,
 				758FC11424CEF72000BAD35C /* appicon-keepass_iPhoneApp_60@3x.png in Resources */,
@@ -2348,6 +2363,7 @@
 				75D7DFB3233E5E310029AD87 /* ProgressVC.storyboard in Resources */,
 				7584CEF324D208E80063B421 /* HardwareKeyPicker.storyboard in Resources */,
 				75D7DFB4233E5E310029AD87 /* MainInterface.storyboard in Resources */,
+				758CA5402569B9960034EF10 /* SwitchCell.xib in Resources */,
 				75D7DFB5233E5E310029AD87 /* WelcomeVC.storyboard in Resources */,
 				75D7DFB6233E5E310029AD87 /* Localizable.strings in Resources */,
 				75D7DFB7233E5E310029AD87 /* CrashReportVC.storyboard in Resources */,
@@ -2433,6 +2449,7 @@
 				7573FD8C2321664F00DCDA5A /* MultilineButton.swift in Sources */,
 				750CFBD921BAD7FF00E62B09 /* Refreshable.swift in Sources */,
 				757FB3D021F9C52600F016FA /* UITableViewCell+extension.swift in Sources */,
+				758CA5452569B9EA0034EF10 /* SwitchCell.swift in Sources */,
 				75CFBE2A21C2BDDF0029A80A /* DatabaseUnlockerVC.swift in Sources */,
 				7575B24922D8476300B84B3F /* SearchHelper+extensions.swift in Sources */,
 				750CFBDC21BAD7FF00E62B09 /* UIColor+namedColors.swift in Sources */,
@@ -2584,6 +2601,7 @@
 				75F4ACFC21776F4800B22D8B /* LString.swift in Sources */,
 				7558D06223CE2F3E00547621 /* ChallengeResponseManager.swift in Sources */,
 				750D127E20CF071600BE0CCE /* EditGroupVC.swift in Sources */,
+				758CA5442569B9EA0034EF10 /* SwitchCell.swift in Sources */,
 				7579A06A24F074D500C98F24 /* AppHistory.swift in Sources */,
 				757ADC4523A1047600D708D2 /* HardwareKeyPicker.swift in Sources */,
 				75C94C5B20B4B8C2004FA29D /* ViewEntryVC.swift in Sources */,
@@ -2713,6 +2731,7 @@
 				75B38C43233E5B7C006BDEFC /* LString.swift in Sources */,
 				7558D06323CE2F4100547621 /* ChallengeResponseManager.swift in Sources */,
 				75B38C44233E5B7C006BDEFC /* EditGroupVC.swift in Sources */,
+				758CA5462569B9EA0034EF10 /* SwitchCell.swift in Sources */,
 				7579A06B24F074D500C98F24 /* AppHistory.swift in Sources */,
 				757ADC4723A1047600D708D2 /* HardwareKeyPicker.swift in Sources */,
 				75B38C46233E5B7C006BDEFC /* ViewEntryVC.swift in Sources */,
@@ -2761,6 +2780,7 @@
 				75D7DF8D233E5E310029AD87 /* MultilineButton.swift in Sources */,
 				75D7DF8E233E5E310029AD87 /* Refreshable.swift in Sources */,
 				75D7DF8F233E5E310029AD87 /* UITableViewCell+extension.swift in Sources */,
+				758CA5472569B9EA0034EF10 /* SwitchCell.swift in Sources */,
 				75D7DF90233E5E310029AD87 /* DatabaseUnlockerVC.swift in Sources */,
 				75D7DF91233E5E310029AD87 /* SearchHelper+extensions.swift in Sources */,
 				75D7DF92233E5E310029AD87 /* UIColor+namedColors.swift in Sources */,
