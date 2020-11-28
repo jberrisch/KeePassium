@@ -808,7 +808,7 @@ extension MainCoordinator: WatchdogDelegate {
             animated: true,
             completion: { [weak self] (finished) in
                 passcodeInputVC.shouldActivateKeyboard = false
-                self?.showBiometricAuth()
+                self?.maybeShowBiometricAuth()
             }
         )
         self.passcodeInputController = passcodeInputVC
@@ -844,17 +844,33 @@ extension MainCoordinator: WatchdogDelegate {
     }
     
     /// Shows biometric authentication UI, if supported and enabled.
-    private func showBiometricAuth() {
+    private func maybeShowBiometricAuth() {
         guard isBiometricAuthAvailable() else {
             isBiometricAuthShown = false
             return
         }
-
+        
+        if #available(iOS 14, *) {
+            // On iOS 14, if we show biometric auth too early, the system
+            // won't find a suitable key window to attach the keyboard to.
+            // So the keyboard won't appear (https://github.com/keepassium/KeePassium/issues/133)
+            // To avoid this, we delay the biometrics slightly, so the system
+            // has enough time to show the keyboard.
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
+                self?.actuallyShowBiometrics()
+            }
+        } else {
+            actuallyShowBiometrics()
+        }
+    }
+    
+    /// Shows biometric auth unconditionally.
+    private func actuallyShowBiometrics() {
         let context = LAContext()
         let policy = LAPolicy.deviceOwnerAuthenticationWithBiometrics
         context.localizedFallbackTitle = "" // hide "Enter Password" fallback; nil won't work
         context.localizedCancelTitle = LString.actionUsePasscode
-        
+
         Diag.debug("Biometric auth: showing request")
         context.evaluatePolicy(policy, localizedReason: LString.titleTouchID) {
             [weak self](authSuccessful, authError) in
@@ -906,7 +922,7 @@ extension MainCoordinator: PasscodeInputDelegate {
     }
     
     func passcodeInputDidRequestBiometrics(_ sender: PasscodeInputVC) {
-        showBiometricAuth()
+        maybeShowBiometricAuth()
     }
 }
 
