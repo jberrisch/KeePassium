@@ -561,27 +561,27 @@ open class ViewGroupVC: UITableViewController, Refreshable {
         trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath
     ) -> UISwipeActionsConfiguration? {
         let editAction = UIContextualAction(style: .normal, title: LString.actionEdit) {
-            [weak self] (_,_,_) in
-            self?.setEditing(false, animated: true)
+            [weak self] (_, _, completion) in
             self?.onEditItemAction(at: indexPath)
+            completion(true)
         }
         editAction.backgroundColor = UIColor.actionTint
         editAction.image = UIImage(asset: .editItemToolbar)
         
         let deleteAction = UIContextualAction(style: .destructive, title: LString.actionDelete)
         {
-            [weak self] (_,_,_) in
-            self?.setEditing(false, animated: true)
+            [weak self] (_, _, completion) in
             self?.onDeleteItemAction(at: indexPath)
+            completion(false)
         }
         deleteAction.backgroundColor = UIColor.destructiveTint
         deleteAction.image = UIImage(asset: .deleteItemToolbar)
 
         let menuAction = UIContextualAction(style: .normal, title: LString.titleMoreActions)
         {
-            [weak self] (_,_,_) in
-            self?.setEditing(false, animated: true)
+            [weak self] (_, _, completion) in
             self?.showActionsForItem(at: indexPath)
+            completion(true)
         }
         menuAction.backgroundColor = UIColor.lightGray
         menuAction.image = UIImage(asset: .moreActionsToolbar)
