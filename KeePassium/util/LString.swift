@@ -87,7 +87,11 @@ public enum LString {
         value: "Open URL",
         comment: "Action/button to open URL in the appropriate app (usually, web browser)"
     )
-
+    public static let actionShare = NSLocalizedString(
+        "[Generic] Share",
+        value: "Share",
+        comment: "Action/button to share an item with another app (AirDrop, send an email, etc)"
+    )
     public static let actionShowDetails = NSLocalizedString(
         "[Generic] Show Details",
         value: "Show Details",

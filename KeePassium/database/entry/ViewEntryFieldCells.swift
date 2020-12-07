@@ -180,7 +180,19 @@ class URLFieldCell: ViewableFieldCell {
             target: self,
             action: #selector(handleLongPressURLButton))
         openURLButton.addGestureRecognizer(longTapRecognizer)
+        openURLButton.isAccessibilityElement = false // handled by a11y actions
         
+        let openURLAction = UIAccessibilityCustomAction(
+            name: LString.actionOpenURL,
+            target: self,
+            selector: #selector(didPressOpenURLButton))
+        let shareAction = UIAccessibilityCustomAction(
+            name: LString.actionShare,
+            target: self,
+            selector: #selector(didPressShare(_:)))
+        accessibilityCustomActions = [openURLAction, shareAction]
+        valueText.accessibilityTraits = .link
+
         accessoryView = openURLButton
         accessoryType = .detailButton
     }
@@ -188,6 +200,11 @@ class URLFieldCell: ViewableFieldCell {
     @objc
     private func handleLongPressURLButton(_ gestureRecognizer: UILongPressGestureRecognizer) {
         guard gestureRecognizer.state == .began else { return }
+        didPressShare(gestureRecognizer)
+    }
+    
+    @objc
+    private func didPressShare(_ sender: Any) {
         delegate?.didLongTapAccessoryButton(self)
     }
     
