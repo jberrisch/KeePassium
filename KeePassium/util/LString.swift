@@ -82,6 +82,11 @@ public enum LString {
         value: "Show more",
         comment: "Checkbox/Button to show a text field in its full size"
     )
+    public static let actionOpenURL = NSLocalizedString(
+        "[Generic] Open URL",
+        value: "Open URL",
+        comment: "Action/button to open URL in the appropriate app (usually, web browser)"
+    )
 
     public static let actionShowDetails = NSLocalizedString(
         "[Generic] Show Details",

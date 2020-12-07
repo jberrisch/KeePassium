@@ -151,6 +151,8 @@ class OpenURLAccessoryButton: UIButton {
         super.init(frame: CGRect(x: 0, y: 0, width: 44, height: 80))
         setImage(UIImage(asset: .openURLCellAccessory), for: .normal)
         contentMode = .scaleAspectFit
+
+        accessibilityLabel = LString.actionOpenURL
     }
     required init?(coder aDecoder: NSCoder) {
         fatalError("Not implemented")
