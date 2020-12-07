@@ -14,6 +14,7 @@ class HapticFeedback {
         case appUnlocked
         case databaseUnlocked
         case contextMenuOpened
+        case copiedToClipboard
         case credentialsPasted
         case wrongPassword
         case error
@@ -27,6 +28,9 @@ class HapticFeedback {
         case .appUnlocked, .databaseUnlocked, .contextMenuOpened:
             let tactileGenerator = UIImpactFeedbackGenerator()
             tactileGenerator.impactOccurred()
+        case .copiedToClipboard:
+            let tactileGenerator = UISelectionFeedbackGenerator()
+            tactileGenerator.selectionChanged()
         case .credentialsPasted:
             let tactileGenerator = UINotificationFeedbackGenerator()
             tactileGenerator.notificationOccurred(.success)

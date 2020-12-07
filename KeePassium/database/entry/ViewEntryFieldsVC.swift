@@ -216,6 +216,7 @@ class ViewEntryFieldsVC: UITableViewController, Refreshable {
     func animateCopyToClipboard(indexPath: IndexPath, field: ViewableField) {
 //        tableView.allowsSelection = false
         copiedCellView.field = field
+        HapticFeedback.play(.copiedToClipboard)
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             self.copiedCellView.show(in: self.tableView, at: indexPath)
