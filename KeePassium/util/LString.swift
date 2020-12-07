@@ -93,6 +93,11 @@ public enum LString {
         value: "Show Details",
         comment: "Action/button to show additional information about an error or item"
     )
+    public static let actionToggleVisibility = NSLocalizedString(
+        "[Generic] Toggle Visibililty",
+        value: "Toggle Visibility",
+        comment: "Action/button to show or hide plain-text information (for example, to switch between plain-text password and asterisks)"
+    )
     public static let actionExport = NSLocalizedString(
         "[Generic] Export",
         value: "Export",

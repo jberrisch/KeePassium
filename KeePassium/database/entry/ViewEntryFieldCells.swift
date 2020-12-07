@@ -207,7 +207,11 @@ class ToggleVisibilityAccessoryButton: UIButton {
         setImage(UIImage(asset: .hideListitem), for: .selected)
         setImage(UIImage(asset: .hideListitem), for: .highlighted)
         contentMode = .scaleAspectFit
+        
+        accessibilityLabel = LString.actionToggleVisibility
+        accessibilityTraits.insert(UIAccessibilityTraits.button)
     }
+
     required init?(coder aDecoder: NSCoder) {
         fatalError("Not implemented")
     }
