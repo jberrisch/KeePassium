@@ -311,6 +311,12 @@ public enum LString {
         comment: "Name of an entry field"
     )
 
+    public static let hintDoubleTapToCopyToClipboard = NSLocalizedString(
+        "[Accessibility] Double tap to copy to clipboard",
+        value: "Double tap to copy to clipboard",
+        comment: "Suggestion/hint for available user action"
+    )
+
 //    public static let titleEntryAttachedFiles = NSLocalizedString(
 //        "[Entry/Attachments/title] Attached Files",
 //        value: "Attached Files",

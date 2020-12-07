@@ -127,6 +127,7 @@ class ViewableFieldCell: UITableViewCell, ViewableFieldCellBase {
         
         nameLabel.text = field?.visibleName
         valueText.text = getUserVisibleValue()
+        accessibilityHint = LString.hintDoubleTapToCopyToClipboard
     }
 
     func getUserVisibleValue() -> String? {
