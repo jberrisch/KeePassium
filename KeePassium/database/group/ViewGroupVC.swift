@@ -348,7 +348,8 @@ open class ViewGroupVC: UITableViewController, Refreshable {
             title: entry.resolvedTitle,
             subtitle: getDetailInfo(forEntry: entry),
             image: UIImage.kpIcon(forEntry: entry),
-            isExpired: entry.isExpired)
+            isExpired: entry.isExpired,
+            itemCount: nil)
         return entryCell
     }
     
@@ -366,12 +367,14 @@ open class ViewGroupVC: UITableViewController, Refreshable {
                 withIdentifier: CellID.group,
                 for: indexPath)
                 as! GroupViewListCell
+            let itemCount = group.groups.count + group.entries.count
             setupCell(
                 groupCell,
                 title: group.name,
-                subtitle: "\(group.groups.count + group.entries.count)",
+                subtitle: "\(itemCount)",
                 image: UIImage.kpIcon(forGroup: group),
-                isExpired: group.isExpired)
+                isExpired: group.isExpired,
+                itemCount: itemCount)
             return groupCell
         } else {
             let entryIndex = indexPath.row - groupsSorted.count
@@ -389,7 +392,8 @@ open class ViewGroupVC: UITableViewController, Refreshable {
                 title: entry.resolvedTitle,
                 subtitle: getDetailInfo(forEntry: entry),
                 image: UIImage.kpIcon(forEntry: entry),
-                isExpired: entry.isExpired)
+                isExpired: entry.isExpired,
+                itemCount: nil)
             return entryCell
         }
     }
@@ -399,11 +403,18 @@ open class ViewGroupVC: UITableViewController, Refreshable {
         title: String,
         subtitle: String?,
         image: UIImage?,
-        isExpired: Bool)
+        isExpired: Bool,
+        itemCount: Int?)
     {
         cell.titleLabel.setText(title, strikethrough: isExpired)
         cell.subtitleLabel?.setText(subtitle, strikethrough: isExpired)
         cell.iconView?.image = image
+        
+        if itemCount != nil {
+            cell.accessibilityLabel = String.localizedStringWithFormat(
+                LString.titleGroupDescriptionTemplate,
+                title)
+        }
     }
 
     /// Returns string to display in the detail line for `entry`

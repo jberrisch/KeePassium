@@ -290,6 +290,13 @@ public enum LString {
         value: "Field Name",
         comment: "Default name of a newly created entry field")
     
+    // Group viewer
+    public static let titleGroupDescriptionTemplate = NSLocalizedString(
+        "[Group/a11y/description]",
+        value: "%@, Group",
+        comment: "VoiceOver description of a group [groupTitle: String, itemCount: Int]"
+    )
+    
     // Entry view
     public static let fieldTitle = NSLocalizedString(
         "[Entry/Field/name] Title",
