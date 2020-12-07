@@ -183,6 +183,16 @@ public enum LString {
     )
     
     // Clipboard
+    public static let actionCopyToClipboardTemplate = NSLocalizedString(
+        "[Clipboard/Copy/namedValue]",
+        value: "Copy %@",
+        comment: "Action copy some named value to clipboard. For example: `Copy Password`. [valueName: String]"
+    )
+    public static let titleCopiedToClipboard = NSLocalizedString(
+        "[Clipboard/Copy/notification]",
+        value: "Copied",
+        comment: "Notification: an item has been copied to clipboard"
+    )
 
     public static let hintDoubleTapToCopyToClipboard = NSLocalizedString(
         "[Accessibility] Double tap to copy to clipboard",

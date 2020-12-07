@@ -350,6 +350,7 @@ open class ViewGroupVC: UITableViewController, Refreshable {
             image: UIImage.kpIcon(forEntry: entry),
             isExpired: entry.isExpired,
             itemCount: nil)
+        setupAccessibilityActions(entryCell, entry: entry)
         return entryCell
     }
     
@@ -394,6 +395,7 @@ open class ViewGroupVC: UITableViewController, Refreshable {
                 image: UIImage.kpIcon(forEntry: entry),
                 isExpired: entry.isExpired,
                 itemCount: nil)
+            setupAccessibilityActions(entryCell, entry: entry)
             return entryCell
         }
     }
@@ -411,10 +413,37 @@ open class ViewGroupVC: UITableViewController, Refreshable {
         cell.iconView?.image = image
         
         if itemCount != nil {
+            // group
             cell.accessibilityLabel = String.localizedStringWithFormat(
                 LString.titleGroupDescriptionTemplate,
                 title)
         }
+    }
+    
+    private func setupAccessibilityActions(_ cell: GroupViewListCell, entry: Entry) {
+        guard #available(iOS 13, *) else { return }
+        
+        var actions = [UIAccessibilityCustomAction]()
+        
+        let nonTitleFields = entry.fields.filter { $0.name != EntryField.title }
+        nonTitleFields.reversed().forEach { (field) in
+            let actionName = String.localizedStringWithFormat(
+                LString.actionCopyToClipboardTemplate,
+                field.name)
+            let action = UIAccessibilityCustomAction(name: actionName) {
+                [weak field] _ -> Bool in
+                if let fieldValue = field?.resolvedValue {
+                    Clipboard.general.insert(fieldValue)
+                    UIAccessibility.post(
+                        notification: .announcement,
+                        argument: LString.titleCopiedToClipboard
+                    )
+                }
+                return true
+            }
+            actions.append(action)
+        }
+        cell.accessibilityCustomActions = actions
     }
 
     /// Returns string to display in the detail line for `entry`
