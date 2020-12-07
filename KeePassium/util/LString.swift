@@ -182,6 +182,13 @@ public enum LString {
         comment: "Message shown when trying to copy into an existing file."
     )
     
+    // Clipboard
+
+    public static let hintDoubleTapToCopyToClipboard = NSLocalizedString(
+        "[Accessibility] Double tap to copy to clipboard",
+        value: "Double tap to copy to clipboard",
+        comment: "Suggestion/hint for available user action"
+    )
 
     // DB progress status
     public static let databaseStatusLoading = NSLocalizedString(
@@ -327,12 +334,6 @@ public enum LString {
         "[Entry/Field/name] Notes",
         value: "Notes",
         comment: "Name of an entry field"
-    )
-
-    public static let hintDoubleTapToCopyToClipboard = NSLocalizedString(
-        "[Accessibility] Double tap to copy to clipboard",
-        value: "Double tap to copy to clipboard",
-        comment: "Suggestion/hint for available user action"
     )
 
 //    public static let titleEntryAttachedFiles = NSLocalizedString(
