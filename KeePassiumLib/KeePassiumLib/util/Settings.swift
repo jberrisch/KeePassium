@@ -675,6 +675,8 @@ public class Settings {
         /// Comparator function for sorting.
         /// Returns `true` if `lhs` < `rhs`.
         public func compare(_ lhs: URLReference, _ rhs: URLReference) -> Bool {
+            guard self != .noSorting else { return false }
+            
             guard let lhsInfo = lhs.getCachedInfoSync(canFetch: false) else { return false }
             guard let rhsInfo = rhs.getCachedInfoSync(canFetch: false) else { return true }
             
