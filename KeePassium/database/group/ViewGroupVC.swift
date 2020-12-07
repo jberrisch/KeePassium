@@ -516,34 +516,35 @@ open class ViewGroupVC: UITableViewController, Refreshable {
         return getEntry(at: indexPath) != nil || getGroup(at: indexPath) != nil
     }
 
-    override open func tableView(
+    open override func tableView(
         _ tableView: UITableView,
-        editActionsForRowAt indexPath: IndexPath
-        ) -> [UITableViewRowAction]?
-    {
-        let editAction = UITableViewRowAction(style: .default, title: LString.actionEdit)
-        {
-            [unowned self] (_,_) in
-            self.setEditing(false, animated: true)
-            self.onEditItemAction(at: indexPath)
+        trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath
+    ) -> UISwipeActionsConfiguration? {
+        let editAction = UIContextualAction(style: .normal, title: LString.actionEdit) {
+            [weak self] (_,_,_) in
+            self?.setEditing(false, animated: true)
+            self?.onEditItemAction(at: indexPath)
         }
         editAction.backgroundColor = UIColor.actionTint
+        editAction.image = UIImage(asset: .editItemToolbar)
         
-        let deleteAction = UITableViewRowAction(style: .destructive, title: LString.actionDelete)
+        let deleteAction = UIContextualAction(style: .destructive, title: LString.actionDelete)
         {
-            [unowned self] (_,_) in
-            self.setEditing(false, animated: true)
-            self.onDeleteItemAction(at: indexPath)
+            [weak self] (_,_,_) in
+            self?.setEditing(false, animated: true)
+            self?.onDeleteItemAction(at: indexPath)
         }
         deleteAction.backgroundColor = UIColor.destructiveTint
-     
-        let menuAction = UITableViewRowAction(style: .default, title: "...")
+        deleteAction.image = UIImage(asset: .deleteItemToolbar)
+
+        let menuAction = UIContextualAction(style: .normal, title: LString.titleMoreActions)
         {
-            [unowned self] (_,_) in
-            self.setEditing(false, animated: true)
-            self.showActionsForItem(at: indexPath)
+            [weak self] (_,_,_) in
+            self?.setEditing(false, animated: true)
+            self?.showActionsForItem(at: indexPath)
         }
         menuAction.backgroundColor = UIColor.lightGray
+        menuAction.image = UIImage(asset: .moreActionsToolbar)
         
         // items in RecycleBin can be deleted (permanently), but cannot be edited
         var allowedActions = [deleteAction]
@@ -555,7 +556,7 @@ open class ViewGroupVC: UITableViewController, Refreshable {
         }
         
         allowedActions.append(menuAction)
-        return allowedActions
+        return UISwipeActionsConfiguration(actions: allowedActions)
     }
     
     // MARK: - Item operation constraints

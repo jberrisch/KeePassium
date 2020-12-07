@@ -130,6 +130,12 @@ public enum LString {
         value: "Upgrade to Premium",
         comment: "Action/button to start choosing premium versions and possibly buying one")
 
+    public static let titleMoreActions = NSLocalizedString(
+        "[Generic] More Actions",
+        value: "More Actions",
+        comment: "Checkbox/Button to show additional actions"
+    )
+
     // Error/warning messages
     public static let titleError = NSLocalizedString(
         "[Generic/title] Error",
