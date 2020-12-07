@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		750433AF2274CDD5000FE96B /* DatabaseCreatorCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 750433AE2274CDD5000FE96B /* DatabaseCreatorCoordinator.swift */; };
+		75061ECC257EE4F7003EF34A /* Clipboard+extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75061ECB257EE4F7003EF34A /* Clipboard+extensions.swift */; };
+		75061ECD257EE4F7003EF34A /* Clipboard+extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75061ECB257EE4F7003EF34A /* Clipboard+extensions.swift */; };
 		75065A3522C41B5200958243 /* SettingsAutoFillVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75065A3422C41B5200958243 /* SettingsAutoFillVC.swift */; };
 		750C683220D767F6001A6AA0 /* EditEntryVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 750C683120D767F6001A6AA0 /* EditEntryVC.swift */; };
 		750CFBC821BA9ACD00E62B09 /* AuthenticationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7550D231215D758800360E0C /* AuthenticationServices.framework */; };
@@ -683,6 +685,7 @@
 
 /* Begin PBXFileReference section */
 		750433AE2274CDD5000FE96B /* DatabaseCreatorCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseCreatorCoordinator.swift; sourceTree = "<group>"; };
+		75061ECB257EE4F7003EF34A /* Clipboard+extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Clipboard+extensions.swift"; sourceTree = "<group>"; };
 		75065A3422C41B5200958243 /* SettingsAutoFillVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsAutoFillVC.swift; sourceTree = "<group>"; };
 		750BA15224BE624B00BDF1CC /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		750C683120D767F6001A6AA0 /* EditEntryVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditEntryVC.swift; sourceTree = "<group>"; };
@@ -1709,6 +1712,7 @@
 				759BC62B2487FE5200E88111 /* URLReference+extensions.swift */,
 				7537FEBD249D7B950028A653 /* Settings+extensions.swift */,
 				758FC18C24CF254000BAD35C /* AppIcon.swift */,
+				75061ECB257EE4F7003EF34A /* Clipboard+extensions.swift */,
 			);
 			path = util;
 			sourceTree = "<group>";
@@ -2491,6 +2495,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				75061ECC257EE4F7003EF34A /* Clipboard+extensions.swift in Sources */,
 				75679ACE22FD897000372301 /* NewsCenter.swift in Sources */,
 				758BF0DD20D220B300897C83 /* WatchdogAwareTextField.swift in Sources */,
 				751A565224CCD3CD001227D6 /* AppIconPicker.swift in Sources */,
@@ -2621,6 +2626,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				75061ECD257EE4F7003EF34A /* Clipboard+extensions.swift in Sources */,
 				75B38BF3233E5B7C006BDEFC /* NewsCenter.swift in Sources */,
 				75B38BF4233E5B7C006BDEFC /* WatchdogAwareTextField.swift in Sources */,
 				751A565324CCD3CD001227D6 /* AppIconPicker.swift in Sources */,
