@@ -256,6 +256,8 @@ extension ViewEntryFieldsVC: ViewableFieldCellDelegate {
         guard let value = cell.field?.resolvedValue else { return }
         guard let accessoryView = cell.accessoryView else { return }
         
+        HapticFeedback.play(.contextMenuOpened)
+        
         var items: [Any] = [value]
         if value.isOpenableURL, let url = URL(string: value) {
             items = [url]
@@ -278,6 +280,8 @@ extension ViewEntryFieldsVC: FieldCopiedViewDelegate {
             return
         }
         view.hide(animated: true)
+
+        HapticFeedback.play(.contextMenuOpened)
         let activityController = UIActivityViewController(
             activityItems: [value],
             applicationActivities: nil)
