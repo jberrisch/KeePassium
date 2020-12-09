@@ -222,8 +222,7 @@ class ToggleVisibilityAccessoryButton: UIButton {
         setImage(UIImage(asset: .hideListitem), for: .highlighted)
         contentMode = .scaleAspectFit
         
-        accessibilityLabel = LString.actionToggleVisibility
-        accessibilityTraits.insert(UIAccessibilityTraits.button)
+        accessibilityLabel = LString.actionShowInPlainText
     }
 
     required init?(coder aDecoder: NSCoder) {
