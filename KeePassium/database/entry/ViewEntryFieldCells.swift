@@ -180,7 +180,7 @@ class URLFieldCell: ViewableFieldCell {
             target: self,
             action: #selector(handleLongPressURLButton))
         openURLButton.addGestureRecognizer(longTapRecognizer)
-        openURLButton.isAccessibilityElement = false // handled by a11y actions
+        accessoryView = openURLButton
         
         let openURLAction = UIAccessibilityCustomAction(
             name: LString.actionOpenURL,
@@ -192,9 +192,6 @@ class URLFieldCell: ViewableFieldCell {
             selector: #selector(didPressShare(_:)))
         accessibilityCustomActions = [openURLAction, shareAction]
         valueText.accessibilityTraits = .link
-
-        accessoryView = openURLButton
-        accessoryType = .detailButton
     }
     
     @objc
@@ -247,7 +244,6 @@ class ProtectedFieldCell: ViewableFieldCell {
         theButton.isSelected = !(field?.isValueHidden ?? true)
         valueText.isSelectable = theButton.isSelected
         accessoryView = theButton
-        accessoryType = .detailButton
         toggleButton = theButton
         
         refreshTextView()
