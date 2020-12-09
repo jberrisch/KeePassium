@@ -506,6 +506,10 @@
 		75B5FB7B20D61BC000D402D9 /* ViewableEntryFieldFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75B5FB7A20D61BC000D402D9 /* ViewableEntryFieldFactory.swift */; };
 		75BC562125818563002B4395 /* LString+premium.swift in Sources */ = {isa = PBXBuildFile; fileRef = 759992EF24B6140D006CC379 /* LString+premium.swift */; };
 		75BC562425818564002B4395 /* LString+premium.swift in Sources */ = {isa = PBXBuildFile; fileRef = 759992EF24B6140D006CC379 /* LString+premium.swift */; };
+		75BC56292581872B002B4395 /* AccessibilityHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75BC56282581872B002B4395 /* AccessibilityHelper.swift */; };
+		75BC562A2581872B002B4395 /* AccessibilityHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75BC56282581872B002B4395 /* AccessibilityHelper.swift */; };
+		75BC562B2581872B002B4395 /* AccessibilityHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75BC56282581872B002B4395 /* AccessibilityHelper.swift */; };
+		75BC562C2581872B002B4395 /* AccessibilityHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75BC56282581872B002B4395 /* AccessibilityHelper.swift */; };
 		75BE091F2509905300C436C2 /* ItemIconPickerCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75BE091E2509905300C436C2 /* ItemIconPickerCoordinator.swift */; };
 		75BE09202509905300C436C2 /* ItemIconPickerCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75BE091E2509905300C436C2 /* ItemIconPickerCoordinator.swift */; };
 		75BFB13F2481553D0017B980 /* DynamicFileList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75BFB13E2481553D0017B980 /* DynamicFileList.swift */; };
@@ -1228,6 +1232,7 @@
 		75B5FB7620D53EA700D402D9 /* ViewEntryFieldsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewEntryFieldsVC.swift; sourceTree = "<group>"; };
 		75B5FB7820D6101100D402D9 /* ItemCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemCategory.swift; sourceTree = "<group>"; };
 		75B5FB7A20D61BC000D402D9 /* ViewableEntryFieldFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewableEntryFieldFactory.swift; sourceTree = "<group>"; };
+		75BC56282581872B002B4395 /* AccessibilityHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityHelper.swift; sourceTree = "<group>"; };
 		75BE091E2509905300C436C2 /* ItemIconPickerCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemIconPickerCoordinator.swift; sourceTree = "<group>"; };
 		75BFB13E2481553D0017B980 /* DynamicFileList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DynamicFileList.swift; sourceTree = "<group>"; };
 		75BFB1452481D19B0017B980 /* FileProvider+extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FileProvider+extensions.swift"; sourceTree = "<group>"; };
@@ -1681,6 +1686,7 @@
 		754FCBAF20A86785004DA0E7 /* util */ = {
 			isa = PBXGroup;
 			children = (
+				75BC562725818702002B4395 /* a11y */,
 				753376F023CA650C00603F4A /* PasswordStringHelper.swift */,
 				75F4ACFB21776F4800B22D8B /* LString.swift */,
 				75679ACA22F8095F00372301 /* AppInfo.swift */,
@@ -1907,6 +1913,14 @@
 				7575B24822D8476300B84B3F /* SearchHelper+extensions.swift */,
 			);
 			path = util;
+			sourceTree = "<group>";
+		};
+		75BC562725818702002B4395 /* a11y */ = {
+			isa = PBXGroup;
+			children = (
+				75BC56282581872B002B4395 /* AccessibilityHelper.swift */,
+			);
+			path = a11y;
 			sourceTree = "<group>";
 		};
 		75BE091D25098F3500C436C2 /* icon */ = {
@@ -2448,6 +2462,7 @@
 				75D3A3B121BAE66F00255FC3 /* FileListCell.swift in Sources */,
 				7523F71521C94DD90025C706 /* DiagnosticsViewerVC.swift in Sources */,
 				7578487E22C02A9100BBEF9A /* UITableViewCell+demoEditActions.swift in Sources */,
+				75BC562A2581872B002B4395 /* AccessibilityHelper.swift in Sources */,
 				75B24DBA21C3CADB003C9486 /* EntryFinderVC.swift in Sources */,
 				75B59A6923887A2C00239CFF /* SystemIssueDetector.swift in Sources */,
 				750CFC0921BADBA500E62B09 /* DatabaseChooserVC.swift in Sources */,
@@ -2527,6 +2542,7 @@
 				7550D24C215FDEC500360E0C /* AppCoverVC.swift in Sources */,
 				75BFB1462481D19B0017B980 /* FileProvider+extensions.swift in Sources */,
 				75DC043320E9E0C9007E63EC /* GroupChangeObserver+Notifier.swift in Sources */,
+				75BC56292581872B002B4395 /* AccessibilityHelper.swift in Sources */,
 				75514A3420DF5B6200202340 /* EditEntryFieldsCells.swift in Sources */,
 				75BFB13F2481553D0017B980 /* DynamicFileList.swift in Sources */,
 				759BCEB02144E6E8002FC18B /* RootSplitVC.swift in Sources */,
@@ -2658,6 +2674,7 @@
 				75B38C03233E5B7C006BDEFC /* AppCoverVC.swift in Sources */,
 				75BFB1482481D19B0017B980 /* FileProvider+extensions.swift in Sources */,
 				75B38C04233E5B7C006BDEFC /* GroupChangeObserver+Notifier.swift in Sources */,
+				75BC562B2581872B002B4395 /* AccessibilityHelper.swift in Sources */,
 				75B38C05233E5B7C006BDEFC /* EditEntryFieldsCells.swift in Sources */,
 				75BFB1412481553D0017B980 /* DynamicFileList.swift in Sources */,
 				75B38C06233E5B7C006BDEFC /* RootSplitVC.swift in Sources */,
@@ -2782,6 +2799,7 @@
 				75D7DF86233E5E310029AD87 /* FileListCell.swift in Sources */,
 				75D7DF87233E5E310029AD87 /* DiagnosticsViewerVC.swift in Sources */,
 				75D7DF88233E5E310029AD87 /* UITableViewCell+demoEditActions.swift in Sources */,
+				75BC562C2581872B002B4395 /* AccessibilityHelper.swift in Sources */,
 				75D7DF89233E5E310029AD87 /* EntryFinderVC.swift in Sources */,
 				75B59A6B23887A2C00239CFF /* SystemIssueDetector.swift in Sources */,
 				75D7DF8A233E5E310029AD87 /* DatabaseChooserVC.swift in Sources */,
