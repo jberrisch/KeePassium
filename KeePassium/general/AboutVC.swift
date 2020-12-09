@@ -50,6 +50,7 @@ class AboutVC: UITableViewController {
         } else {
             versionLabel.text = "v\(AppInfo.version).\(AppInfo.build)"
         }
+        contactSupportCell.detailTextLabel?.text = SupportEmailComposer.getSupportEmail()
     }
     
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
