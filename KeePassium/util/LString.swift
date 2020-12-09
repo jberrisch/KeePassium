@@ -77,6 +77,11 @@ public enum LString {
         value: "Done",
         comment: "Action/button to finish (editing) and keep changes"
     )
+    public static let actionCreate = NSLocalizedString(
+        "[Generic] Create",
+        value: "Create",
+        comment: "Action/button to create an item (entry, group, file — depending on context)"
+    )
     public static let actionShowMore = NSLocalizedString(
         "[Generic] Show more",
         value: "Show more",

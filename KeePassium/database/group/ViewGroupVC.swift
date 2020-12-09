@@ -91,10 +91,12 @@ open class ViewGroupVC: UITableViewController, Refreshable {
         }
 
         // add "Create" button
-        navigationItem.setRightBarButton(UIBarButtonItem(
+        let createItemButton = UIBarButtonItem(
             image: UIImage(asset: .createItemToolbar),
             style: .plain, target: self,
-            action: #selector(onCreateNewItemAction)), animated: false)
+            action: #selector(onCreateNewItemAction))
+        createItemButton.accessibilityLabel = LString.actionCreate
+        navigationItem.setRightBarButton(createItemButton, animated: false)
         
         isActivateSearch = Settings.current.isStartWithSearch && (group?.isRoot ?? false)
         
