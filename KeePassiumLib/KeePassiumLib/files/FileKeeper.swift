@@ -839,7 +839,7 @@ public class FileKeeper {
             .absoluteString
             .removingPercentEncoding  // should be OK, but if failed - fallback to
             ?? nameTemplate           // original template, even with extension
-        let backupFileURL = backupDirURL
+        var backupFileURL = backupDirURL
             .appendingPathComponent(baseFileName + fileNameSuffix, isDirectory: false)
             .appendingPathExtension(nameTemplateURL.pathExtension)
         
@@ -855,7 +855,10 @@ public class FileKeeper {
                 [FileAttributeKey.creationDate: timestamp,
                  FileAttributeKey.modificationDate: timestamp],
                 ofItemAtPath: backupFileURL.path)
-
+            
+            let isExcludeFromBackup = Settings.current.isExcludeBackupFilesFromSystemBackup
+            backupFileURL.setExcludedFromBackup(isExcludeFromBackup)
+            
             switch mode {
             case .latest:
                 // don't change timestamps

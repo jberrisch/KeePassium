@@ -101,6 +101,7 @@ public class Settings {
         // Backup
         case backupDatabaseOnSave
         case backupKeepingDuration
+        case excludeBackupFilesFromSystemBackup
         
         // AutoFill
         case autoFillFinishedOK
@@ -1300,6 +1301,22 @@ public class Settings {
             if newValue != oldValue {
                 postChangeNotification(changedKey: Keys.backupKeepingDuration)
             }
+        }
+    }
+    
+    /// Whether to exclude backup files from iTunes/iCloud backup
+    public var isExcludeBackupFilesFromSystemBackup: Bool {
+        get {
+            let stored = UserDefaults.appGroupShared
+                .object(forKey: Keys.excludeBackupFilesFromSystemBackup.rawValue)
+                as? Bool
+            return stored ?? false
+        }
+        set {
+            updateAndNotify(
+                oldValue: isExcludeBackupFilesFromSystemBackup,
+                newValue: newValue,
+                key: .excludeBackupFilesFromSystemBackup)
         }
     }
     
