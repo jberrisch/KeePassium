@@ -123,7 +123,9 @@ class ViewableFieldCell: UITableViewCell, ViewableFieldCellBase {
     func setupCell() {
         let textScale = Settings.current.textScale
         nameLabel.font = UIFont.systemFont(ofSize: 15 * textScale, forTextStyle: .subheadline, weight: .thin)
+        nameLabel.adjustsFontForContentSizeCategory = true
         valueText.font = UIFont.monospaceFont(ofSize: 17 * textScale, forTextStyle: .body)
+        valueText.adjustsFontForContentSizeCategory = true
         
         nameLabel.text = field?.visibleName
         valueText.text = getUserVisibleValue()
