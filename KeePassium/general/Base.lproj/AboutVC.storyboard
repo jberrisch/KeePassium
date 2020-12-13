@@ -13,7 +13,7 @@
             <objects>
                 <tableViewController storyboardIdentifier="AboutVC" title="About" modalPresentationStyle="formSheet" id="NLN-lQ-bh5" customClass="AboutVC" customModule="KeePassium" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="grouped" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="18" id="Nvx-Qr-8CL">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="1200"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="2000"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="groupTableViewBackgroundColor"/>
                         <sections>
@@ -611,15 +611,50 @@
                                     <fragment content="Section: acknowledgements and thank-you notes"/>
                                 </attributedString>
                             </tableViewSection>
+                            <tableViewSection headerTitle="Troubleshooting" id="0mb-N7-JBa">
+                                <cells>
+                                    <tableViewCell clipsSubviews="YES" tag="10" contentMode="scaleToFill" misplaced="YES" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" textLabel="bTY-d6-puv" detailTextLabel="C70-cC-bOU" style="IBUITableViewCellStyleSubtitle" id="FW9-fw-Zgc">
+                                        <rect key="frame" x="0.0" y="1578" width="375" height="58"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="FW9-fw-Zgc" id="l7p-k9-HXU">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="58"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Reset entry text size to default" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" id="bTY-d6-puv">
+                                                    <rect key="frame" x="16" y="9" width="231.5" height="20.5"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                    <attributedString key="userComments">
+                                                        <fragment content="#bc-ignore!"/>
+                                                    </attributedString>
+                                                </label>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" id="C70-cC-bOU">
+                                                    <rect key="frame" x="16" y="32.5" width="44" height="14.5"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
+                                                    <color key="textColor" name="AuxiliaryText"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </cells>
+                                <attributedString key="userComments">
+                                    <fragment content="#bc-ignore!"/>
+                                </attributedString>
+                            </tableViewSection>
                         </sections>
                         <connections>
                             <outlet property="dataSource" destination="NLN-lQ-bh5" id="K2c-4H-F1l"/>
                             <outlet property="delegate" destination="NLN-lQ-bh5" id="HCY-WR-eZ0"/>
                         </connections>
                     </tableView>
-                    <size key="freeformSize" width="375" height="1200"/>
+                    <size key="freeformSize" width="375" height="2000"/>
                     <connections>
                         <outlet property="contactSupportCell" destination="lcp-fz-TzI" id="SFZ-rV-MFA"/>
+                        <outlet property="resetTextScaleCell" destination="FW9-fw-Zgc" id="nh3-oo-qXX"/>
                         <outlet property="versionLabel" destination="vDg-fF-8ty" id="fc4-EY-VCt"/>
                         <outlet property="writeReviewCell" destination="aun-72-lCX" id="EWW-SV-WVB"/>
                     </connections>

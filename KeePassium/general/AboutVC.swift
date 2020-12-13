@@ -13,6 +13,7 @@ class AboutVC: UITableViewController {
     @IBOutlet weak var contactSupportCell: UITableViewCell!
     @IBOutlet weak var writeReviewCell: UITableViewCell!
     @IBOutlet weak var versionLabel: UILabel!
+    @IBOutlet weak var resetTextScaleCell: UITableViewCell!
     
     let cellTagToURL: [Int: String] = [
         10: "https://github.com/keepassium/KeePassium-L10n",
@@ -69,6 +70,12 @@ class AboutVC: UITableViewController {
             SupportEmailComposer.show(subject: .supportRequest, parent: self)
         case writeReviewCell:
             AppStoreHelper.writeReview()
+        case resetTextScaleCell:
+            Settings.current.textScale = 1.0
+            Diag.info("Text scale reset to 1.0")
+            resetTextScaleCell.detailTextLabel?.text = "Done!" //
+            tableView.beginUpdates()
+            tableView.endUpdates()
         default:
             if let urlString = cellTagToURL[selectedCell.tag], let url = URL(string: urlString) {
                 AppGroup.applicationShared?.open(url, options: [:], completionHandler: nil)
