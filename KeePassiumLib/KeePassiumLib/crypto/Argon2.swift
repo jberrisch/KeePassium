@@ -12,29 +12,53 @@ import Foundation
 public final class Argon2 {
     public static let version: UInt32 = 0x13
     
+    public struct Params {
+        /// salt array
+        let salt: ByteArray
+        /// requested parallelism (`nThreads`)
+        let parallelism: UInt32
+        /// requessted memory in KiB (`m_cost`)
+        let memoryKiB: UInt32
+        /// number of iterations (`t_cost`)
+        let iterations: UInt32
+        /// algorithm version
+        let version: UInt32
+    }
+    
+    /// Argon2 primitve type
+    public enum PrimitiveType {
+        case argon2d
+        case argon2id
+        
+        var rawValue: argon2_type {
+            let result: argon2_type
+            switch self {
+            case .argon2d:
+                result = Argon2_d
+            case .argon2id:
+                result = Argon2_id
+            }
+            return result
+        }
+    }
+    
     private init() {
         // nothing to do
     }
     
-    /// Returns Argon2d hash
+    /// Returns Argon2 hash
     ///
     /// - Parameters:
     ///   - data: data to hash
-    ///   - salt: salt array
-    ///   - nThreads: requested parallelism
-    ///   - m_cost: requested memory (in KiB)
-    ///   - t_cost: number of iterations
-    ///   - version: algorithm version
+    ///   - params: Argon2 parameters
+    ///   - primitiveType: Argon2 primitive type
     ///   - progress: initialized `Progress` instance to track iterations
     /// - Returns: 32-byte hash array
     /// - Throws: CryptoError.argon2Error, ProgressInterruption
     public static func hash(
         data pwd: ByteArray,
-        salt: ByteArray,
-        parallelism nThreads: UInt32,
-        memoryKiB m_cost: UInt32,
-        iterations t_cost: UInt32,
-        version: UInt32,
+        params: Params,
+        type: PrimitiveType,
         progress: ProgressEx?
         ) throws -> ByteArray
     {
@@ -45,7 +69,7 @@ public final class Argon2 {
 
         var isAbortProcessing: UInt8 = 0
         
-        progress?.totalUnitCount = Int64(t_cost)
+        progress?.totalUnitCount = Int64(params.iterations)
         progress?.completedUnitCount = 0
         let progressKVO = progress?.observe(
             \.isCancelled,
@@ -63,29 +87,45 @@ public final class Argon2 {
                 isAbortProcessing = 1
             }
         )
+        
         FLAG_clear_internal_memory = 1
         //TODO: ugly nesting, refactor
         var outBytes = [UInt8](repeating: 0, count: 32)
         let statusCode = pwd.withBytes {
             (pwdBytes) in
-            return salt.withBytes {
+            return params.salt.withBytes {
                 (saltBytes) -> Int32 in
                 guard let progress = progress else {
                     // no progress - no callback
                     return argon2_hash(
-                        t_cost, m_cost, nThreads, pwdBytes, pwdBytes.count,
-                        saltBytes, saltBytes.count, &outBytes, outBytes.count,
-                        nil, 0, Argon2_d, version, nil, nil, &isAbortProcessing)
+                        params.iterations,  // t_cost: UInt32
+                        params.memoryKiB,   // m_cost: UInt32
+                        params.parallelism, // parallelism: UInt32
+                        pwdBytes, pwdBytes.count,   // pwd: UnsafeRawPointer!, pwdlen: Int
+                        saltBytes, saltBytes.count, // salt: UnsafeRawPointer!, saltlen: Int
+                        &outBytes, outBytes.count,  // hash: UnsafeMutableRawPointer!, hashlen: Int
+                        nil, 0,         // encoded: UnsafeMutablePointer<Int8>!, encodedlen: Int
+                        type.rawValue,  // type: argon2_type
+                        params.version, // version: UInt32
+                        nil,            // progress_cbk: progress_fptr!
+                        nil,            // progress_user_obj: UnsafeRawPointer!
+                        &isAbortProcessing // flag_abort: UnsafePointer<UInt8>!
+                    )
                 }
                 
                 // pointer to the object to pass to the callback
                 let progressPtr = UnsafeRawPointer(Unmanaged.passUnretained(progress).toOpaque())
                 
-                
                 return argon2_hash(
-                    t_cost, m_cost, nThreads, pwdBytes, pwdBytes.count,
-                    saltBytes, saltBytes.count, &outBytes, outBytes.count,
-                    nil, 0, Argon2_d, version,
+                    params.iterations,
+                    params.memoryKiB,
+                    params.parallelism,
+                    pwdBytes, pwdBytes.count,
+                    saltBytes, saltBytes.count,
+                    &outBytes, outBytes.count,
+                    nil, 0,
+                    type.rawValue,
+                    params.version,
                     // A closure for updating progress from the C code
                     {
                         (pass: UInt32, observer: Optional<UnsafeRawPointer>) -> Int32 in
@@ -102,7 +142,7 @@ public final class Argon2 {
         }
         progressKVO?.invalidate()
         if let progress = progress {
-            progress.completedUnitCount = Int64(t_cost) // for consistency
+            progress.completedUnitCount = Int64(params.iterations) // for consistency
             if progress.isCancelled {
                 throw ProgressInterruption.cancelled(reason: progress.cancellationReason)
             }

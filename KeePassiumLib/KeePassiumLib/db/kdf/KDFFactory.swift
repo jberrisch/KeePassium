@@ -38,8 +38,9 @@ protocol KeyDerivationFunction {
 
 /// Creates a KDF instance by its UUID.
 final class KDFFactory {
-    private static let argon2kdf = Argon2KDF()
-    private static let aeskdf = AESKDF()
+    private static let argon2dKDF = Argon2dKDF()
+    private static let argon2idKDF = Argon2idKDF()
+    private static let aesKDF = AESKDF()
 
     private init() {
         // nothing to do here
@@ -48,10 +49,13 @@ final class KDFFactory {
     /// - Returns: a suitable KDF instance, or `nil` for unknown UUID.
     public static func createFor(uuid: UUID) -> KeyDerivationFunction? {
         switch uuid {
-        case argon2kdf.uuid:
-            Diag.info("Creating Argon2 KDF")
-            return Argon2KDF()
-        case aeskdf.uuid:
+        case argon2dKDF.uuid:
+            Diag.info("Creating Argon2d KDF")
+            return Argon2dKDF()
+        case argon2idKDF.uuid:
+            Diag.info("Creating Argon2id KDF")
+            return Argon2idKDF()
+        case aesKDF.uuid:
             Diag.info("Creating AES KDF")
             return AESKDF()
         default:
