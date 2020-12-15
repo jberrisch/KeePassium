@@ -82,8 +82,12 @@ class SettingsDataProtectionVC: UITableViewController, Refreshable {
     // MARK: - Actions
     
     @IBAction func didToggleRememberMasterKeys(_ sender: UISwitch) {
-        Settings.current.isRememberDatabaseKey = rememberMasterKeysSwitch.isOn
+        let isRemember = rememberMasterKeysSwitch.isOn
+        Settings.current.isRememberDatabaseKey = isRemember
         refresh()
+        if !isRemember {
+            didPressClearMasterKeys(self)
+        }
     }
     
     @IBAction func didPressClearMasterKeys(_ sender: Any) {
