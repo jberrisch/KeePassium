@@ -88,56 +88,46 @@ public final class Argon2 {
             }
         )
         
+        let progressCallback: progress_fptr!   // A closure for updating progress from the C code
+        let progressObject: UnsafeRawPointer?  // pointer to the object to pass to the callback
+        
+        if let progress = progress {
+            progressObject = UnsafeRawPointer(Unmanaged.passUnretained(progress).toOpaque())
+            progressCallback = {
+                (pass: UInt32, observer: Optional<UnsafeRawPointer>) -> Int32 in
+                guard let observer = observer else { return 0 /* continue hashing */ }
+                let progress = Unmanaged<Progress>.fromOpaque(observer).takeUnretainedValue()
+                progress.completedUnitCount = Int64(pass)
+                // print("Argon2 pass: \(pass)")
+                let isShouldStop: Int32 = progress.isCancelled ? 1 : 0
+                return isShouldStop
+            }
+        } else {
+            // no progress - no callback
+            progressObject = nil
+            progressCallback = nil
+        }
+        
         FLAG_clear_internal_memory = 1
-        //TODO: ugly nesting, refactor
         var outBytes = [UInt8](repeating: 0, count: 32)
         let statusCode = pwd.withBytes {
             (pwdBytes) in
             return params.salt.withBytes {
                 (saltBytes) -> Int32 in
-                guard let progress = progress else {
-                    // no progress - no callback
-                    return argon2_hash(
-                        params.iterations,  // t_cost: UInt32
-                        params.memoryKiB,   // m_cost: UInt32
-                        params.parallelism, // parallelism: UInt32
-                        pwdBytes, pwdBytes.count,   // pwd: UnsafeRawPointer!, pwdlen: Int
-                        saltBytes, saltBytes.count, // salt: UnsafeRawPointer!, saltlen: Int
-                        &outBytes, outBytes.count,  // hash: UnsafeMutableRawPointer!, hashlen: Int
-                        nil, 0,         // encoded: UnsafeMutablePointer<Int8>!, encodedlen: Int
-                        type.rawValue,  // type: argon2_type
-                        params.version, // version: UInt32
-                        nil,            // progress_cbk: progress_fptr!
-                        nil,            // progress_user_obj: UnsafeRawPointer!
-                        &isAbortProcessing // flag_abort: UnsafePointer<UInt8>!
-                    )
-                }
-                
-                // pointer to the object to pass to the callback
-                let progressPtr = UnsafeRawPointer(Unmanaged.passUnretained(progress).toOpaque())
-                
                 return argon2_hash(
-                    params.iterations,
-                    params.memoryKiB,
-                    params.parallelism,
-                    pwdBytes, pwdBytes.count,
-                    saltBytes, saltBytes.count,
-                    &outBytes, outBytes.count,
-                    nil, 0,
-                    type.rawValue,
-                    params.version,
-                    // A closure for updating progress from the C code
-                    {
-                        (pass: UInt32, observer: Optional<UnsafeRawPointer>) -> Int32 in
-                        guard let observer = observer else { return 0 /* continue hashing */ }
-                        let progress = Unmanaged<Progress>.fromOpaque(observer).takeUnretainedValue()
-                        progress.completedUnitCount = Int64(pass)
-                        // print("Argon2 pass: \(pass)")
-                        let isShouldStop: Int32 = progress.isCancelled ? 1 : 0
-                        return isShouldStop
-                    },
-                    progressPtr,
-                    &isAbortProcessing)
+                    params.iterations,  // t_cost: UInt32
+                    params.memoryKiB,   // m_cost: UInt32
+                    params.parallelism, // parallelism: UInt32
+                    pwdBytes, pwdBytes.count,   // pwd: UnsafeRawPointer!, pwdlen: Int
+                    saltBytes, saltBytes.count, // salt: UnsafeRawPointer!, saltlen: Int
+                    &outBytes, outBytes.count,  // hash: UnsafeMutableRawPointer!, hashlen: Int
+                    nil, 0,             // encoded: UnsafeMutablePointer<Int8>!, encodedlen: Int
+                    type.rawValue,      // type: argon2_type
+                    params.version,     // version: UInt32
+                    progressCallback,   // progress_cbk: progress_fptr!
+                    progressObject,     // progress_user_obj: UnsafeRawPointer!
+                    &isAbortProcessing  // flag_abort: UnsafePointer<UInt8>!
+                )
             }
         }
         progressKVO?.invalidate()
