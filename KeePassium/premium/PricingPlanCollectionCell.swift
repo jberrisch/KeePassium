@@ -32,8 +32,10 @@ class PricingPlanConditionCell: UITableViewCell {
     @IBOutlet weak var checkmarkImage: UIImageView!
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var detailButton: UIButton!
+    var helpReference: PricingPlanCondition.HelpReference = .none
     
     @IBAction func didPressDetailButton(_ sender: UIButton) {
+        assert(helpReference != .none)
         delegate?.didPressDetailButton(in: self)
     }
 }
@@ -50,7 +52,7 @@ class PricingPlanBenefitCell: UITableViewCell {
 
 protocol PricingPlanCollectionCellDelegate: class {
     func didPressPurchaseButton(in cell: PricingPlanCollectionCell, with pricePlan: PricingPlan)
-    func didPressPerpetualFallbackInfo(in cell: PricingPlanConditionCell, with pricePlan: PricingPlan)
+    func didPressHelpButton(in cell: PricingPlanConditionCell, with pricePlan: PricingPlan)
 }
 
 /// Represents one page/tile in the price plan picker
@@ -243,12 +245,8 @@ extension PricingPlanCollectionCell: UITableViewDataSource {
             cell.titleLabel.textColor = .disabledText
         }
         
-        switch condition.moreInfo {
-        case .none:
-            cell.detailButton.isHidden = true
-        case .perpetualFallback:
-            cell.detailButton.isHidden = false
-        }
+        cell.helpReference = condition.moreInfo
+        cell.detailButton.isHidden = (condition.moreInfo == .none)
         return cell
     }
     
@@ -337,6 +335,6 @@ extension PricingPlanCollectionCell: UITableViewDataSource {
 // MARK: PricingPlanConditionCellDelegate
 extension PricingPlanCollectionCell: PricingPlanConditionCellDelegate {
     func didPressDetailButton(in cell: PricingPlanConditionCell) {
-        delegate?.didPressPerpetualFallbackInfo(in: cell, with: pricingPlan)
+        delegate?.didPressHelpButton(in: cell, with: pricingPlan)
     }
 }

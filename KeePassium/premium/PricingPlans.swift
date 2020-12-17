@@ -21,10 +21,20 @@ struct PricingPlanCondition {
         case currentPremiumFeatures
         case perpetualFallback
     }
+    
     enum HelpReference {
         case none
         case perpetualFallback
+        var articleKey: HelpArticle.Key {
+            switch self {
+            case .none:
+                fatalError()
+            case .perpetualFallback:
+                return .perpetualFallbackLicense
+            }
+        }
     }
+    
     var kind: Kind
     var isIncluded: Bool
     var moreInfo: HelpReference

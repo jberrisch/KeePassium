@@ -139,11 +139,16 @@ extension PremiumCoordinator: PricingPlanPickerDelegate {
         restorePurchases()
     }
     
-    func didPressPerpetualFallbackInfo(
+    func didPressHelpButton(
+        for helpReference: PricingPlanCondition.HelpReference,
         at popoverAnchor: PopoverAnchor,
         in viewController: PricingPlanPickerVC)
     {
         assert(childCoordinators.isEmpty)
+        guard helpReference != .none else {
+            assertionFailure()
+            return
+        }
         
         let router = NavigationRouter.createPopover(at: popoverAnchor)
         let helpViewerCoordinator = HelpViewerCoordinator(router: router)
@@ -151,7 +156,7 @@ extension PremiumCoordinator: PricingPlanPickerDelegate {
             self.childCoordinators.removeLast()
             assert(self.childCoordinators.isEmpty)
         }
-        helpViewerCoordinator.article = HelpArticle.load(.perpetualFallbackLicense)
+        helpViewerCoordinator.article = HelpArticle.load(helpReference.articleKey)
         helpViewerCoordinator.start()
         childCoordinators.append(helpViewerCoordinator)
         planPicker.present(router.navigationController, animated: true, completion: nil)
