@@ -171,7 +171,7 @@ public class Database1: Database {
             Diag.debug("Header read OK")
             
             try deriveMasterKey(compositeKey: compositeKey, canUseFinalKey: true)
-                // throws CryptoError, ChallengeResponseError, ProgressInterruption
+                // throws CryptoError, KeyFileError, ChallengeResponseError, ProgressInterruption
             Diag.debug("Key derivation OK")
             
             // Decrypt data
@@ -196,6 +196,9 @@ public class Database1: Database {
             throw DatabaseError.loadError(reason: error.localizedDescription)
         } catch let error as CryptoError {
             Diag.error("Crypto error [reason: \(error.localizedDescription)]")
+            throw DatabaseError.loadError(reason: error.localizedDescription)
+        } catch let error as KeyFileError {
+            Diag.error("Key file error [reason: \(error.localizedDescription)]")
             throw DatabaseError.loadError(reason: error.localizedDescription)
         } catch let error as ChallengeResponseError {
             Diag.error("Challenge-response error [reason: \(error.localizedDescription)]")
@@ -236,10 +239,10 @@ public class Database1: Database {
         
         let combinedComponents: SecureByteArray
         if compositeKey.state == .processedComponents {
-            combinedComponents = keyHelper.combineComponents(
+            combinedComponents = try keyHelper.combineComponents(
                 passwordData: compositeKey.passwordData!, // might be empty, but not nil
                 keyFileData: compositeKey.keyFileData!    // might be empty, but not nil
-            )
+            ) // throws KeyFileError
             compositeKey.setCombinedStaticComponents(combinedComponents)
         } else if compositeKey.state >= .combinedComponents {
             combinedComponents = compositeKey.combinedStaticComponents! // not nil in this state
@@ -431,7 +434,7 @@ public class Database1: Database {
             // update encryption seeds and transform the keys
             try header.randomizeSeeds() // throws CryptoError
             try deriveMasterKey(compositeKey: self.compositeKey, canUseFinalKey: false)
-                // throws CryptoError, ChallengeResponseError, ProgressInterruption
+                // throws CryptoError, KeyFileError, ChallengeResponseError, ProgressInterruption
             Diag.debug("Key derivation OK")
             
             // encrypt the content
@@ -448,6 +451,9 @@ public class Database1: Database {
             return outStream.data!
         } catch let error as CryptoError {
             Diag.error("Crypto error [reason: \(error.localizedDescription)]")
+            throw DatabaseError.saveError(reason: error.localizedDescription)
+        } catch let error as KeyFileError {
+            Diag.error("Key file error [reason: \(error.localizedDescription)]")
             throw DatabaseError.saveError(reason: error.localizedDescription)
         } catch let error as ChallengeResponseError {
             Diag.error("Challenge-response error [reason: \(error.localizedDescription)]")

@@ -16,10 +16,15 @@ public class KeyHelper {
     /// Both can be empty simultaneously, but then there should be a challenge-response handler (defined separately)
     /// (Pure virtual method, must be overriden)
     ///
-    /// - Parameter: passwordData - password data (possibly empty)
-    /// - Parameter: keyFileData - key file data (possibly empty)
+    /// - Parameters:
+    ///   - passwordData: password data (possibly empty)
+    ///   - keyFileData: key file data (possibly empty)
     /// - Returns: composite key (possibly empty)
-    public func combineComponents(passwordData: SecureByteArray, keyFileData: ByteArray) -> SecureByteArray {
+    /// - Throws: `KeyFileError`
+    public func combineComponents(
+        passwordData: SecureByteArray,
+        keyFileData: ByteArray
+    ) throws -> SecureByteArray {
         fatalError("Pure virtual method")
     }
     
@@ -33,7 +38,8 @@ public class KeyHelper {
     }
     
     /// Extracts key from a key file
-    public func processKeyFile(keyFileData: ByteArray) -> SecureByteArray {
+    /// - Throws: `KeyFileError`
+    public func processKeyFile(keyFileData: ByteArray) throws -> SecureByteArray {
         assert(!keyFileData.isEmpty, "keyFileData cannot be empty here")
 
         if keyFileData.count == keyFileKeyLength {
@@ -52,7 +58,7 @@ public class KeyHelper {
         }
         
         // is it an XML key file?
-        if let key = processXmlKeyFile(keyFileData: keyFileData) {
+        if let key = try processXmlKeyFile(keyFileData: keyFileData) {
             Diag.debug("Key file format is: XML")
             return key
         }
@@ -65,7 +71,8 @@ public class KeyHelper {
     /// Tries to extract key from XML key file.
     /// (To be subclassed for format-dependent processing)
     /// - Returns: extracted key, or nil if failed to extract.
-    public func processXmlKeyFile(keyFileData: ByteArray) -> SecureByteArray? {
+    /// - Throws: `KeyFileError`
+    public func processXmlKeyFile(keyFileData: ByteArray) throws -> SecureByteArray? {
         return nil
     }
 }

@@ -193,7 +193,7 @@ public class Database2: Database {
                 compositeKey: compositeKey,
                 cipher: header.dataCipher,
                 canUseFinalKey: true)
-                // throws CryptoError, ChallengeResponseError, ProgressInterruption
+                // throws CryptoError, KeyFileError ChallengeResponseError, ProgressInterruption
             Diag.debug("Key derivation OK")
             Diag.verbose("== DB2 progress CP2: \(progress.completedUnitCount)")
             
@@ -284,6 +284,9 @@ public class Database2: Database {
             throw DatabaseError.loadError(reason: error.localizedDescription)
         } catch let error as CryptoError {
             Diag.error("Crypto error [reason: \(error.localizedDescription)]")
+            throw DatabaseError.loadError(reason: error.localizedDescription)
+        } catch let error as KeyFileError {
+            Diag.error("Key file error [reason: \(error.localizedDescription)]")
             throw DatabaseError.loadError(reason: error.localizedDescription)
         } catch let error as ChallengeResponseError {
             Diag.error("Challenge-response error [reason: \(error.localizedDescription)]")
@@ -639,7 +642,7 @@ public class Database2: Database {
     }
     
     /// Updates `cipherKey` field by transforming the given `compositeKey`.
-    /// - Throws: `CryptoError`, `ChallengeResponseError`, `ProgressInterruption`
+    /// - Throws: `CryptoError`, `KeyFileError`, `ChallengeResponseError`, `ProgressInterruption`
     func deriveMasterKey(compositeKey: CompositeKey, cipher: DataCipher, canUseFinalKey: Bool) throws {
         Diag.debug("Start key derivation")
 
@@ -659,10 +662,10 @@ public class Database2: Database {
         var combinedComponents: SecureByteArray
         if compositeKey.state == .processedComponents {
             /// merges the components according to format rules, but does not hash them
-            combinedComponents = keyHelper.combineComponents(
+            combinedComponents = try keyHelper.combineComponents(
                 passwordData: compositeKey.passwordData!, // might be empty, but not nil
                 keyFileData: compositeKey.keyFileData!    // might be empty, but not nil
-            )
+            ) // throws KeyFileError
             compositeKey.setCombinedStaticComponents(combinedComponents)
         } else if compositeKey.state >= .combinedComponents {
             combinedComponents = compositeKey.combinedStaticComponents! // not nil in this state
@@ -1022,10 +1025,13 @@ public class Database2: Database {
                 compositeKey: compositeKey,
                 cipher: header.dataCipher,
                 canUseFinalKey: false)
-                // throws CryptoError, ChallengeResponseError, ProgressInterruption
+                // throws CryptoError, KeyFileError, ChallengeResponseError, ProgressInterruption
             Diag.debug("Key derivation OK")
         } catch let error as CryptoError {
             Diag.error("Crypto error [reason: \(error.localizedDescription)]")
+            throw DatabaseError.saveError(reason: error.localizedDescription)
+        } catch let error as KeyFileError {
+            Diag.error("Key file error [reason: \(error.localizedDescription)]")
             throw DatabaseError.saveError(reason: error.localizedDescription)
         } catch let error as ChallengeResponseError {
             Diag.error("Challenge-response error [reason: \(error.localizedDescription)]")

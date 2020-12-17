@@ -262,15 +262,25 @@ public class DatabaseManager {
                 errorHandler(LString.Error.passwordAndKeyFileAreBothEmpty)
                 return
             }
-            let staticComponents = keyHelper.combineComponents(
-                passwordData: passwordData, // might be empty, but not nil
-                keyFileData: keyFileData    // might be empty, but not nil
-            )
-            let compositeKey = CompositeKey(
-                staticComponents: staticComponents,
-                challengeHandler: challengeHandler)
-            Diag.debug("New composite key created successfully")
-            successHandler(compositeKey)
+            do {
+                let staticComponents = try keyHelper.combineComponents(
+                    passwordData: passwordData, // might be empty, but not nil
+                    keyFileData: keyFileData    // might be empty, but not nil
+                ) // throws KeyFileError
+                let compositeKey = CompositeKey(
+                    staticComponents: staticComponents,
+                    challengeHandler: challengeHandler)
+                Diag.debug("New composite key created successfully")
+                successHandler(compositeKey)
+            } catch let error as KeyFileError {
+                Diag.error("Key file error [reason: \(error.localizedDescription)]")
+                errorHandler(error.localizedDescription)
+            } catch {
+                let message = "Caught unrecognized exception" // unlikely to happen, don't localize
+                assertionFailure(message)
+                Diag.error(message)
+                errorHandler(message)
+            }
         }
         
         guard let keyFileRef = keyFileRef else {

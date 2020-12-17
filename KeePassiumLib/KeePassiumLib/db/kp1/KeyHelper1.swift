@@ -21,10 +21,11 @@ class KeyHelper1: KeyHelper {
         return SecureByteArray(data: data)
     }
     
+    /// - Throws: `KeyFileError`
     override func combineComponents(
         passwordData: SecureByteArray,
         keyFileData: ByteArray
-    ) -> SecureByteArray {
+    ) throws -> SecureByteArray {
         let hasPassword = !passwordData.isEmpty
         let hasKeyFile = !keyFileData.isEmpty
         
@@ -32,14 +33,15 @@ class KeyHelper1: KeyHelper {
             Diag.info("Using password and key file")
             let preKey = SecureByteArray.concat(
                 passwordData.sha256,
-                processKeyFile(keyFileData: keyFileData))
+                try processKeyFile(keyFileData: keyFileData)) // throws KeyFileError
             return preKey.sha256
         } else if hasPassword {
             Diag.info("Using password")
             return passwordData.sha256
         } else if hasKeyFile {
             Diag.info("Using key file")
-            return processKeyFile(keyFileData: keyFileData) // in KP1 returned as is (in KP2 undergoes another sha256)
+            // in KP1, XML files are returned as is (in KP2 undergoes another sha256)
+            return try processKeyFile(keyFileData: keyFileData) // throws KeyFileError
         } else {
             // The caller must ensure that some other key component
             // (challenge-response handler) is not empty.
@@ -52,7 +54,8 @@ class KeyHelper1: KeyHelper {
         return combinedComponents // they are already hashed
     }
     
-    override func processXmlKeyFile(keyFileData: ByteArray) -> SecureByteArray? {
+    /// - Throws: `KeyFileError`
+    override func processXmlKeyFile(keyFileData: ByteArray) throws -> SecureByteArray? {
         // By design, KP1 does not handle XML key files in any special manner.
         return nil
     }

@@ -20,10 +20,11 @@ final class KeyHelper2: KeyHelper {
         return SecureByteArray(data: Data(password.utf8))
     }
     
+    // Throws: `KeyFileError`
     override func combineComponents(
         passwordData: SecureByteArray,
         keyFileData: ByteArray
-    ) -> SecureByteArray {
+    ) throws -> SecureByteArray {
         let hasPassword = !passwordData.isEmpty
         let hasKeyFile = !keyFileData.isEmpty
         
@@ -36,7 +37,7 @@ final class KeyHelper2: KeyHelper {
             Diag.info("Using key file")
             preKey = SecureByteArray.concat(
                 preKey,
-                processKeyFile(keyFileData: keyFileData)
+                try processKeyFile(keyFileData: keyFileData) // throws KeyFileError
             )
         }
         if preKey.isEmpty {
@@ -53,17 +54,61 @@ final class KeyHelper2: KeyHelper {
     
     /// Tries to extract key data from KeePass v2.xx XML file.
     /// - Returns: key data, or nil in case of any issues.
-    internal override func processXmlKeyFile(keyFileData: ByteArray) -> SecureByteArray? {
-        do {
-            let xml = try AEXMLDocument(xml: keyFileData.asData)
-            // version = xml[Xml2.keyFile][Xml2.meta][Xml2.version].value // unused
-            let base64 = xml[Xml2.keyFile][Xml2.key][Xml2.data].value
-            guard let out = ByteArray(base64Encoded: base64) else {
-                return nil
-            }
-            return SecureByteArray(out)
-        } catch {
+    /// - Throws: KeyFileError
+    internal override func processXmlKeyFile(keyFileData: ByteArray) throws -> SecureByteArray? {
+        let xml = try AEXMLDocument(xml: keyFileData.asData)
+        let version = xml[Xml2.keyFile][Xml2.meta][Xml2.version].value
+        switch version {
+        case "2.0":
+            let result = try processXMLFileVersion2(xml) // throws KeyFileError
+            return result
+        case "1.0":
+            let result = try processXMLFileVersion1(xml) // throws KeyFileError
+            return result
+        default:
+            throw KeyFileError.unsupportedFormat
+        }
+    }
+    
+    /// - Throws: `KeyFileError`
+    private func processXMLFileVersion1(_ xml: AEXMLDocument) throws -> SecureByteArray? {
+        guard let base64 = xml[Xml2.keyFile][Xml2.key][Xml2.data].value else {
+            Diag.warning("Empty Base64 value")
             return nil
         }
+        guard let keyData = ByteArray(base64Encoded: base64) else {
+            Diag.error("Invalid Base64 string")
+            throw KeyFileError.keyFileCorrupted
+        }
+        return SecureByteArray(keyData)
+    }
+    
+    /// - Throws: `KeyFileError`
+    private func processXMLFileVersion2(_ xml: AEXMLDocument) throws -> SecureByteArray? {
+        let rawHexString = xml[Xml2.keyFile][Xml2.key][Xml2.data].value
+        guard let hexString = rawHexString?.filter({ !$0.isWhitespace }),
+              hexString.isNotEmpty
+        else {
+            Diag.warning("Empty key data")
+            throw KeyFileError.keyFileCorrupted
+        }
+        
+        guard let keyData = ByteArray(hexString: hexString) else {
+            Diag.error("Invalid hex string")
+            throw KeyFileError.keyFileCorrupted
+        }
+        
+        if let hashString = xml[Xml2.keyFile][Xml2.key][Xml2.data].attributes[Xml2.hash] {
+            // hash present, must verify it
+            guard let hashData = ByteArray(hexString: hashString) else {
+                Diag.error("Invalid hash hex string")
+                throw KeyFileError.keyFileCorrupted
+            }
+            guard keyData.sha256.prefix(4) == hashData else {
+                Diag.error("Hash verification failed")
+                throw KeyFileError.keyFileCorrupted
+            }
+        }
+        return SecureByteArray(keyData)
     }
 }
