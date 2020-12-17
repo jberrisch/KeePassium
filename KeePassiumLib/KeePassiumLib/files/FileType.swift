@@ -25,7 +25,7 @@ public enum FileType {
         "org.keepassxc"]
     
     public static let keyFileUTIs =
-        ["com.keepassium.keyfile", "public.data", "public.content"]
+        ["com.keepassium.keyfile", "public.data", "public.content", "public.item"]
 
     /// File extensions for database files
     public enum DatabaseExtensions {
