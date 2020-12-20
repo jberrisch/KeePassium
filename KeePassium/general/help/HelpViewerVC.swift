@@ -14,7 +14,7 @@ protocol HelpViewerDelegate: class {
 }
 
 class HelpViewerVC: UIViewController {
-    @IBOutlet weak var bodyLabel: UILabel!
+    @IBOutlet weak var bodyTextView: UITextView!
     weak var delegate: HelpViewerDelegate?
     
     var content: HelpArticle? {
@@ -42,11 +42,11 @@ class HelpViewerVC: UIViewController {
     func refresh() {
         guard isViewLoaded else { return }
         guard let content = content else {
-            bodyLabel.attributedText = nil
-            bodyLabel.text = nil
+            bodyTextView.attributedText = nil
+            bodyTextView.text = nil
             return
         }
-        bodyLabel.attributedText = content.rendered()
+        bodyTextView.attributedText = content.rendered()
     }
 
     @IBAction func didPressCancel(_ sender: Any) {
