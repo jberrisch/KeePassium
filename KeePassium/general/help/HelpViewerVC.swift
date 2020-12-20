@@ -35,6 +35,8 @@ class HelpViewerVC: UIViewController {
 
         let shareButton = UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(didPressShareButton(_:)))
         navigationItem.rightBarButtonItem = shareButton
+        
+        bodyTextView.textContainerInset.top = 16
 
         refresh()
     }
