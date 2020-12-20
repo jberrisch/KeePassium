@@ -118,6 +118,10 @@ You can manage and cancel your subscriptions by going to your account settings o
         "[Premium/Price Plan/Conditions/perpetual fallback]",
         value: "Rent-to-own license (Perpetual fallback license)",
         comment: "What's included in a price plan. Please leave `perpetual fallback license` in English.")
+    public static let planConditionFamilySharing = NSLocalizedString(
+        "[Premium/Price Plan/Conditions/family sharing]",
+        value: "Family Sharing",
+        comment: "Family Sharing programme. Translation must match Apple's: https://www.apple.com/family-sharing/")
 
     // MARK: Purchase call for action
     

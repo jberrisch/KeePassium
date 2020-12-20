@@ -148,6 +148,10 @@
 		75679ACE22FD897000372301 /* NewsCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75679ACD22FD896F00372301 /* NewsCenter.swift */; };
 		75679ACF22FD897000372301 /* NewsCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75679ACD22FD896F00372301 /* NewsCenter.swift */; };
 		756AE9D320CF8B5E00995846 /* ItemIconPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 756AE9D220CF8B5E00995846 /* ItemIconPicker.swift */; };
+		756AFD63258CF4E40072BEEF /* appstore-family-sharing.html in Resources */ = {isa = PBXBuildFile; fileRef = 756AFD62258CF4E40072BEEF /* appstore-family-sharing.html */; };
+		756AFD64258CF4E40072BEEF /* appstore-family-sharing.html in Resources */ = {isa = PBXBuildFile; fileRef = 756AFD62258CF4E40072BEEF /* appstore-family-sharing.html */; };
+		756AFD65258CF4E40072BEEF /* appstore-family-sharing.html in Resources */ = {isa = PBXBuildFile; fileRef = 756AFD62258CF4E40072BEEF /* appstore-family-sharing.html */; };
+		756AFD66258CF4E40072BEEF /* appstore-family-sharing.html in Resources */ = {isa = PBXBuildFile; fileRef = 756AFD62258CF4E40072BEEF /* appstore-family-sharing.html */; };
 		756B15CF24C19C1E004A75B6 /* FileAddingHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 756B15CE24C19C1E004A75B6 /* FileAddingHelper.swift */; };
 		756B15D024C19C1E004A75B6 /* FileAddingHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 756B15CE24C19C1E004A75B6 /* FileAddingHelper.swift */; };
 		756B15D124C19C1E004A75B6 /* FileAddingHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 756B15CE24C19C1E004A75B6 /* FileAddingHelper.swift */; };
@@ -899,6 +903,7 @@
 		75679ACA22F8095F00372301 /* AppInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInfo.swift; sourceTree = "<group>"; };
 		75679ACD22FD896F00372301 /* NewsCenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsCenter.swift; sourceTree = "<group>"; };
 		756AE9D220CF8B5E00995846 /* ItemIconPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemIconPicker.swift; sourceTree = "<group>"; };
+		756AFD62258CF4E40072BEEF /* appstore-family-sharing.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = "appstore-family-sharing.html"; sourceTree = "<group>"; };
 		756B15CE24C19C1E004A75B6 /* FileAddingHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileAddingHelper.swift; sourceTree = "<group>"; };
 		756B2433243F74E000AA121A /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		756B2434243F74E000AA121A /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -1752,6 +1757,7 @@
 			isa = PBXGroup;
 			children = (
 				756FC99A24F45B13007F9920 /* perpetual-fallback-license.html */,
+				756AFD62258CF4E40072BEEF /* appstore-family-sharing.html */,
 			);
 			path = resources;
 			sourceTree = "<group>";
@@ -2156,6 +2162,7 @@
 			files = (
 				751E0D322309AFF30088BB10 /* DatabaseUnlockerVC.storyboard in Resources */,
 				755E7D99232008300010E199 /* InfoPlist.strings in Resources */,
+				756AFD64258CF4E40072BEEF /* appstore-family-sharing.html in Resources */,
 				751E0D2F2309AFED0088BB10 /* DatabaseChooserVC.storyboard in Resources */,
 				755B863223054FAD00E9FC83 /* PasscodeInputVC.storyboard in Resources */,
 				75C51454234A792B00B44512 /* Assets.xcassets in Resources */,
@@ -2202,6 +2209,7 @@
 				751E0D0A2309AF380088BB10 /* ViewEntryFieldsVC.storyboard in Resources */,
 				758FC15F24CEF72000BAD35C /* appicon-atom-black_iPhoneApp_60@2x.png in Resources */,
 				75ED429223133DEF003DE72E /* SettingsBackupTimeoutPickerVC.storyboard in Resources */,
+				756AFD63258CF4E40072BEEF /* appstore-family-sharing.html in Resources */,
 				758FC17724CEF72000BAD35C /* appicon-info_iPhoneApp_60@2x.png in Resources */,
 				758FC14B24CEF72000BAD35C /* appicon-keepass_iPadApp_76@2x.png in Resources */,
 				7579A06D24F0787700C98F24 /* ChangeLog.json in Resources */,
@@ -2298,6 +2306,7 @@
 				75B38C5B233E5B7C006BDEFC /* ViewEntryFieldsVC.storyboard in Resources */,
 				758FC16024CEF72000BAD35C /* appicon-atom-black_iPhoneApp_60@2x.png in Resources */,
 				75B38C5C233E5B7C006BDEFC /* SettingsBackupTimeoutPickerVC.storyboard in Resources */,
+				756AFD65258CF4E40072BEEF /* appstore-family-sharing.html in Resources */,
 				758FC17824CEF72000BAD35C /* appicon-info_iPhoneApp_60@2x.png in Resources */,
 				758FC14C24CEF72000BAD35C /* appicon-keepass_iPadApp_76@2x.png in Resources */,
 				7579A06E24F0787700C98F24 /* ChangeLog.json in Resources */,
@@ -2374,6 +2383,7 @@
 			files = (
 				75D7DFAC233E5E310029AD87 /* DatabaseUnlockerVC.storyboard in Resources */,
 				75D7DFAD233E5E310029AD87 /* InfoPlist.strings in Resources */,
+				756AFD66258CF4E40072BEEF /* appstore-family-sharing.html in Resources */,
 				75D7DFAE233E5E310029AD87 /* DatabaseChooserVC.storyboard in Resources */,
 				75D7DFAF233E5E310029AD87 /* PasscodeInputVC.storyboard in Resources */,
 				75C51455234A792C00B44512 /* Assets.xcassets in Resources */,

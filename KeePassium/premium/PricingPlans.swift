@@ -20,17 +20,21 @@ struct PricingPlanCondition {
         case upcomingPremiumFeatures
         case currentPremiumFeatures
         case perpetualFallback
+        case familySharing
     }
     
     enum HelpReference {
         case none
         case perpetualFallback
+        case familySharing
         var articleKey: HelpArticle.Key {
             switch self {
             case .none:
                 fatalError()
             case .perpetualFallback:
                 return .perpetualFallbackLicense
+            case .familySharing:
+                return .appStoreFamilySharingProgramme
             }
         }
     }
@@ -59,6 +63,8 @@ struct PricingPlanCondition {
             return LString.planConditionCurrentPremiumFeatures
         case .perpetualFallback:
             return LString.planConditionPerpetualFallback
+        case .familySharing:
+            return LString.planConditionFamilySharing
         }
     }
 }
@@ -273,6 +279,7 @@ class PricingPlanPremiumMonthly: RealPricingPlan {
             PricingPlanCondition(kind: .updatesAndFixes, isIncluded: true, moreInfo: .none),
             PricingPlanCondition(kind: .emailSupport, isIncluded: true, moreInfo: .none),
             PricingPlanCondition(kind: .allPremiumFeatures, isIncluded: true, moreInfo: .none),
+            PricingPlanCondition(kind: .familySharing, isIncluded: true, moreInfo: .familySharing),
             PricingPlanCondition(kind: .perpetualFallback, isIncluded: true, moreInfo: .perpetualFallback),
         ]
         self.benefits = [
@@ -301,6 +308,7 @@ class PricingPlanPremiumYearly: RealPricingPlan {
             PricingPlanCondition(kind: .updatesAndFixes, isIncluded: true, moreInfo: .none),
             PricingPlanCondition(kind: .emailSupport, isIncluded: true, moreInfo: .none),
             PricingPlanCondition(kind: .allPremiumFeatures, isIncluded: true, moreInfo: .none),
+            PricingPlanCondition(kind: .familySharing, isIncluded: true, moreInfo: .familySharing),
             PricingPlanCondition(kind: .perpetualFallback, isIncluded: true, moreInfo: .perpetualFallback),
         ]
         self.benefits = [
@@ -328,7 +336,7 @@ class PricingPlanPremiumForever: RealPricingPlan {
             PricingPlanCondition(kind: .emailSupport, isIncluded: true, moreInfo: .none),
             PricingPlanCondition(kind: .allPremiumFeatures, isIncluded: true, moreInfo: .none),
             PricingPlanCondition(kind: .upcomingPremiumFeatures, isIncluded: true, moreInfo: .none),
-            
+            PricingPlanCondition(kind: .familySharing, isIncluded: false, moreInfo: .familySharing),
         ]
         self.benefits = [
             PricingPlanBenefit.multipleDatabases,
