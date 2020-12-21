@@ -37,8 +37,20 @@ class HelpViewerVC: UIViewController {
         navigationItem.rightBarButtonItem = shareButton
         
         bodyTextView.textContainerInset.top = 16
+        bodyTextView.textContainerInset.left = 8
+        bodyTextView.textContainerInset.right = 8
 
         refresh()
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        // By default, UITextView scrolls away the top padding (who knows why).
+        // So we need to scroll it to the top before showing.
+        // viewWillAppear() is too early and won't work.
+        // viewDidAppear() is too late and jumps.
+        // viewDidLayoutSubviews() is just right.
+        bodyTextView.setContentOffset(.zero, animated: false)
     }
     
     func refresh() {
