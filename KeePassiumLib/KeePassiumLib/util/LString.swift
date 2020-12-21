@@ -55,6 +55,17 @@ internal enum LString {
             comment: "Error shown when both master password and key file are empty")
     }
     
+    // MARK: - Warning messages
+    
+    enum Warning {
+        public static let fileIsInTrashTemplate = NSLocalizedString(
+            "[File/In Trash/warning]",
+            bundle: Bundle.framework,
+            value: "'%@' is located in Recently Deleted and might be deleted soon. To preserve your data, move the file to a more permanent location.",
+            comment: "Warning shown when opening files from Recycle Bin location. Translation of 'Recently Deleted' should match that in the Files app. [fileName: String]"
+        )
+    }
+    
     // MARK: - Progress status messages
     
     enum Progress {
