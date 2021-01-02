@@ -10,6 +10,7 @@ import UIKit
 import KeePassiumLib
 
 class AboutVC: UITableViewController {
+    @IBOutlet weak var appTitleLabel: UILabel!
     @IBOutlet weak var contactSupportCell: UITableViewCell!
     @IBOutlet weak var writeReviewCell: UITableViewCell!
     @IBOutlet weak var versionLabel: UILabel!
@@ -46,11 +47,16 @@ class AboutVC: UITableViewController {
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 44
         
+        var versionParts = ["v\(AppInfo.version).\(AppInfo.build)"]
         if Settings.current.isTestEnvironment {
-            versionLabel.text = "v\(AppInfo.version).\(AppInfo.build) beta"
+            versionParts.append("beta")
         } else {
-            versionLabel.text = "v\(AppInfo.version).\(AppInfo.build)"
+            if BusinessModel.type == .prepaid {
+                versionParts.append("Pro")
+            }
         }
+        versionLabel.text = versionParts.joined(separator: " ")
+        
         contactSupportCell.detailTextLabel?.text = SupportEmailComposer.getSupportEmail()
     }
     

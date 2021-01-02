@@ -653,6 +653,7 @@
                     </tableView>
                     <size key="freeformSize" width="375" height="2000"/>
                     <connections>
+                        <outlet property="appTitleLabel" destination="Wuj-Uw-baK" id="gzp-Qe-Po7"/>
                         <outlet property="contactSupportCell" destination="lcp-fz-TzI" id="SFZ-rV-MFA"/>
                         <outlet property="resetTextScaleCell" destination="FW9-fw-Zgc" id="nh3-oo-qXX"/>
                         <outlet property="versionLabel" destination="vDg-fF-8ty" id="fc4-EY-VCt"/>
