@@ -172,7 +172,11 @@ extension PremiumCoordinator: PremiumManagerDelegate {
     
     func purchaseSucceeded(_ product: InAppProduct, in premiumManager: PremiumManager) {
         setPurchasing(false)
-        SKStoreReviewController.requestReview()
+        let usage = premiumManager.usageMonitor.getAppUsageDuration(.perMonth)
+        if usage > 10 * 60.0 {
+            // Only if the app was used for at least 10 minutes
+            SKStoreReviewController.requestReview()
+        }
     }
     
     func purchaseDeferred(in premiumManager: PremiumManager) {

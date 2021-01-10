@@ -149,9 +149,9 @@ You can manage and cancel your subscriptions by going to your account settings o
         value: "Purchasing...",
         comment: "Status: in-app purchase started")
     public static let statusDeferredPurchase = NSLocalizedString(
-        "[Premium/Upgrade/Deferred/text] Thank you! You can use KeePassium while purchase is awaiting approval from a parent",
-        value: "Thank you! You can use KeePassium while purchase is awaiting approval from a parent",
-        comment: "Message shown when in-app purchase is deferred until parental approval.")
+        "[Premium/Upgrade/Deferred/text] Thank you! You can use KeePassium while purchase is awaiting approval.",
+        value: "Thank you! You can use KeePassium while purchase is awaiting approval.",
+        comment: "Message shown when in-app purchase is deferred until approval (parental or corporate).")
 
 
     // MARK: Restoring purchases
