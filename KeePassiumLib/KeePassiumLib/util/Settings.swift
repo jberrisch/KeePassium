@@ -676,35 +676,52 @@ public class Settings {
         /// Comparator function for sorting.
         /// Returns `true` if `lhs` < `rhs`.
         public func compare(_ lhs: URLReference, _ rhs: URLReference) -> Bool {
-            guard self != .noSorting else { return false }
-            
-            guard let lhsInfo = lhs.getCachedInfoSync(canFetch: false) else { return false }
-            guard let rhsInfo = rhs.getCachedInfoSync(canFetch: false) else { return true }
-            
             switch self {
             case .noSorting:
                 return false
             case .nameAsc:
-                return lhsInfo.fileName.localizedCaseInsensitiveCompare(rhsInfo.fileName) == .orderedAscending
+                return compareFileNames(lhs, rhs, criteria: .orderedAscending)
             case .nameDesc:
-                return lhsInfo.fileName.localizedCaseInsensitiveCompare(rhsInfo.fileName) == .orderedDescending
+                return compareFileNames(lhs, rhs, criteria: .orderedDescending)
             case .creationTimeAsc:
-                guard let date1 = lhsInfo.creationDate else { return true }
-                guard let date2 = rhsInfo.creationDate else { return false }
-                return date1.compare(date2) == .orderedAscending
+                return compareCreationTimes(lhs, rhs, criteria: .orderedAscending)
             case .creationTimeDesc:
-                guard let date1 = lhsInfo.creationDate else { return true }
-                guard let date2 = rhsInfo.creationDate else { return false }
-                return date1.compare(date2) == .orderedDescending
+                return compareCreationTimes(lhs, rhs, criteria: .orderedDescending)
             case .modificationTimeAsc:
-                guard let date1 = lhsInfo.modificationDate else { return true}
-                guard let date2 = rhsInfo.modificationDate else { return false }
-                return date1.compare(date2) == .orderedAscending
+                return compareModificationTimes(lhs, rhs, criteria: .orderedAscending)
             case .modificationTimeDesc:
-                guard let date1 = lhsInfo.modificationDate else { return true }
-                guard let date2 = rhsInfo.modificationDate else { return false }
-                return date1.compare(date2) == .orderedDescending
+                return compareModificationTimes(lhs, rhs, criteria: .orderedDescending)
             }
+        }
+        
+        private func compareFileNames(_ lhs: URLReference, _ rhs: URLReference, criteria: ComparisonResult) -> Bool {
+            let lhsInfo = lhs.getCachedInfoSync(canFetch: false)
+            guard let lhsName = lhsInfo?.fileName ?? lhs.url?.lastPathComponent else {
+                // file name not available
+                return false
+            }
+            let rhsInfo = rhs.getCachedInfoSync(canFetch: false)
+            guard let rhsName = rhsInfo?.fileName ?? rhs.url?.lastPathComponent else {
+                // file name not available
+                return true
+            }
+            return lhsName.localizedCaseInsensitiveCompare(rhsName) == criteria
+        }
+        
+        private func compareCreationTimes(_ lhs: URLReference, _ rhs: URLReference, criteria: ComparisonResult) -> Bool {
+            guard let lhsInfo = lhs.getCachedInfoSync(canFetch: false) else { return false }
+            guard let rhsInfo = rhs.getCachedInfoSync(canFetch: false) else { return true }
+            guard let lhsDate = lhsInfo.creationDate else { return true }
+            guard let rhsDate = rhsInfo.creationDate else { return false }
+            return lhsDate.compare(rhsDate) == criteria
+        }
+        
+        private func compareModificationTimes(_ lhs: URLReference, _ rhs: URLReference, criteria: ComparisonResult) -> Bool {
+            guard let lhsInfo = lhs.getCachedInfoSync(canFetch: false) else { return false }
+            guard let rhsInfo = rhs.getCachedInfoSync(canFetch: false) else { return true }
+            guard let lhsDate = lhsInfo.modificationDate else { return true }
+            guard let rhsDate = rhsInfo.modificationDate else { return false }
+            return lhsDate.compare(rhsDate) == criteria
         }
     }
     
