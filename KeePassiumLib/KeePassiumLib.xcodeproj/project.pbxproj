@@ -179,6 +179,7 @@
 		754ABF0025AB960400B98A63 /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/Localizable.strings; sourceTree = "<group>"; };
 		754ABF2D25AB969800B98A63 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		754ABF2E25AB969800B98A63 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		754ABF2F25AB96BC00B98A63 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		754D7C0D238C26A7005652E1 /* YubiKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YubiKey.swift; sourceTree = "<group>"; };
 		7558700622E5857C00E1DD89 /* TOTPGeneratorFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TOTPGeneratorFactory.swift; sourceTree = "<group>"; };
 		756AFD5C258B4C510072BEEF /* KeyFileError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyFileError.swift; sourceTree = "<group>"; };
@@ -969,6 +970,7 @@
 				754ABED225AB959800B98A63 /* nl */,
 				754ABEFF25AB960400B98A63 /* pl */,
 				754ABF2D25AB969800B98A63 /* pt-BR */,
+				754ABF2F25AB96BC00B98A63 /* ru */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
