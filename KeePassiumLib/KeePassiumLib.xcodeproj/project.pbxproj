@@ -177,6 +177,8 @@
 		754ABED225AB959800B98A63 /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		754ABEFF25AB960400B98A63 /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		754ABF0025AB960400B98A63 /* pl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/Localizable.strings; sourceTree = "<group>"; };
+		754ABF2D25AB969800B98A63 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		754ABF2E25AB969800B98A63 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		754D7C0D238C26A7005652E1 /* YubiKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YubiKey.swift; sourceTree = "<group>"; };
 		7558700622E5857C00E1DD89 /* TOTPGeneratorFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TOTPGeneratorFactory.swift; sourceTree = "<group>"; };
 		756AFD5C258B4C510072BEEF /* KeyFileError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyFileError.swift; sourceTree = "<group>"; };
@@ -751,6 +753,7 @@
 				ja,
 				ar,
 				pl,
+				"pt-BR",
 			);
 			mainGroup = 75D0C7602174AF1F00C64C93;
 			packageReferences = (
@@ -947,6 +950,7 @@
 				7532821824A8048B00A71F87 /* ja */,
 				754ABE9D25AB898B00B98A63 /* ar */,
 				754ABF0025AB960400B98A63 /* pl */,
+				754ABF2E25AB969800B98A63 /* pt-BR */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -964,6 +968,7 @@
 				754ABED125AB956300B98A63 /* ja */,
 				754ABED225AB959800B98A63 /* nl */,
 				754ABEFF25AB960400B98A63 /* pl */,
+				754ABF2D25AB969800B98A63 /* pt-BR */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
