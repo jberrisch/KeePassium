@@ -322,11 +322,7 @@ class SettingsVC: UITableViewController, Refreshable {
     }
     
     func didPressManageSubscription() {
-        guard let application = AppGroup.applicationShared,
-            let url = URL(string: "itms-apps://apps.apple.com/account/subscriptions")
-            else { assertionFailure(); return }
-        // open Manage Subscriptions page in AppStore
-        application.open(url, options: [:])
+        AppStoreHelper.openSubscriptionManagement()
     }
     
     // MARK: - Premium status
