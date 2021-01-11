@@ -62,7 +62,7 @@ struct PricingPlanCondition {
         case .currentPremiumFeatures:
             return LString.planConditionCurrentPremiumFeatures
         case .perpetualFallback:
-            return LString.planConditionPerpetualFallback
+            return LString.planConditionSubscriptionAsPurchase
         case .familySharing:
             return LString.planConditionFamilySharing
         }
@@ -276,11 +276,11 @@ class PricingPlanPremiumMonthly: RealPricingPlan {
         self.callToAction = LString.premiumCallToActionUpgradeNow
         self.ctaSubtitle = nil
         self.conditions = [
-            PricingPlanCondition(kind: .updatesAndFixes, isIncluded: true, moreInfo: .none),
-            PricingPlanCondition(kind: .emailSupport, isIncluded: true, moreInfo: .none),
             PricingPlanCondition(kind: .allPremiumFeatures, isIncluded: true, moreInfo: .none),
-            PricingPlanCondition(kind: .familySharing, isIncluded: true, moreInfo: .familySharing),
+            PricingPlanCondition(kind: .updatesAndFixes, isIncluded: true, moreInfo: .none),
             PricingPlanCondition(kind: .perpetualFallback, isIncluded: true, moreInfo: .perpetualFallback),
+            PricingPlanCondition(kind: .emailSupport, isIncluded: true, moreInfo: .none),
+            PricingPlanCondition(kind: .familySharing, isIncluded: true, moreInfo: .familySharing),
         ]
         self.benefits = [
             PricingPlanBenefit.multipleDatabases,
@@ -305,11 +305,11 @@ class PricingPlanPremiumYearly: RealPricingPlan {
         self.callToAction = LString.premiumCallToActionUpgradeNow
         self.ctaSubtitle = nil
         self.conditions = [
-            PricingPlanCondition(kind: .updatesAndFixes, isIncluded: true, moreInfo: .none),
-            PricingPlanCondition(kind: .emailSupport, isIncluded: true, moreInfo: .none),
             PricingPlanCondition(kind: .allPremiumFeatures, isIncluded: true, moreInfo: .none),
-            PricingPlanCondition(kind: .familySharing, isIncluded: true, moreInfo: .familySharing),
+            PricingPlanCondition(kind: .updatesAndFixes, isIncluded: true, moreInfo: .none),
             PricingPlanCondition(kind: .perpetualFallback, isIncluded: true, moreInfo: .perpetualFallback),
+            PricingPlanCondition(kind: .emailSupport, isIncluded: true, moreInfo: .none),
+            PricingPlanCondition(kind: .familySharing, isIncluded: true, moreInfo: .familySharing),
         ]
         self.benefits = [
             PricingPlanBenefit.multipleDatabases,
@@ -332,10 +332,10 @@ class PricingPlanPremiumForever: RealPricingPlan {
         self.callToAction = LString.premiumCallToActionUpgradeNow
         self.ctaSubtitle = nil
         self.conditions = [
-            PricingPlanCondition(kind: .updatesAndFixes, isIncluded: true, moreInfo: .none),
-            PricingPlanCondition(kind: .emailSupport, isIncluded: true, moreInfo: .none),
             PricingPlanCondition(kind: .allPremiumFeatures, isIncluded: true, moreInfo: .none),
             PricingPlanCondition(kind: .upcomingPremiumFeatures, isIncluded: true, moreInfo: .none),
+            PricingPlanCondition(kind: .updatesAndFixes, isIncluded: true, moreInfo: .none),
+            PricingPlanCondition(kind: .emailSupport, isIncluded: true, moreInfo: .none),
             PricingPlanCondition(kind: .familySharing, isIncluded: false, moreInfo: .familySharing),
         ]
         self.benefits = [
