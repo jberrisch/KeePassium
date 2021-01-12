@@ -71,7 +71,7 @@ public class KeyHelper {
     /// Tries to extract key from XML key file.
     /// (To be subclassed for format-dependent processing)
     /// - Returns: extracted key, or nil if failed to extract.
-    /// - Throws: `KeyFileError`
+    /// - Throws: `KeyFileError` if correct structure with invalid values, or failed verification
     public func processXmlKeyFile(keyFileData: ByteArray) throws -> SecureByteArray? {
         return nil
     }

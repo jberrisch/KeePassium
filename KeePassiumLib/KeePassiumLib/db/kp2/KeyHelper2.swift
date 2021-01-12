@@ -53,11 +53,27 @@ final class KeyHelper2: KeyHelper {
     }
     
     /// Tries to extract key data from KeePass v2.xx XML file.
-    /// - Returns: key data, or nil in case of any issues.
-    /// - Throws: KeyFileError
+    /// - Returns: key data, or nil if incorrect file structure
+    /// - Throws: `KeyFileError` if correct structure with invalid values, or failed verification
     internal override func processXmlKeyFile(keyFileData: ByteArray) throws -> SecureByteArray? {
-        let xml = try AEXMLDocument(xml: keyFileData.asData)
-        let version = xml[Xml2.keyFile][Xml2.meta][Xml2.version].value
+        let xml: AEXMLDocument
+        do {
+            xml = try AEXMLDocument(xml: keyFileData.asData)
+        } catch {
+            // failed to parse, probably not XML data at all
+            return nil
+        }
+        
+        let versionElement = xml[Xml2.keyFile][Xml2.meta][Xml2.version]
+        if versionElement.error != nil {
+            // invalid structure, not an XML key file
+            return nil
+        }
+        guard let version = versionElement.value else {
+            Diag.warning("Missing version in XML key file")
+            return nil
+        }
+
         switch version {
         case "2.0":
             let result = try processXMLFileVersion2(xml) // throws KeyFileError
@@ -66,6 +82,7 @@ final class KeyHelper2: KeyHelper {
             let result = try processXMLFileVersion1(xml) // throws KeyFileError
             return result
         default:
+            Diag.error("Unsupported XML key file format [version: \(version)]")
             throw KeyFileError.unsupportedFormat
         }
     }
