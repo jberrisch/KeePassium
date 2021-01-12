@@ -24,6 +24,7 @@ public class DatabaseSettings: Eraseable, Codable {
     public var accessMode: AccessMode
     
     public var isRememberMasterKey: Bool?
+    public var isRememberFinalKey: Bool?
     public private(set) var masterKey: CompositeKey?
     public var hasMasterKey: Bool { return masterKey != nil }
     
@@ -37,6 +38,7 @@ public class DatabaseSettings: Eraseable, Codable {
         case databaseRef
         case accessMode
         case isRememberMasterKey
+        case isRememberFinalKey
         case masterKey
         case isRememberKeyFile
         case associatedKeyFile
@@ -57,6 +59,7 @@ public class DatabaseSettings: Eraseable, Codable {
         self.accessMode = AccessMode.default
         
         isRememberMasterKey = nil
+        isRememberFinalKey = nil
         clearMasterKey()
         
         isRememberKeyFile = nil
@@ -80,6 +83,10 @@ public class DatabaseSettings: Eraseable, Codable {
     /// Stores the master key for the target database
     public func setMasterKey(_ key: CompositeKey) {
         masterKey = key.clone()
+        let isKeepFinalKey = self.isRememberFinalKey ?? Settings.current.isRememberDatabaseFinalKey
+        if !isKeepFinalKey {
+            masterKey?.eraseFinalKeys()
+        }
     }
     
     /// Conditionally stores the master key for the target database,
@@ -95,6 +102,10 @@ public class DatabaseSettings: Eraseable, Codable {
         masterKey = nil
     }
 
+    public func clearFinalKey() {
+        masterKey?.eraseFinalKeys()
+    }
+    
     public func setAssociatedKeyFile(_ urlRef: URLReference?) {
         associatedKeyFile = urlRef
     }

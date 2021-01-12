@@ -68,6 +68,7 @@ public class Settings {
         case startupDatabase
         case autoUnlockStartupDatabase
         case rememberDatabaseKey
+        case rememberDatabaseFinalKey
         case keepKeyFileAssociations
         case keepHardwareKeyAssociations
         case hardwareKeyAssociations
@@ -890,6 +891,23 @@ public class Settings {
                 key: .rememberDatabaseKey)
         }
     }
+
+    /// Whether to store database's final encryption key in keychain after unlock
+    public var isRememberDatabaseFinalKey: Bool {
+        get {
+            let stored = UserDefaults.appGroupShared
+                .object(forKey: Keys.rememberDatabaseFinalKey.rawValue)
+                as? Bool
+            return stored ?? true
+        }
+        set {
+            updateAndNotify(
+                oldValue: isRememberDatabaseFinalKey,
+                newValue: newValue,
+                key: .rememberDatabaseFinalKey)
+        }
+    }
+
     
     /// Should we keep track of which key file is used with which database?
     public var isKeepKeyFileAssociations: Bool {
