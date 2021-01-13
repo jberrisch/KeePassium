@@ -190,6 +190,11 @@ public enum LString {
         value: "Try to remove the file from the app, then add it again.",
         comment: "A suggestion shown after specific file errors (either databases or key files)."
     )
+    public static let actionReAddFile = NSLocalizedString(
+        "[File/Re-add/title]",
+        value: "Add the file again",
+        comment: "Action: re-add (a broken) database or key file to the app."
+    )
     public static let fileAlreadyExists = NSLocalizedString(
         "[Generic/File/title] File already exists",
         value: "File already exists",
