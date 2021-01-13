@@ -117,7 +117,12 @@ public enum LString {
         value: "Contact Us",
         comment: "Action/button to write an email to support"
     )
-
+    public static let actionLearnMore = NSLocalizedString(
+        "[Generic] Learn more",
+        value: "Learn more…",
+        comment: "Action/button to view more help/info about some topic"
+    )
+    
     public static let actionDeleteFile = NSLocalizedString(
         "[Generic/File] Delete",
         value: "Delete",
