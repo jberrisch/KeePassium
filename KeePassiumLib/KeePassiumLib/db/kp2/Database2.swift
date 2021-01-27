@@ -819,6 +819,7 @@ public class Database2: Database {
                     comment: "A warning about unused attachments after loading the database. [lastUsedAppName: String]"),
                 lastUsedAppName)
             warnings.messages.append(warningMessage)
+            warnings.isGeneratorImportant = true
             
             let unusedIDs = unusedBinaries
                 .map { String($0) }
@@ -904,6 +905,7 @@ public class Database2: Database {
             listOfEntryNames)
         Diag.warning(warningMessage)
         warnings.messages.append(warningMessage)
+        warnings.isGeneratorImportant = true
     }
     
     /// Checks if there are any (non-critically) misformatted custom fields,
@@ -928,6 +930,7 @@ public class Database2: Database {
                 comment: "A warning about misformatted custom fields after loading the database. [entryPaths: String]"),
             entryPaths)
         warnings.messages.append(warningMessage)
+        warnings.isGeneratorImportant = true
     }
         
     /// Rebuilds the binary pool from attachments of individual entries (including their histories).

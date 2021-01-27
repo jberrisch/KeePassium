@@ -87,6 +87,9 @@ public class DatabaseLoadingWarnings {
     
     public var isEmpty: Bool { return messages.isEmpty }
     
+    /// Defines whether `databaseGenerator` should be included in the warning
+    public var isGeneratorImportant = false
+    
     internal init() {
         databaseGenerator = nil
         messages = []
