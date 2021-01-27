@@ -190,13 +190,24 @@ public class URLReference:
             data = Data() // for backward compatibility
         } else {
             data = try url.bookmarkData(
-                options: [.minimalBookmark],
+                options: URLReference.getBookmarkCreationOptions(),
                 includingResourceValuesForKeys: nil,
                 relativeTo: nil) // throws an internal system error
         }
         processReference()
     }
 
+    private static func getBookmarkCreationOptions() -> URL.BookmarkCreationOptions {
+        if #available(iOS 14, *),
+           ProcessInfo.processInfo.isiOSAppOnMac
+        {
+            /// iOS app on macOS, does not support .minimalBookmark for security-scoped bookmarks
+            return []
+        } else {
+            return [.minimalBookmark]
+        }
+    }
+    
     public static func == (lhs: URLReference, rhs: URLReference) -> Bool {
         guard lhs.location == rhs.location else { return false }
         guard let lhsOriginalURL = lhs.originalURL, let rhsOriginalURL = rhs.originalURL else {
