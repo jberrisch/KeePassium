@@ -257,7 +257,7 @@ public class DatabaseManager {
     {
         let dataReadyHandler = { (keyFileData: ByteArray) -> Void in
             let passwordData = keyHelper.getPasswordData(password: password)
-            if passwordData.isEmpty && keyFileData.isEmpty {
+            if passwordData.isEmpty && keyFileData.isEmpty && challengeHandler == nil {
                 Diag.error("Password and key file are both empty")
                 errorHandler(LString.Error.passwordAndKeyFileAreBothEmpty)
                 return
