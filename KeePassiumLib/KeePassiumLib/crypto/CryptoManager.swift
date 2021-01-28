@@ -42,7 +42,7 @@ public final class CryptoManager {
             Diag.warning("Failed to generate random bytes [count: \(count), status: \(status)]")
             throw CryptoError.rngError(code: Int(status))
         }
-        return output // ByteArray(bytes: outBytes)
+        return output
     }
     
     /// Returns a 512-bit (64 byte) HMAC key for the given block index.
