@@ -198,9 +198,7 @@ public class URLReference:
     }
 
     private static func getBookmarkCreationOptions() -> URL.BookmarkCreationOptions {
-        if #available(iOS 14, *),
-           ProcessInfo.processInfo.isiOSAppOnMac
-        {
+        if ProcessInfo.isRunningOnMac {
             /// iOS app on macOS, does not support .minimalBookmark for security-scoped bookmarks
             return []
         } else {
@@ -738,9 +736,12 @@ public class URLReference:
         if let fileProviderID = _fileProviderID {
             self.fileProvider = FileProvider(rawValue: fileProviderID)
         } else {
+            if ProcessInfo.isRunningOnMac {
+                self.fileProvider = .localStorage
+                return
+            }
             assertionFailure()
             self.fileProvider = nil
         }
     }
-
 }
